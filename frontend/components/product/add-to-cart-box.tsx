@@ -46,7 +46,9 @@ export function AddToCartBox({ productId, productName, available }: AddToCartBox
   const checkoutT = useTranslations("Checkout");
   const [quantity, setQuantity] = React.useState(1);
   const [isPending, startTransition] = React.useTransition();
-  const [feedback, setFeedback] = React.useState<"success" | "error" | null>(null);
+  const [feedback, setFeedback] = React.useState<
+    { type: "success" } | { type: "error"; message: string } | null
+  >(null);
 
   // Buy Now's own session, separate from the Add to Cart transition above
   // so neither action's pending/loading state affects the other's button.
@@ -65,15 +67,28 @@ export function AddToCartBox({ productId, productName, available }: AddToCartBox
     return () => clearTimeout(timeout);
   }, [feedback]);
 
+  /** Mirrors the same OUT_OF_STOCK-with-count vs. generic-error split
+   * used by the cart drawer/page (cart-widget.tsx, cart-page-client.tsx)
+   * — same error codes, same fallback rule, just surfaced via Toast
+   * here instead of an inline alert. */
+  function errorMessage(result: Extract<Awaited<ReturnType<typeof addToCartAction>>, { ok: false }>) {
+    if (result.code === "OUT_OF_STOCK") {
+      return result.availableQuantity !== undefined
+        ? cartT("maxAvailableQuantity", { max: result.availableQuantity })
+        : cartT("errorOutOfStock");
+    }
+    return t("addToCartError");
+  }
+
   function handleClick() {
     startTransition(async () => {
       const result = await addToCartAction({ productId, quantity });
       if (result.ok) {
         dispatchCartUpdated(result.cart);
-        setFeedback("success");
+        setFeedback({ type: "success" });
         setQuantity(1);
       } else {
-        setFeedback("error");
+        setFeedback({ type: "error", message: errorMessage(result) });
       }
     });
   }
@@ -86,7 +101,7 @@ export function AddToCartBox({ productId, productName, available }: AddToCartBox
     startBuyNowTransition(async () => {
       const addResult = await addToCartAction({ productId, quantity });
       if (!addResult.ok) {
-        setFeedback("error");
+        setFeedback({ type: "error", message: errorMessage(addResult) });
         return;
       }
       dispatchCartUpdated(addResult.cart);
@@ -96,7 +111,7 @@ export function AddToCartBox({ productId, productName, available }: AddToCartBox
         setBuyNowSession({ cart: addResult.cart, ...bootstrap });
         setCheckoutOpen(true);
       } catch {
-        setFeedback("error");
+        setFeedback({ type: "error", message: t("addToCartError") });
       }
     });
   }
@@ -156,13 +171,13 @@ export function AddToCartBox({ productId, productName, available }: AddToCartBox
       </div>
       <div className="fixed inset-x-0 bottom-6 z-50 flex justify-center">
         <Toast
-          isVisible={feedback === "success"}
+          isVisible={feedback?.type === "success"}
           message={t("addedToCart")}
           variant="success"
         />
         <Toast
-          isVisible={feedback === "error"}
-          message={t("addToCartError")}
+          isVisible={feedback?.type === "error"}
+          message={feedback?.type === "error" ? feedback.message : ""}
           variant="error"
         />
       </div>

@@ -247,6 +247,7 @@
     "taxLabel": "Taxes",
     "totalLabel": "Total",
     "errorOutOfStock": "Quantité indisponible en stock.",
+    "maxAvailableQuantity": "Quantité maximale disponible : {max}",
     "errorValidation": "Cet article n'est plus dans votre panier.",
     "errorGeneric": "Une erreur est survenue. Réessayez.",
     "loading": "Chargement du panier…",

@@ -19,7 +19,7 @@ type CartPageClientProps = {
 
 export function CartPageClient({ initialCart, relatedProducts }: CartPageClientProps) {
   const t = useTranslations("Cart");
-  const { cart, errorCode, updateQuantity, remove } = useCart(initialCart);
+  const { cart, errorCode, availableQuantity, updateQuantity, remove } = useCart(initialCart);
 
   if (cart.items.length === 0) {
     return (
@@ -41,7 +41,10 @@ export function CartPageClient({ initialCart, relatedProducts }: CartPageClientP
         <div>
           {errorCode && (
             <p role="alert" className="mb-4 text-body-s text-error">
-              {errorCode === "OUT_OF_STOCK" && t("errorOutOfStock")}
+              {errorCode === "OUT_OF_STOCK" &&
+                (availableQuantity !== undefined
+                  ? t("maxAvailableQuantity", { max: availableQuantity })
+                  : t("errorOutOfStock"))}
               {errorCode === "VALIDATION_ERROR" && t("errorValidation")}
               {errorCode !== "OUT_OF_STOCK" && errorCode !== "VALIDATION_ERROR" && t("errorGeneric")}
             </p>

@@ -21,6 +21,7 @@ import { dispatchCartUpdated, useCartUpdatedListener } from "@/lib/cart/cart-eve
 export function useCart(initialCart: Cart | null) {
   const [cart, setCart] = React.useState<Cart>(initialCart ?? EMPTY_CART);
   const [errorCode, setErrorCode] = React.useState<ErrorCode | null>(null);
+  const [availableQuantity, setAvailableQuantity] = React.useState<number | undefined>(undefined);
 
   useCartUpdatedListener(setCart);
 
@@ -40,17 +41,20 @@ export function useCart(initialCart: Cart | null) {
 
   async function updateQuantity(key: string, quantity: number) {
     setErrorCode(null);
+    setAvailableQuantity(undefined);
     const result = await updateCartItemAction({ key, quantity });
     if (result.ok) {
       setCart(result.cart);
       dispatchCartUpdated(result.cart);
     } else {
       setErrorCode(result.code);
+      setAvailableQuantity(result.availableQuantity);
     }
   }
 
   async function remove(key: string) {
     setErrorCode(null);
+    setAvailableQuantity(undefined);
     const result = await removeCartItemAction({ key });
     if (result.ok) {
       setCart(result.cart);
@@ -60,5 +64,15 @@ export function useCart(initialCart: Cart | null) {
     }
   }
 
-  return { cart, errorCode, updateQuantity, remove, clearError: () => setErrorCode(null) };
+  return {
+    cart,
+    errorCode,
+    availableQuantity,
+    updateQuantity,
+    remove,
+    clearError: () => {
+      setErrorCode(null);
+      setAvailableQuantity(undefined);
+    },
+  };
 }

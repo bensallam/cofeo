@@ -101,10 +101,17 @@ function mapCart(raw: StoreApiCart): Cart {
  * normalized ERROR_CODES — the raw WooCommerce code/message never
  * reaches a component or the client. Anything not recognized falls
  * back to SERVER_ERROR rather than guessing.
+ *
+ * `invalid_quantity` (WooCommerce's code when a requested quantity
+ * exceeds `quantity_limits.maximum` — verified live against
+ * /cart/update-item, message: "The maximum quantity of ... is 3") is
+ * a stock-ceiling error from the customer's perspective just as much
+ * as the `*_out_of_stock` codes from /cart/add-item are, even though
+ * WooCommerce names it differently. Both map to OUT_OF_STOCK.
  */
 function mapCartErrorCode(wooCode: string): "OUT_OF_STOCK" | "VALIDATION_ERROR" | "SERVER_ERROR" {
-  if (wooCode.includes("stock")) return "OUT_OF_STOCK";
-  if (wooCode.includes("invalid_key") || wooCode.includes("cart_item") || wooCode.includes("quantity")) {
+  if (wooCode.includes("stock") || wooCode.includes("invalid_quantity")) return "OUT_OF_STOCK";
+  if (wooCode.includes("invalid_key") || wooCode.includes("cart_item")) {
     return "VALIDATION_ERROR";
   }
   return "SERVER_ERROR";
@@ -149,15 +156,22 @@ async function cartApiRequest(
 
   if (!response.ok) {
     let code = "unknown";
+    let wooMessage = "";
     try {
-      const errorBody = (await response.json()) as { code?: string };
+      const errorBody = (await response.json()) as { code?: string; message?: string };
       code = errorBody.code ?? "unknown";
+      wooMessage = errorBody.message ?? "";
     } catch {
       // Non-JSON error body (e.g. a raw 5xx HTML page) — fall through
       // to SERVER_ERROR via the "unknown" code below.
     }
+    // `wooMessage` is never shown to the user directly (it's raw,
+    // English, and versioned by WooCommerce, not this app's i18n) —
+    // it's kept only so a stock-ceiling caller can best-effort parse
+    // the number out of it when no cart-derived `quantityMax` is
+    // available yet (e.g. a first-ever add that overshoots stock).
     throw new AppError(mapCartErrorCode(code), "Cart operation failed", {
-      cause: { status: response.status },
+      cause: { status: response.status, wooCode: code, wooMessage },
     });
   }
 

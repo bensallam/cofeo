@@ -247,6 +247,7 @@
     "taxLabel": "الضريبة",
     "totalLabel": "المجموع",
     "errorOutOfStock": "الكمية المطلوبة غير متوفرة في المخزون.",
+    "maxAvailableQuantity": "الكمية القصوى المتاحة: {max}",
     "errorValidation": "هذا العنصر لم يعد في سلتك.",
     "errorGeneric": "حدث خطأ ما. حاول مرة أخرى.",
     "loading": "جارٍ تحميل السلة…",

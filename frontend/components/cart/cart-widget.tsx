@@ -21,7 +21,7 @@ import { useCart } from "@/lib/cart/use-cart";
 export function CartWidget() {
   const t = useTranslations("Cart");
   const [isOpen, setIsOpen] = React.useState(false);
-  const { cart, errorCode, updateQuantity, remove } = useCart(null);
+  const { cart, errorCode, availableQuantity, updateQuantity, remove } = useCart(null);
 
   return (
     <>
@@ -46,7 +46,10 @@ export function CartWidget() {
 
         {errorCode && (
           <p role="alert" className="text-body-s text-error">
-            {errorCode === "OUT_OF_STOCK" && t("errorOutOfStock")}
+            {errorCode === "OUT_OF_STOCK" &&
+              (availableQuantity !== undefined
+                ? t("maxAvailableQuantity", { max: availableQuantity })
+                : t("errorOutOfStock"))}
             {errorCode === "VALIDATION_ERROR" && t("errorValidation")}
             {errorCode !== "OUT_OF_STOCK" && errorCode !== "VALIDATION_ERROR" && t("errorGeneric")}
           </p>

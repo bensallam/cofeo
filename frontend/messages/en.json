@@ -247,6 +247,7 @@
     "taxLabel": "Tax",
     "totalLabel": "Total",
     "errorOutOfStock": "Requested quantity isn't available in stock.",
+    "maxAvailableQuantity": "Maximum available quantity: {max}",
     "errorValidation": "This item is no longer in your cart.",
     "errorGeneric": "Something went wrong. Try again.",
     "loading": "Loading cart…",
