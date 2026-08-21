@@ -1,0 +1,316 @@
+{
+  "Price": {
+    "unavailable": "غير متوفر",
+    "from": "ابتداءً من"
+  },
+  "Product": {
+    "condition": {
+      "new": "جديد",
+      "excellent": "حالة ممتازة",
+      "very-good": "حالة جيدة جداً",
+      "good": "حالة جيدة"
+    },
+    "outOfStock": "نفدت الكمية",
+    "warranty": "ضمان سنة واحدة",
+    "imagePlaceholder": "الصورة قريباً",
+    "badges": {
+      "used": "مستعمل",
+      "refurbished": "مجدّد"
+    },
+    "galleryImageLabel": "الصورة {index} من {total}",
+    "addToCart": "أضف إلى السلة",
+    "buyNow": "اشتري الآن",
+    "addedToCart": "أُضيف إلى السلة.",
+    "addToCartError": "تعذر إضافة هذا العنصر. حاول مرة أخرى.",
+    "closeCheckoutModalLabel": "إغلاق نافذة الطلب",
+    "specificationsHeading": "المواصفات",
+    "skuLabel": "المرجع",
+    "categoryLabel": "النوع",
+    "descriptionHeading": "الوصف",
+    "relatedHeading": "قد يعجبك أيضاً",
+    "breadcrumbLabel": "مسار التصفح",
+    "notFoundTitle": "الآلة غير موجودة",
+    "notFoundDescription": "هذه الآلة غير موجودة أو لم تعد متوفرة.",
+    "backToCatalogue": "العودة إلى الآلات",
+    "errorTitle": "تعذر تحميل هذه الآلة",
+    "errorDescription": "حدث خطأ ما. حاول مرة أخرى بعد قليل."
+  },
+  "DesignSystem": {
+    "title": "نظام تصميم كوفيو",
+    "subtitle": "أداة تطوير داخلية — غير مخصصة للعملاء.",
+    "typographySample": "آلات مختارة، مفحوصة، ومُجهّزة بعناية فائقة.",
+    "devOnlyBadge": "داخلي — للتطوير فقط",
+    "captionSample": "حالة الفحص",
+    "badges": {
+      "new": "جديد",
+      "inStock": "متوفر",
+      "lowStock": "كمية محدودة",
+      "outOfStock": "نفدت الكمية"
+    },
+    "cardsDemo": {
+      "default": "بطاقة افتراضية — حدّ رفيع",
+      "elevated": "بطاقة مرتفعة — ظل خفيف"
+    },
+    "productBadges": {
+      "used": "مستعمل",
+      "refurbished": "مجدّد"
+    },
+    "sections": {
+      "typography": "الطباعة",
+      "colors": "الألوان",
+      "spacing": "المسافات",
+      "buttons": "الأزرار",
+      "forms": "النماذج",
+      "badges": "الشارات",
+      "prices": "الأسعار",
+      "cards": "البطاقات",
+      "productCards": "بطاقات المنتج",
+      "states": "الحالات",
+      "overlays": "الطبقات العلوية"
+    },
+    "buttons": {
+      "primary": "أساسي",
+      "secondary": "ثانوي",
+      "ghost": "شفاف",
+      "destructive": "تدميري",
+      "loading": "جارٍ التحميل"
+    },
+    "forms": {
+      "nameLabel": "الاسم الكامل",
+      "nameHint": "كما يظهر في بطاقة الهوية",
+      "phoneLabel": "الهاتف",
+      "phoneError": "رقم هاتف غير صالح",
+      "cityLabel": "المدينة",
+      "cityPlaceholder": "اختر مدينة",
+      "newsletterLabel": "الاشتراك في النشرة الإخبارية",
+      "paymentLabel": "طريقة الدفع",
+      "codLabel": "الدفع عند التسليم",
+      "transferLabel": "تحويل بنكي",
+      "toggleError": "إظهار حالة الخطأ"
+    },
+    "overlays": {
+      "openModal": "فتح النافذة المنبثقة",
+      "modalTitle": "تأكيد الإجراء",
+      "modalBody": "هذه نافذة منبثقة تجريبية باستخدام عنصر HTML الأصلي المسمى «dialog».",
+      "close": "إغلاق",
+      "openDrawer": "فتح الدرج",
+      "drawerTitle": "درج تجريبي",
+      "drawerBody": "ينزلق من الجهة المنطقية النهائية — يمين في LTR، يسار في RTL.",
+      "showToast": "إظهار إشعار",
+      "toastMessage": "هذا إشعار تجريبي."
+    },
+    "states": {
+      "emptyTitle": "لا توجد نتائج",
+      "emptyDescription": "حاول تعديل عوامل التصفية.",
+      "errorTitle": "حدث خطأ ما",
+      "errorDescription": "تعذر تحميل البيانات في الوقت الحالي."
+    }
+  },
+  "Catalogue": {
+    "heading": "الآلات",
+    "description": "اكتشف تشكيلتنا من آلات القهوة نسبريسو، الأوتوماتيكية، وآلات الإسبريسو.",
+    "resultsRange": "{total, plural, =0 {لا توجد منتجات} other {عرض {from}–{to} من أصل {total}}}",
+    "filtersHeading": "الفلاتر",
+    "clearAllLabel": "مسح الكل",
+    "closeFiltersLabel": "إغلاق الفلاتر",
+    "paginationLabel": "الصفحات",
+    "pageLabel": "صفحة {number}",
+    "searchLabel": "بحث",
+    "searchPlaceholder": "ابحث عن آلة…",
+    "categoryLabel": "النوع",
+    "allCategories": "الكل",
+    "conditionLabel": "الحالة",
+    "allConditions": "الكل",
+    "sortLabel": "الترتيب",
+    "sort": {
+      "priceAsc": "السعر: من الأقل إلى الأعلى",
+      "priceDesc": "السعر: من الأعلى إلى الأقل",
+      "newest": "الأحدث"
+    },
+    "previous": "السابق",
+    "next": "التالي",
+    "retry": "إعادة المحاولة",
+    "emptyTitle": "لا توجد آلات مطابقة لهذه الفلاتر",
+    "emptyDescription": "حاول تعديل بحثك أو عوامل التصفية.",
+    "errorTitle": "تعذر تحميل الآلات",
+    "errorDescription": "حدث خطأ أثناء تحميل الكتالوج. حاول مرة أخرى بعد قليل."
+  },
+  "Nav": {
+    "machines": "الآلات",
+    "coffeeAccessories": "القهوة والإكسسوارات",
+    "used": "مستعمل",
+    "services": "الخدمات",
+    "skipToContent": "الانتقال إلى المحتوى الرئيسي",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "menuTitle": "القائمة",
+    "primaryNavigation": "التنقل الرئيسي"
+  },
+  "Hero": {
+    "headline": "القهوة، بطريقة مختلفة.",
+    "supporting": "آلات مختارة، مفحوصة، ومُجهّزة بعناية فائقة.",
+    "primaryCta": "اكتشف آلاتنا"
+  },
+  "FindYourMachine": {
+    "heading": "ما نوع تجربة القهوة التي تبحث عنها؟",
+    "capsules": "كبسولات",
+    "ground": "قهوة مطحونة",
+    "beans": "حبوب القهوة"
+  },
+  "FeaturedMachines": {
+    "heading": "آلات مميزة"
+  },
+  "WhyCofeo": {
+    "heading": "لماذا كوفيو",
+    "pillars": {
+      "selection": {
+        "title": "الاختيار",
+        "description": "يتم اختيار كل آلة قبل عرضها."
+      },
+      "transparency": {
+        "title": "الشفافية",
+        "description": "الحالة والضمان محددان بوضوح."
+      },
+      "preparation": {
+        "title": "التحضير",
+        "description": "مفحوصة ومُجهّزة بعناية."
+      }
+    }
+  },
+  "Brands": {
+    "heading": "علاماتنا"
+  },
+  "UsedRefurbished": {
+    "heading": "آلات مستعملة، مُختارة بعناية.",
+    "supporting": "تمر كل آلة مستعملة بنفس الخطوات.",
+    "steps": {
+      "selection": "الاختيار",
+      "inspection": "الفحص",
+      "testing": "الاختبار",
+      "cleaning": "التنظيف",
+      "preparation": "التحضير",
+      "warranty": "الضمان"
+    }
+  },
+  "Services": {
+    "heading": "خدماتنا",
+    "description": "الإصلاح، الصيانة، إزالة الترسبات."
+  },
+  "FinalCta": {
+    "heading": "هل أنت مستعد للعثور على آلتك؟",
+    "cta": "اكتشف آلاتنا"
+  },
+  "Footer": {
+    "rights": "جميع الحقوق محفوظة."
+  },
+  "Cart": {
+    "heading": "السلة",
+    "itemCount": "{count, plural, =0 {} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصراً} other {# عنصر}}",
+    "openCartLabel": "{count, plural, =0 {فتح السلة} one {فتح السلة، عنصر واحد} two {فتح السلة، عنصران} few {فتح السلة، # عناصر} many {فتح السلة، # عنصراً} other {فتح السلة، # عنصر}}",
+    "miniCartTitle": "السلة",
+    "viewCart": "عرض السلة",
+    "emptyTitle": "سلتك فارغة",
+    "emptyDescription": "تصفح آلاتنا وأضف واحدة إلى سلتك.",
+    "continueShopping": "متابعة التسوق",
+    "proceedToCheckout": "إتمام الطلب",
+    "quantityLabel": "الكمية",
+    "quantityInputLabel": "الكمية لـ {name}",
+    "decreaseQuantityLabel": "إنقاص الكمية",
+    "increaseQuantityLabel": "زيادة الكمية",
+    "removeLabel": "إزالة",
+    "removeItemLabel": "إزالة {name} من السلة",
+    "subtotalLabel": "المجموع الفرعي",
+    "discountLabel": "الخصم",
+    "taxLabel": "الضريبة",
+    "totalLabel": "المجموع",
+    "errorOutOfStock": "الكمية المطلوبة غير متوفرة في المخزون.",
+    "errorValidation": "هذا العنصر لم يعد في سلتك.",
+    "errorGeneric": "حدث خطأ ما. حاول مرة أخرى.",
+    "loading": "جارٍ تحميل السلة…",
+    "errorTitle": "تعذر تحميل السلة",
+    "errorDescription": "حدث خطأ ما. حاول مرة أخرى بعد قليل."
+  },
+  "Checkout": {
+    "heading": "إتمام الطلب",
+    "customerInfoHeading": "معلومات التوصيل",
+    "fullNameLabel": "الاسم الكامل",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "you@example.com",
+    "phoneLabel": "الهاتف",
+    "phonePlaceholder": "06XXXXXXXX",
+    "cityLabel": "المدينة",
+    "citySearchHint": "اكتب للبحث ضمن المدن التي نوصل إليها.",
+    "moreCitiesHint": "توجد نتائج أخرى — تابع الكتابة.",
+    "address1Label": "العنوان الكامل",
+    "orderSummaryHeading": "طلبك",
+    "subtotalLabel": "المجموع الفرعي",
+    "shippingLabel": "التوصيل",
+    "shippingFree": "مجاني",
+    "shippingUnknown": "اختر مدينة",
+    "shippingCalculating": "جارٍ الحساب…",
+    "totalLabel": "المجموع",
+    "paymentHeading": "الدفع",
+    "paymentNotAvailable": "الدفع غير متوفر بعد على هذا الموقع.",
+    "paymentMethods": {
+      "cod": "الدفع عند الاستلام",
+      "codHint": "ادفع نقداً عند استلام طلبك",
+      "bacs": "تحويل بنكي",
+      "cheque": "شيك",
+      "bank_transfer": "الدفع عن طريق التحويل البنكي",
+      "bank_transferHint": "يتم التحقق يدوياً بعد استلام التحويل"
+    },
+    "bankTransfer": {
+      "panelHeading": "🏦 الدفع عن طريق التحويل البنكي",
+      "accountHolderLabel": "الحساب باسم",
+      "bankNameLabel": "البنك",
+      "ribLabel": "RIB",
+      "ibanLabel": "IBAN",
+      "bicLabel": "BIC/SWIFT",
+      "amountLabel": "المبلغ الواجب تحويله",
+      "instructionsNote": "قم بإجراء التحويل البنكي مع ذكر رقم طلبك كمرجع. سيتم التحقق من طلبك يدويًا بعد استلام الدفعة.",
+      "copyButtonLabel": "نسخ",
+      "copiedLabel": "تم النسخ!",
+      "confirmedTitle": "تم تسجيل الطلب",
+      "confirmedDescription": "تم تسجيل طلبك {orderNumber}.",
+      "confirmedInstructions": "يرجى إجراء التحويل البنكي مع ذكر رقم طلبك كمرجع. سيتم تأكيد الطلب بعد التحقق من الدفعة."
+    },
+    "paymentMethodLabel": "طريقة الدفع",
+    "placeOrderButton": "تأكيد الطلب",
+    "orderConfirmedTitle": "شكراً لطلبك",
+    "orderConfirmedDescription": "تم تسجيل طلبك {orderNumber} بنجاح.",
+    "orderNumberLabel": "رقم الطلب",
+    "orderStatusLabel": "الحالة",
+    "emptyTitle": "سلتك فارغة",
+    "emptyDescription": "أضف آلة إلى سلتك قبل إتمام الطلب.",
+    "backToCatalogue": "العودة إلى الآلات",
+    "errors": {
+      "fullName": "يرجى إدخال اسمك الكامل.",
+      "email": "بريد إلكتروني غير صالح.",
+      "phone": "رقم هاتف مغربي غير صالح (06XXXXXXXX أو 07XXXXXXXX).",
+      "city": "يرجى اختيار مدينة من القائمة.",
+      "address1": "يرجى إدخال عنوانك.",
+      "paymentMethod": "يرجى اختيار طريقة دفع."
+    },
+    "errorGeneric": "حدث خطأ ما. حاول مرة أخرى.",
+    "errorTitle": "تعذر تحميل صفحة إتمام الطلب",
+    "errorDescription": "حدث خطأ ما. حاول مرة أخرى بعد قليل.",
+    "trustSection": {
+      "fastDelivery": {
+        "title": "توصيل سريع",
+        "description": "في جميع أنحاء المغرب"
+      },
+      "cod": {
+        "title": "الدفع عند الاستلام",
+        "description": "ادفع عند استلام طلبك"
+      },
+      "warranty": {
+        "title": "ضمان",
+        "description": "حسب المنتج"
+      },
+      "customerService": {
+        "title": "خدمة العملاء",
+        "description": "نحن هنا لمساعدتك"
+      }
+    }
+  }
+}

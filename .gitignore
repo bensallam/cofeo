@@ -1,0 +1,29 @@
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Node / frontend
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/next-env.d.ts
+*.tsbuildinfo
+
+# WordPress — core and wp-content live in a Docker named volume (wp_data),
+# never on the host filesystem, except wordpress/custom-plugin/ which IS
+# tracked. Nothing to ignore here today; kept as a guard against accidental
+# future dumps.
+wordpress/**/*.sql
+wordpress/**/*.sql.gz
+
+# Docker
+.colima/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log

@@ -1,0 +1,316 @@
+{
+  "Price": {
+    "unavailable": "Unavailable",
+    "from": "From"
+  },
+  "Product": {
+    "condition": {
+      "new": "New",
+      "excellent": "Excellent condition",
+      "very-good": "Very good condition",
+      "good": "Good condition"
+    },
+    "outOfStock": "Out of stock",
+    "warranty": "1-year warranty",
+    "imagePlaceholder": "Photo coming soon",
+    "badges": {
+      "used": "Used",
+      "refurbished": "Refurbished"
+    },
+    "galleryImageLabel": "Image {index} of {total}",
+    "addToCart": "Add to cart",
+    "buyNow": "Buy now",
+    "addedToCart": "Added to cart.",
+    "addToCartError": "Couldn't add this item. Try again.",
+    "closeCheckoutModalLabel": "Close checkout",
+    "specificationsHeading": "Specifications",
+    "skuLabel": "SKU",
+    "categoryLabel": "Type",
+    "descriptionHeading": "Description",
+    "relatedHeading": "You might also like",
+    "breadcrumbLabel": "Breadcrumb",
+    "notFoundTitle": "Machine not found",
+    "notFoundDescription": "This machine doesn't exist or is no longer available.",
+    "backToCatalogue": "Back to machines",
+    "errorTitle": "Couldn't load this machine",
+    "errorDescription": "Something went wrong. Try again in a moment."
+  },
+  "DesignSystem": {
+    "title": "COFEO Design System",
+    "subtitle": "Internal development tool — not customer-facing.",
+    "typographySample": "Machines selected, tested, and prepared with care.",
+    "devOnlyBadge": "Internal — dev only",
+    "captionSample": "Inspection status",
+    "badges": {
+      "new": "New",
+      "inStock": "In stock",
+      "lowStock": "Limited stock",
+      "outOfStock": "Out of stock"
+    },
+    "cardsDemo": {
+      "default": "Default card — thin border",
+      "elevated": "Elevated card — restrained shadow"
+    },
+    "productBadges": {
+      "used": "Used",
+      "refurbished": "Refurbished"
+    },
+    "sections": {
+      "typography": "Typography",
+      "colors": "Colors",
+      "spacing": "Spacing",
+      "buttons": "Buttons",
+      "forms": "Forms",
+      "badges": "Badges",
+      "prices": "Prices",
+      "cards": "Cards",
+      "productCards": "Product cards",
+      "states": "States",
+      "overlays": "Overlays"
+    },
+    "buttons": {
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "ghost": "Ghost",
+      "destructive": "Destructive",
+      "loading": "Loading"
+    },
+    "forms": {
+      "nameLabel": "Full name",
+      "nameHint": "As it appears on your ID",
+      "phoneLabel": "Phone",
+      "phoneError": "Invalid phone number",
+      "cityLabel": "City",
+      "cityPlaceholder": "Select a city",
+      "newsletterLabel": "Subscribe to the newsletter",
+      "paymentLabel": "Payment method",
+      "codLabel": "Cash on delivery",
+      "transferLabel": "Bank transfer",
+      "toggleError": "Show error state"
+    },
+    "overlays": {
+      "openModal": "Open modal",
+      "modalTitle": "Confirm action",
+      "modalBody": "This is a demo modal using the native HTML \"dialog\" element.",
+      "close": "Close",
+      "openDrawer": "Open drawer",
+      "drawerTitle": "Demo drawer",
+      "drawerBody": "Slides in from the logical end — right in LTR, left in RTL.",
+      "showToast": "Show toast",
+      "toastMessage": "This is a demo toast notification."
+    },
+    "states": {
+      "emptyTitle": "No results",
+      "emptyDescription": "Try adjusting your filters.",
+      "errorTitle": "Something went wrong",
+      "errorDescription": "Couldn't load the data right now."
+    }
+  },
+  "Catalogue": {
+    "heading": "Machines",
+    "description": "Browse our selection of Nespresso, automatic, and espresso coffee machines.",
+    "resultsRange": "{total, plural, =0 {No products} other {Showing {from}–{to} of {total}}}",
+    "filtersHeading": "Filters",
+    "clearAllLabel": "Clear all",
+    "closeFiltersLabel": "Close filters",
+    "paginationLabel": "Pagination",
+    "pageLabel": "Page {number}",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search for a machine…",
+    "categoryLabel": "Type",
+    "allCategories": "All",
+    "conditionLabel": "Condition",
+    "allConditions": "All",
+    "sortLabel": "Sort",
+    "sort": {
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "newest": "Newest"
+    },
+    "previous": "Previous",
+    "next": "Next",
+    "retry": "Try again",
+    "emptyTitle": "No machines match these filters",
+    "emptyDescription": "Try adjusting your search or filters.",
+    "errorTitle": "Couldn't load machines",
+    "errorDescription": "Something went wrong loading the catalogue. Try again in a moment."
+  },
+  "Nav": {
+    "machines": "Machines",
+    "coffeeAccessories": "Coffee & Accessories",
+    "used": "Used",
+    "services": "Services",
+    "skipToContent": "Skip to main content",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menuTitle": "Menu",
+    "primaryNavigation": "Primary navigation"
+  },
+  "Hero": {
+    "headline": "Coffee, differently.",
+    "supporting": "Machines selected, tested, and prepared with care.",
+    "primaryCta": "Discover our machines"
+  },
+  "FindYourMachine": {
+    "heading": "What kind of coffee experience are you looking for?",
+    "capsules": "Capsules",
+    "ground": "Ground Coffee",
+    "beans": "Coffee Beans"
+  },
+  "FeaturedMachines": {
+    "heading": "Featured machines"
+  },
+  "WhyCofeo": {
+    "heading": "Why COFEO",
+    "pillars": {
+      "selection": {
+        "title": "Selection",
+        "description": "Every machine is chosen before it's listed."
+      },
+      "transparency": {
+        "title": "Transparency",
+        "description": "Condition and warranty clearly stated."
+      },
+      "preparation": {
+        "title": "Preparation",
+        "description": "Tested and prepared with care."
+      }
+    }
+  },
+  "Brands": {
+    "heading": "Our brands"
+  },
+  "UsedRefurbished": {
+    "heading": "Pre-owned machines, carefully selected.",
+    "supporting": "Every used machine follows the same steps.",
+    "steps": {
+      "selection": "Selection",
+      "inspection": "Inspection",
+      "testing": "Testing",
+      "cleaning": "Cleaning",
+      "preparation": "Preparation",
+      "warranty": "Warranty"
+    }
+  },
+  "Services": {
+    "heading": "Our services",
+    "description": "Repair, maintenance, descaling."
+  },
+  "FinalCta": {
+    "heading": "Ready to find your machine?",
+    "cta": "Discover our machines"
+  },
+  "Footer": {
+    "rights": "All rights reserved."
+  },
+  "Cart": {
+    "heading": "Cart",
+    "itemCount": "{count, plural, =0 {} one {# item} other {# items}}",
+    "openCartLabel": "{count, plural, =0 {Open cart} one {Open cart, # item} other {Open cart, # items}}",
+    "miniCartTitle": "Cart",
+    "viewCart": "View cart",
+    "emptyTitle": "Your cart is empty",
+    "emptyDescription": "Browse our machines and add one to your cart.",
+    "continueShopping": "Continue shopping",
+    "proceedToCheckout": "Proceed to checkout",
+    "quantityLabel": "Quantity",
+    "quantityInputLabel": "Quantity for {name}",
+    "decreaseQuantityLabel": "Decrease quantity",
+    "increaseQuantityLabel": "Increase quantity",
+    "removeLabel": "Remove",
+    "removeItemLabel": "Remove {name} from cart",
+    "subtotalLabel": "Subtotal",
+    "discountLabel": "Discount",
+    "taxLabel": "Tax",
+    "totalLabel": "Total",
+    "errorOutOfStock": "Requested quantity isn't available in stock.",
+    "errorValidation": "This item is no longer in your cart.",
+    "errorGeneric": "Something went wrong. Try again.",
+    "loading": "Loading cart…",
+    "errorTitle": "Couldn't load the cart",
+    "errorDescription": "Something went wrong. Try again in a moment."
+  },
+  "Checkout": {
+    "heading": "Checkout",
+    "customerInfoHeading": "Delivery information",
+    "fullNameLabel": "Full name",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "06XXXXXXXX",
+    "cityLabel": "City",
+    "citySearchHint": "Type to search the cities we deliver to.",
+    "moreCitiesHint": "More results exist — keep typing.",
+    "address1Label": "Full address",
+    "orderSummaryHeading": "Your order",
+    "subtotalLabel": "Subtotal",
+    "shippingLabel": "Shipping",
+    "shippingFree": "Free",
+    "shippingUnknown": "Select a city",
+    "shippingCalculating": "Calculating…",
+    "totalLabel": "Total",
+    "paymentHeading": "Payment",
+    "paymentNotAvailable": "Payment isn't available on this site yet.",
+    "paymentMethods": {
+      "cod": "Cash on delivery",
+      "codHint": "Pay in cash when your order arrives",
+      "bacs": "Bank transfer",
+      "cheque": "Cheque",
+      "bank_transfer": "Bank transfer",
+      "bank_transferHint": "Manually verified once we receive your transfer"
+    },
+    "bankTransfer": {
+      "panelHeading": "🏦 Bank transfer",
+      "accountHolderLabel": "Account holder",
+      "bankNameLabel": "Bank",
+      "ribLabel": "RIB",
+      "ibanLabel": "IBAN",
+      "bicLabel": "BIC/SWIFT",
+      "amountLabel": "Amount to transfer",
+      "instructionsNote": "Make the transfer using your order number as the reference. Your order will be verified manually once payment is received.",
+      "copyButtonLabel": "Copy",
+      "copiedLabel": "Copied!",
+      "confirmedTitle": "Order registered",
+      "confirmedDescription": "Your order {orderNumber} has been registered.",
+      "confirmedInstructions": "Please make the bank transfer using your order number as the reference. The order will be validated once payment has been verified."
+    },
+    "paymentMethodLabel": "Payment method",
+    "placeOrderButton": "Place order",
+    "orderConfirmedTitle": "Thank you for your order",
+    "orderConfirmedDescription": "Your order {orderNumber} has been placed.",
+    "orderNumberLabel": "Order number",
+    "orderStatusLabel": "Status",
+    "emptyTitle": "Your cart is empty",
+    "emptyDescription": "Add a machine to your cart before checking out.",
+    "backToCatalogue": "Back to machines",
+    "errors": {
+      "fullName": "Please enter your full name.",
+      "email": "Invalid email address.",
+      "phone": "Invalid Moroccan phone number (06XXXXXXXX or 07XXXXXXXX).",
+      "city": "Please select a city from the list.",
+      "address1": "Please enter your address.",
+      "paymentMethod": "Please choose a payment method."
+    },
+    "errorGeneric": "Something went wrong. Try again.",
+    "errorTitle": "Couldn't load the checkout page",
+    "errorDescription": "Something went wrong. Try again in a moment.",
+    "trustSection": {
+      "fastDelivery": {
+        "title": "Fast delivery",
+        "description": "All over Morocco"
+      },
+      "cod": {
+        "title": "Cash on delivery",
+        "description": "Pay when you receive your order"
+      },
+      "warranty": {
+        "title": "Warranty",
+        "description": "Depending on the product"
+      },
+      "customerService": {
+        "title": "Customer service",
+        "description": "We're here to help"
+      }
+    }
+  }
+}

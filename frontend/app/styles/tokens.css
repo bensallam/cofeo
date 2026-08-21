@@ -1,0 +1,176 @@
+/*
+ * COFEO design tokens — single source of truth for the visual system.
+ * Two tiers: primitives (raw values, never used directly by components)
+ * and semantic tokens (named by role, what components actually consume).
+ *
+ * Contrast ratios below are computed WCAG 2.1 values (see docs/design-system.md
+ * for the calculation), not visual estimates.
+ */
+
+@theme {
+  /* ---- Primitives: neutral ramp ---- */
+  --color-gray-0: #ffffff;
+  --color-gray-50: #f5f5f2; /* warm white */
+  --color-gray-200: #d9d9d6;
+  --color-gray-400: #8a8a86;
+  --color-gray-600: #5c5c5c;
+  --color-gray-800: #3f3f3f;
+  --color-gray-950: #111111;
+  --color-gray-1000: #000000;
+
+  /* ---- Semantic: surfaces ---- */
+  --color-bg: var(--color-gray-50);
+  --color-surface: var(--color-gray-0);
+  --color-surface-elevated: var(--color-gray-0);
+  --color-surface-hover: var(--color-gray-50);
+
+  /* ---- Semantic: text (all AA-verified against --color-bg / --color-surface) ---- */
+  --color-text-primary: var(--color-gray-950); /* 17.3:1 on bg */
+  --color-text-secondary: var(--color-gray-800); /* 9.6:1 on bg */
+  --color-text-muted: var(--color-gray-600); /* 6.1:1 on bg */
+  --color-text-inverse: var(--color-gray-0);
+
+  /* ---- Semantic: borders ----
+   * `border` is decorative only (dividers, card hairlines) — 1.4:1, not
+   * meant to be the sole indicator of anything interactive.
+   * `border-strong` meets the WCAG 2.2 non-text 3:1 requirement and is
+   * for interactive element boundaries (Input, Select, secondary Button). */
+  --color-border: var(--color-gray-200);
+  --color-border-strong: var(--color-gray-400); /* 3.47:1 on surface */
+
+  /* ---- Semantic: buttons ---- */
+  --color-button-primary-bg: var(--color-gray-950);
+  --color-button-primary-bg-hover: var(--color-gray-1000);
+  --color-button-primary-text: var(--color-gray-0);
+  --color-button-secondary-bg: transparent;
+  --color-button-secondary-text: var(--color-gray-950);
+  --color-button-secondary-border: var(--color-gray-400);
+
+  /* ---- Semantic: focus (monochrome by design — no accent color) ---- */
+  --color-focus-ring: var(--color-gray-1000);
+  --color-focus-offset: var(--color-gray-0);
+
+  /* ---- Semantic: system feedback (only place color appears) ---- */
+  --color-success: #2f6b4f; /* 5.76:1 on bg */
+  --color-success-surface: color-mix(in srgb, var(--color-success) 10%, var(--color-bg));
+  --color-warning: #8a5a00; /* 5.43:1 on bg */
+  --color-warning-surface: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg));
+  --color-error: #b42318; /* 6.02:1 on bg */
+  --color-error-surface: color-mix(in srgb, var(--color-error) 10%, var(--color-bg));
+
+
+  /* ---- Typography ----
+   * Latin: IBM Plex Sans. Arabic: IBM Plex Sans Arabic — swapped at
+   * runtime via the [dir="rtl"] override below, both loaded through
+   * next/font (see app/[locale]/layout.tsx), zero npm font dependency. */
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Type scale — paired font-size/line-height (Tailwind's --text-*--line-height
+   * convention), so e.g. `text-display` sets both in one utility class. */
+  --text-display: 3.5rem;
+  --text-display--line-height: 1.05;
+  --text-heading-xl: 2.75rem;
+  --text-heading-xl--line-height: 1.1;
+  --text-heading-l: 2.25rem;
+  --text-heading-l--line-height: 1.15;
+  --text-heading-m: 1.75rem;
+  --text-heading-m--line-height: 1.2;
+  --text-heading-s: 1.25rem;
+  --text-heading-s--line-height: 1.3;
+  --text-body-l: 1.125rem;
+  --text-body-l--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-body-s: 0.875rem;
+  --text-body-s--line-height: 1.5;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.4;
+  --text-price: 1.5rem;
+  --text-price--line-height: 1.2;
+  --text-price-lg: 2rem;
+  --text-price-lg--line-height: 1.15;
+
+  /* ---- Spacing / layout ---- */
+  --container-max: 80rem; /* 1280px */
+
+  /* ---- Radius: restrained, never fully rounded ---- */
+  --radius-control: 0.25rem; /* inputs, badges, buttons */
+  --radius-card: 0.375rem;
+
+  /* ---- Shadow: very restrained, elevation only where truly needed ---- */
+  --shadow-elevated: 0 8px 24px -8px rgb(0 0 0 / 0.16);
+
+  /* ---- Motion easing (mirrored in lib/design/motion.ts for Motion/JS) ---- */
+  --ease-precise: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * RTL overrides. Tailwind v4 utilities read theme values through CSS
+ * custom properties, so redeclaring them under [dir="rtl"] is enough
+ * to flip every utility built on top of these tokens — no per-component
+ * RTL logic needed for font family, tracking, or body line-height.
+ */
+[dir="rtl"] {
+  --font-sans: var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+
+  /* Letter-spacing breaks Arabic's cursive letter joining — neutralize
+   * every tracking utility under RTL rather than remembering to avoid
+   * `tracking-*` classes in Arabic-rendered components. */
+  --tracking-tighter: 0em;
+  --tracking-tight: 0em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0em;
+  --tracking-wider: 0em;
+  --tracking-widest: 0em;
+
+  /* Arabic script needs modestly more line-height for comfortable
+   * reading at body sizes (diacritics, denser glyph shapes). Headings/
+   * display sizes keep their tighter leading in both scripts. */
+  --text-body-l--line-height: 1.75;
+  --text-body--line-height: 1.75;
+  --text-body-s--line-height: 1.65;
+}
+
+@layer base {
+  body {
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/*
+ * CSS-only entrance animation — used by the Hero so it stays a Server
+ * Component (a JS-driven fade via Motion would require "use client"
+ * for a one-time on-load effect, which also complicates LCP timing).
+ * Already covered by the reduced-motion override above.
+ */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s var(--ease-precise) both;
+}

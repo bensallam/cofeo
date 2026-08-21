@@ -1,0 +1,75 @@
+name: cofeo
+
+services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      # Host 3307 (not 3306 — that port is already used by an unrelated
+      # local MySQL install on this machine). Exposed only for optional
+      # GUI DB tools; the wordpress/wpcli services talk to `db` internally.
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  wordpress:
+    image: wordpress:6-php8.2-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DEBUG: 1
+    ports:
+      - "8080:80"
+    volumes:
+      - wp_data:/var/www/html
+      # Only the custom plugin is bind-mounted into the repo. WordPress
+      # core and everything else in wp-content live inside wp_data and
+      # are never committed — core is never hand-modified.
+      - ./wordpress/custom-plugin:/var/www/html/wp-content/plugins/cofeo
+
+  wpcli:
+    # Must share the same base OS/www-data uid as the `wordpress` service's
+    # image (both Debian, uid 33) since they share the wp_data volume —
+    # the Alpine cli variant (uid 82) causes permission errors on write.
+    image: wordpress:cli
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    volumes:
+      - wp_data:/var/www/html
+      - ./wordpress/custom-plugin:/var/www/html/wp-content/plugins/cofeo
+    entrypoint: ["wp"]
+    command: ["--info"]
+
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+
+volumes:
+  db_data:
+  wp_data:

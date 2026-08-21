@@ -1,0 +1,316 @@
+{
+  "Price": {
+    "unavailable": "Indisponible",
+    "from": "À partir de"
+  },
+  "Product": {
+    "condition": {
+      "new": "Neuf",
+      "excellent": "Excellent état",
+      "very-good": "Très bon état",
+      "good": "Bon état"
+    },
+    "outOfStock": "Rupture de stock",
+    "warranty": "Garantie 1 an",
+    "imagePlaceholder": "Photo à venir",
+    "badges": {
+      "used": "Occasion",
+      "refurbished": "Reconditionnée"
+    },
+    "galleryImageLabel": "Image {index} sur {total}",
+    "addToCart": "Ajouter au panier",
+    "buyNow": "Acheter maintenant",
+    "addedToCart": "Ajouté au panier.",
+    "addToCartError": "Impossible d'ajouter cet article. Réessayez.",
+    "closeCheckoutModalLabel": "Fermer la commande",
+    "specificationsHeading": "Caractéristiques",
+    "skuLabel": "Référence",
+    "categoryLabel": "Type",
+    "descriptionHeading": "Description",
+    "relatedHeading": "Vous aimerez aussi",
+    "breadcrumbLabel": "Fil d'Ariane",
+    "notFoundTitle": "Machine introuvable",
+    "notFoundDescription": "Cette machine n'existe pas ou n'est plus disponible.",
+    "backToCatalogue": "Retour aux machines",
+    "errorTitle": "Impossible de charger cette machine",
+    "errorDescription": "Une erreur est survenue. Réessayez dans un instant."
+  },
+  "DesignSystem": {
+    "title": "Système de design COFEO",
+    "subtitle": "Outil de développement interne — non destiné aux clients.",
+    "typographySample": "Des machines sélectionnées, testées et préparées avec soin.",
+    "devOnlyBadge": "Interne — développement uniquement",
+    "captionSample": "État d'inspection",
+    "badges": {
+      "new": "Neuf",
+      "inStock": "En stock",
+      "lowStock": "Stock limité",
+      "outOfStock": "Rupture"
+    },
+    "cardsDemo": {
+      "default": "Carte par défaut — bordure fine",
+      "elevated": "Carte surélevée — ombre restreinte"
+    },
+    "productBadges": {
+      "used": "Occasion",
+      "refurbished": "Reconditionnée"
+    },
+    "sections": {
+      "typography": "Typographie",
+      "colors": "Couleurs",
+      "spacing": "Espacements",
+      "buttons": "Boutons",
+      "forms": "Formulaires",
+      "badges": "Badges",
+      "prices": "Prix",
+      "cards": "Cartes",
+      "productCards": "Fiches produit",
+      "states": "États",
+      "overlays": "Superpositions"
+    },
+    "buttons": {
+      "primary": "Primaire",
+      "secondary": "Secondaire",
+      "ghost": "Discret",
+      "destructive": "Destructeur",
+      "loading": "Chargement"
+    },
+    "forms": {
+      "nameLabel": "Nom complet",
+      "nameHint": "Tel qu'il apparaît sur votre pièce d'identité",
+      "phoneLabel": "Téléphone",
+      "phoneError": "Numéro de téléphone invalide",
+      "cityLabel": "Ville",
+      "cityPlaceholder": "Sélectionner une ville",
+      "newsletterLabel": "S'abonner à la newsletter",
+      "paymentLabel": "Mode de paiement",
+      "codLabel": "Paiement à la livraison",
+      "transferLabel": "Virement bancaire",
+      "toggleError": "Afficher l'état d'erreur"
+    },
+    "overlays": {
+      "openModal": "Ouvrir la fenêtre modale",
+      "modalTitle": "Confirmer l'action",
+      "modalBody": "Ceci est une fenêtre modale de démonstration utilisant l'élément HTML natif « dialog ».",
+      "close": "Fermer",
+      "openDrawer": "Ouvrir le tiroir",
+      "drawerTitle": "Tiroir de démonstration",
+      "drawerBody": "Glisse depuis le côté logique de fin — à droite en LTR, à gauche en RTL.",
+      "showToast": "Afficher une notification",
+      "toastMessage": "Ceci est une notification de démonstration."
+    },
+    "states": {
+      "emptyTitle": "Aucun résultat",
+      "emptyDescription": "Essayez d'ajuster vos filtres.",
+      "errorTitle": "Une erreur est survenue",
+      "errorDescription": "Impossible de charger les données pour le moment."
+    }
+  },
+  "Catalogue": {
+    "heading": "Machines",
+    "description": "Découvrez notre sélection de machines à café Nespresso, automatiques et expresso.",
+    "resultsRange": "{total, plural, =0 {Aucun produit} other {Affichage de {from} à {to} sur {total}}}",
+    "filtersHeading": "Filtres",
+    "clearAllLabel": "Tout effacer",
+    "closeFiltersLabel": "Fermer les filtres",
+    "paginationLabel": "Pagination",
+    "pageLabel": "Page {number}",
+    "searchLabel": "Rechercher",
+    "searchPlaceholder": "Rechercher une machine…",
+    "categoryLabel": "Type",
+    "allCategories": "Toutes",
+    "conditionLabel": "État",
+    "allConditions": "Tous",
+    "sortLabel": "Trier",
+    "sort": {
+      "priceAsc": "Prix croissant",
+      "priceDesc": "Prix décroissant",
+      "newest": "Nouveautés"
+    },
+    "previous": "Précédent",
+    "next": "Suivant",
+    "retry": "Réessayer",
+    "emptyTitle": "Aucune machine ne correspond à ces critères",
+    "emptyDescription": "Essayez d'ajuster votre recherche ou vos filtres.",
+    "errorTitle": "Impossible de charger les machines",
+    "errorDescription": "Une erreur est survenue lors du chargement du catalogue. Réessayez dans un instant."
+  },
+  "Nav": {
+    "machines": "Machines",
+    "coffeeAccessories": "Café & Accessoires",
+    "used": "Occasion",
+    "services": "Services",
+    "skipToContent": "Aller au contenu principal",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "menuTitle": "Menu",
+    "primaryNavigation": "Navigation principale"
+  },
+  "Hero": {
+    "headline": "Le café, autrement.",
+    "supporting": "Des machines sélectionnées, testées et préparées avec soin.",
+    "primaryCta": "Découvrir les machines"
+  },
+  "FindYourMachine": {
+    "heading": "Quelle expérience café recherchez-vous ?",
+    "capsules": "Capsules",
+    "ground": "Café moulu",
+    "beans": "Café en grains"
+  },
+  "FeaturedMachines": {
+    "heading": "Machines en vedette"
+  },
+  "WhyCofeo": {
+    "heading": "Pourquoi COFEO",
+    "pillars": {
+      "selection": {
+        "title": "Sélection",
+        "description": "Chaque machine est choisie avant d'être proposée."
+      },
+      "transparency": {
+        "title": "Transparence",
+        "description": "État et garantie clairement indiqués."
+      },
+      "preparation": {
+        "title": "Préparation",
+        "description": "Testées et préparées avec soin."
+      }
+    }
+  },
+  "Brands": {
+    "heading": "Nos marques"
+  },
+  "UsedRefurbished": {
+    "heading": "Machines d'occasion, sélectionnées avec soin.",
+    "supporting": "Chaque machine d'occasion suit les mêmes étapes.",
+    "steps": {
+      "selection": "Sélection",
+      "inspection": "Inspection",
+      "testing": "Test",
+      "cleaning": "Nettoyage",
+      "preparation": "Préparation",
+      "warranty": "Garantie"
+    }
+  },
+  "Services": {
+    "heading": "Nos services",
+    "description": "Réparation, entretien, détartrage."
+  },
+  "FinalCta": {
+    "heading": "Prêt à trouver votre machine ?",
+    "cta": "Découvrir les machines"
+  },
+  "Footer": {
+    "rights": "Tous droits réservés."
+  },
+  "Cart": {
+    "heading": "Panier",
+    "itemCount": "{count, plural, =0 {} one {# article} other {# articles}}",
+    "openCartLabel": "{count, plural, =0 {Ouvrir le panier} one {Ouvrir le panier, # article} other {Ouvrir le panier, # articles}}",
+    "miniCartTitle": "Panier",
+    "viewCart": "Voir le panier",
+    "emptyTitle": "Votre panier est vide",
+    "emptyDescription": "Parcourez nos machines et ajoutez-en une à votre panier.",
+    "continueShopping": "Continuer mes achats",
+    "proceedToCheckout": "Passer commande",
+    "quantityLabel": "Quantité",
+    "quantityInputLabel": "Quantité pour {name}",
+    "decreaseQuantityLabel": "Diminuer la quantité",
+    "increaseQuantityLabel": "Augmenter la quantité",
+    "removeLabel": "Retirer",
+    "removeItemLabel": "Retirer {name} du panier",
+    "subtotalLabel": "Sous-total",
+    "discountLabel": "Réduction",
+    "taxLabel": "Taxes",
+    "totalLabel": "Total",
+    "errorOutOfStock": "Quantité indisponible en stock.",
+    "errorValidation": "Cet article n'est plus dans votre panier.",
+    "errorGeneric": "Une erreur est survenue. Réessayez.",
+    "loading": "Chargement du panier…",
+    "errorTitle": "Impossible de charger le panier",
+    "errorDescription": "Une erreur est survenue. Réessayez dans un instant."
+  },
+  "Checkout": {
+    "heading": "Commande",
+    "customerInfoHeading": "Informations de livraison",
+    "fullNameLabel": "Nom complet",
+    "emailLabel": "Adresse e-mail",
+    "emailPlaceholder": "votre@exemple.com",
+    "phoneLabel": "Téléphone",
+    "phonePlaceholder": "06XXXXXXXX",
+    "cityLabel": "Ville",
+    "citySearchHint": "Tapez pour rechercher parmi les villes desservies.",
+    "moreCitiesHint": "D'autres résultats existent — continuez à taper.",
+    "address1Label": "Adresse complète",
+    "orderSummaryHeading": "Votre commande",
+    "subtotalLabel": "Sous-total",
+    "shippingLabel": "Livraison",
+    "shippingFree": "Gratuite",
+    "shippingUnknown": "Sélectionnez une ville",
+    "shippingCalculating": "Calcul en cours…",
+    "totalLabel": "Total",
+    "paymentHeading": "Paiement",
+    "paymentNotAvailable": "Le paiement n'est pas encore disponible sur ce site.",
+    "paymentMethods": {
+      "cod": "Paiement à la livraison",
+      "codHint": "Payez en espèces à la réception",
+      "bacs": "Virement bancaire",
+      "cheque": "Chèque",
+      "bank_transfer": "Paiement par virement bancaire",
+      "bank_transferHint": "Vérifié manuellement après réception du virement"
+    },
+    "bankTransfer": {
+      "panelHeading": "🏦 Paiement par virement bancaire",
+      "accountHolderLabel": "Titulaire du compte",
+      "bankNameLabel": "Banque",
+      "ribLabel": "RIB",
+      "ibanLabel": "IBAN",
+      "bicLabel": "BIC/SWIFT",
+      "amountLabel": "Montant à virer",
+      "instructionsNote": "Effectuez le virement avec votre numéro de commande comme référence. Votre commande sera vérifiée manuellement après réception du paiement.",
+      "copyButtonLabel": "Copier",
+      "copiedLabel": "Copié !",
+      "confirmedTitle": "Commande enregistrée",
+      "confirmedDescription": "Votre commande {orderNumber} est enregistrée.",
+      "confirmedInstructions": "Veuillez effectuer le virement bancaire avec votre numéro de commande comme référence. La commande sera validée après vérification du paiement."
+    },
+    "paymentMethodLabel": "Mode de paiement",
+    "placeOrderButton": "Commander",
+    "orderConfirmedTitle": "Merci pour votre commande",
+    "orderConfirmedDescription": "Votre commande {orderNumber} a bien été enregistrée.",
+    "orderNumberLabel": "Numéro de commande",
+    "orderStatusLabel": "Statut",
+    "emptyTitle": "Votre panier est vide",
+    "emptyDescription": "Ajoutez une machine à votre panier avant de passer commande.",
+    "backToCatalogue": "Retour aux machines",
+    "errors": {
+      "fullName": "Veuillez indiquer votre nom complet.",
+      "email": "Adresse e-mail invalide.",
+      "phone": "Numéro de téléphone marocain invalide (06XXXXXXXX ou 07XXXXXXXX).",
+      "city": "Veuillez sélectionner une ville dans la liste.",
+      "address1": "Veuillez indiquer votre adresse.",
+      "paymentMethod": "Veuillez choisir un mode de paiement."
+    },
+    "errorGeneric": "Une erreur est survenue. Réessayez.",
+    "errorTitle": "Impossible de charger la page de commande",
+    "errorDescription": "Une erreur est survenue. Réessayez dans un instant.",
+    "trustSection": {
+      "fastDelivery": {
+        "title": "Livraison rapide",
+        "description": "Partout au Maroc"
+      },
+      "cod": {
+        "title": "Paiement à la livraison",
+        "description": "Payez à la réception"
+      },
+      "warranty": {
+        "title": "Garantie",
+        "description": "Selon le produit"
+      },
+      "customerService": {
+        "title": "Service client",
+        "description": "À votre écoute"
+      }
+    }
+  }
+}
