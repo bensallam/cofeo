@@ -28,13 +28,14 @@ export function CartWidget() {
       <IconButton
         aria-label={t("openCartLabel", { count: cart.itemsCount })}
         onClick={() => setIsOpen(true)}
+        variant="ghost-inverse"
         className="relative"
       >
         <CartIcon />
         {cart.itemsCount > 0 && (
           <span
             aria-hidden="true"
-            className="absolute -end-1 -top-1 inline-flex size-4 items-center justify-center rounded-full bg-text-primary text-[10px] font-medium text-text-inverse tabular-nums"
+            className="absolute -end-1 -top-1 inline-flex size-4 items-center justify-center rounded-full bg-error text-[10px] font-medium text-text-inverse tabular-nums"
           >
             {cart.itemsCount > 9 ? "9+" : cart.itemsCount}
           </span>

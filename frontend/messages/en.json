@@ -136,7 +136,9 @@
     "errorDescription": "Something went wrong loading the catalogue. Try again in a moment."
   },
   "Nav": {
+    "home": "Home",
     "machines": "Machines",
+    "machinesMenu": "Our Machines",
     "coffeeAccessories": "Coffee & Accessories",
     "used": "Used",
     "services": "Services",
@@ -144,12 +146,33 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "menuTitle": "Menu",
-    "primaryNavigation": "Primary navigation"
+    "primaryNavigation": "Primary navigation",
+    "language": "Change language"
   },
   "Hero": {
-    "headline": "Coffee, differently.",
-    "supporting": "Machines selected, tested, and prepared with care.",
-    "primaryCta": "Discover our machines"
+    "headline": "The art of coffee.",
+    "supporting": "Exceptional machines, origin coffee, and a whole universe for a perfect experience.",
+    "eyebrow": "Exclusive offer",
+    "headlineLine1": "The art",
+    "headlineLine2": "of coffee",
+    "promoLabel": "Up to",
+    "promoPercent": "-20%",
+    "promoDescription": "On a selection of machines",
+    "cta": "Discover the offer",
+    "process": {
+      "origin": "Origin",
+      "roasting": "Roasting",
+      "grinding": "Ground",
+      "extraction": "Extraction"
+    },
+    "discoverEyebrow": "Discover",
+    "discoverLabel": "Our universe",
+    "metrics": {
+      "experience": { "value": "10+", "label": "Years of expertise" },
+      "clients": { "value": "870+", "label": "Satisfied customers" },
+      "passion": { "value": "100%", "label": "Coffee passion" }
+    },
+    "scrollLabel": "Scroll"
   },
   "FindYourMachine": {
     "heading": "What kind of coffee experience are you looking for?",

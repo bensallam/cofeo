@@ -1,8 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/container";
-import { LanguageSwitcher } from "@/components/homepage/language-switcher";
+import { LanguageSwitcherCircle } from "@/components/homepage/language-switcher-circle";
 import { MobileNav } from "@/components/homepage/mobile-nav";
+import { PrimaryNav } from "@/components/homepage/primary-nav";
 import { CartWidget } from "@/components/cart/cart-widget";
 
 /**
@@ -20,43 +21,114 @@ import { CartWidget } from "@/components/cart/cart-widget";
  * "Machines", which reads as a real category but goes nowhere specific.
  * Reinstate it once Coffee & Accessories has its own content section
  * or route (see docs/development-environment.md closure notes).
+ *
+ * VISUAL REDESIGN (dark glassmorphism pill, COFEO wordmark, compact
+ * "Machines" dropdown — see components/homepage/primary-nav.tsx): the
+ * reference this was designed against used a 5-item order (Accueil /
+ * Boutique / À propos / Nos Machines+dropdown / Contact) and dropdown
+ * sub-items named after specific coffee-system sub-brands (Nespresso,
+ * Dolce Gusto, Accessories). Adopted as closely as this app's real
+ * content allows, confirmed with the user rather than guessed:
+ * - Accueil ("Home", → "/") — added, since it's a real, existing route
+ *   that simply had no explicit nav link before (only the logo linked
+ *   home).
+ * - Boutique and À propos — NOT added: this app has no shop landing
+ *   distinct from the /machines catalogue, and no about page. Adding
+ *   either would mean either a duplicate link to the same destination
+ *   as "Nos Machines", or a dead link to a page that doesn't exist.
+ * - Nos Machines (dropdown) — kept, relabeled from "Machines" to match
+ *   the reference's wording (Nav.machinesMenu, header-only — the
+ *   original Nav.machines string is untouched since the Footer also
+ *   reads it and is out of scope here). Sub-items are COFEO's actual
+ *   three product categories (see machineCategories below — the same
+ *   ones the Homepage's "Find your machine" tiles already use), not
+ *   the reference's sub-brand names, which aren't part of this app's
+ *   real category data.
+ * - Contact — NOT added: no contact page/route exists.
+ * - Occasion / Services — kept as-is (existing homepage anchors,
+ *   unaffected by any of the above).
+ *
+ * There is currently no hero photo anywhere in this app (see the
+ * Homepage's own placeholder comment), so the header's glass effect
+ * reads against the plain page background rather than hero photography.
+ *
+ * STICKY: `sticky top-0` on the <header> itself (not `fixed`) — sticky
+ * keeps the element in normal flow, so it never removes its own height
+ * from the page and can't cause layout shift or reflow the content
+ * below it, unlike `fixed`. The <header> has no background of its own
+ * (previously `bg-bg`, removed): only the pill inside is opaque/glass,
+ * so scrolled content is visible through the gutter around the pill,
+ * keeping it a floating pill rather than a full-width bar. z-40 keeps
+ * it above page content but below the mobile/cart Drawer's z-50 (see
+ * ui/drawer.tsx) so an open drawer still layers over the sticky header.
+ *
+ * LANGUAGE SWITCHER: circular flag control (see
+ * language-switcher-circle.tsx), replacing the old inline "FR / AR / EN"
+ * text switcher here — that component (`LanguageSwitcher`) is untouched
+ * and still used as-is by the Footer. Both read/write the same next-intl
+ * routing (`routing.locales`, `router.replace(pathname, { locale })`);
+ * only the presentation differs.
  */
 export async function Header() {
   const t = await getTranslations("Nav");
+  const findYourMachine = await getTranslations("FindYourMachine");
 
-  const navItems = [
-    { href: "/machines", label: t("machines") },
+  const machinesHref = "/machines";
+  const machineCategories = [
+    { href: "/machines?category=capsules", label: findYourMachine("capsules") },
+    { href: "/machines?category=cafe-moulu", label: findYourMachine("ground") },
+    { href: "/machines?category=cafe-en-grains", label: findYourMachine("beans") },
+  ];
+  const leadingNavItems = [{ href: "/", label: t("home") }];
+  const otherNavItems = [
     // Root-relative anchors, not bare "#…" — bare fragments only scroll
     // within whatever page you're already on, which silently breaks
     // once /machines exists as a second real route.
     { href: "/#used-refurbished", label: t("used") },
     { href: "/#services", label: t("services") },
   ];
+  // Flat list kept for MobileNav, which renders these in one pass and
+  // special-cases whichever entry matches machinesHref to insert the
+  // category sub-links right after it.
+  const mobileNavItems = [
+    ...leadingNavItems,
+    { href: machinesHref, label: t("machinesMenu") },
+    ...otherNavItems,
+  ];
 
   return (
-    <header className="border-b border-border bg-bg">
-      <Container>
-        <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="text-body-l font-semibold tracking-tight text-text-primary">
-            COFEO
+    <header className="sticky top-0 z-40">
+      <Container className="py-4 sm:py-6">
+        <div
+          className="flex h-16 items-center justify-between gap-4 rounded-full border border-white/25 bg-gray-1000/50 px-5 shadow-(--shadow-elevated) backdrop-blur-xl backdrop-saturate-150 sm:px-8"
+        >
+          <Link href="/" className="shrink-0">
+            {/* Plain <img>, not next/image: next.config.ts's images.localPatterns
+             * is an allowlist (Next 16) currently scoped to the product-image
+             * API routes only — a small, already-optimized static logo doesn't
+             * need on-the-fly optimization, so this avoids widening that
+             * allowlist for an unrelated asset. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/cofeo-logo.png" alt="COFEO" width={780} height={243} className="h-7 w-auto sm:h-8" />
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex" aria-label={t("primaryNavigation")}>
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="text-body-s text-text-primary transition-colors duration-200 hover:text-text-secondary"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <PrimaryNav
+            ariaLabel={t("primaryNavigation")}
+            leadingItems={leadingNavItems}
+            machinesHref={machinesHref}
+            machinesLabel={t("machinesMenu")}
+            machineCategories={machineCategories}
+            otherItems={otherNavItems}
+          />
 
-          <div className="flex items-center gap-4">
-            <LanguageSwitcher className="hidden md:flex" />
+          <div className="flex items-center gap-2 sm:gap-4">
+            <LanguageSwitcherCircle className="hidden md:block" />
             <CartWidget />
-            <MobileNav navItems={navItems} />
+            <MobileNav
+              navItems={mobileNavItems}
+              machinesHref={machinesHref}
+              machineCategories={machineCategories}
+            />
           </div>
         </div>
       </Container>

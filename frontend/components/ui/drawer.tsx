@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/design/cn";
 
 type DrawerProps = {
@@ -9,6 +10,11 @@ type DrawerProps = {
   title: string;
   children: React.ReactNode;
   className?: string;
+  /** Dark glass panel (used by the mobile nav menu, to match the header's
+   * dark glassmorphism theme) instead of the default light one. Defaults
+   * to the original light appearance so every other existing caller (the
+   * cart mini-cart) is completely unaffected. */
+  variant?: "light" | "dark";
 };
 
 const FOCUSABLE_SELECTOR =
@@ -23,10 +29,20 @@ const FOCUSABLE_SELECTOR =
  * per the Phase 2 scope decision — hardened now that MobileNav is its
  * first real production usage.)
  */
-export function Drawer({ isOpen, onClose, title, children, className }: DrawerProps) {
+export function Drawer({ isOpen, onClose, title, children, className, variant = "light" }: DrawerProps) {
   const titleId = React.useId();
   const panelRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<Element | null>(null);
+  // Portaled to document.body: the header pill's backdrop-blur (a
+  // backdrop-filter) makes it a containing block for any `fixed`
+  // descendant per the CSS spec, which broke this drawer's fixed
+  // inset-0 wrapper — it was being sized/positioned against the 64px
+  // header bar instead of the viewport. Portaling escapes that.
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -72,7 +88,9 @@ export function Drawer({ isOpen, onClose, title, children, className }: DrawerPr
     };
   }, [isOpen, onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div
       className={cn("fixed inset-0 z-50", isOpen ? "pointer-events-auto" : "pointer-events-none")}
       aria-hidden={!isOpen}
@@ -91,18 +109,28 @@ export function Drawer({ isOpen, onClose, title, children, className }: DrawerPr
         aria-labelledby={titleId}
         tabIndex={-1}
         className={cn(
-          "absolute inset-y-0 end-0 flex w-full max-w-sm flex-col gap-4 bg-surface-elevated p-6",
+          "absolute inset-y-0 end-0 flex w-full max-w-sm flex-col gap-4 overflow-y-auto p-6",
+          variant === "dark"
+            ? "rounded-s-3xl border-s border-white/25 bg-gray-1000/60 text-text-inverse backdrop-blur-xl backdrop-saturate-150"
+            : "bg-surface-elevated",
           "shadow-(--shadow-elevated) transition-transform duration-300 ease-(--ease-precise)",
           "focus:outline-none",
           isOpen ? "translate-x-0" : "translate-x-full rtl:-translate-x-full",
           className || null,
         )}
       >
-        <h2 id={titleId} className="text-heading-s font-medium text-text-primary">
+        <h2
+          id={titleId}
+          className={cn(
+            "text-heading-s font-medium",
+            variant === "dark" ? "text-text-inverse" : "text-text-primary",
+          )}
+        >
           {title}
         </h2>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

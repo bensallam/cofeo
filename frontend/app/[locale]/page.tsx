@@ -9,6 +9,7 @@ import { Divider } from "@/components/ui/divider";
 import { ProductCard } from "@/components/ui/product-card";
 import { DiscoveryTile } from "@/components/homepage/discovery-tile";
 import { ProcessStep } from "@/components/homepage/process-step";
+import { CoffeeUniverseHero } from "@/components/home/coffee-universe-hero";
 import { DEMO_FEATURED_PRODUCTS, DEMO_BRANDS } from "@/lib/demo-data/products";
 import { publicEnv } from "@/config/env";
 
@@ -43,7 +44,6 @@ export default async function HomePage({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const hero = await getTranslations("Hero");
   const findYourMachine = await getTranslations("FindYourMachine");
   const featuredMachines = await getTranslations("FeaturedMachines");
   const whyCofeo = await getTranslations("WhyCofeo");
@@ -88,23 +88,11 @@ export default async function HomePage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
 
-      {/* Hero — Concept A (Editorial / Premium), approved copy */}
-      <Section spacing="lg">
-        <Container>
-          <div className="mx-auto flex max-w-3xl flex-col items-start gap-6 animate-fade-in-up">
-            <Heading level={1} size="display">
-              {hero("headline")}
-            </Heading>
-            <p className="text-body-l text-text-secondary">{hero("supporting")}</p>
-            <Button variant="primary" href="/machines">
-              {hero("primaryCta")}
-            </Button>
-          </div>
-
-          {/* Dominant photography — no real image exists yet, see docs. */}
-          <div className="mt-12 aspect-[16/9] w-full rounded-(--radius-card) bg-bg" aria-hidden="true" />
-        </Container>
-      </Section>
+      {/* Hero — cinematic dark "coffee universe" concept, approved
+       * reference. See coffee-universe-hero.tsx for the full rationale;
+       * it renders its own <h1> so this page no longer needs the
+       * Heading/Button-based markup that used to live here. */}
+      <CoffeeUniverseHero />
 
       <Divider />
 

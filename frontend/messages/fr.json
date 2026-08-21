@@ -136,7 +136,9 @@
     "errorDescription": "Une erreur est survenue lors du chargement du catalogue. Réessayez dans un instant."
   },
   "Nav": {
+    "home": "Accueil",
     "machines": "Machines",
+    "machinesMenu": "Nos machines",
     "coffeeAccessories": "Café & Accessoires",
     "used": "Occasion",
     "services": "Services",
@@ -144,12 +146,33 @@
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
     "menuTitle": "Menu",
-    "primaryNavigation": "Navigation principale"
+    "primaryNavigation": "Navigation principale",
+    "language": "Changer de langue"
   },
   "Hero": {
-    "headline": "Le café, autrement.",
-    "supporting": "Des machines sélectionnées, testées et préparées avec soin.",
-    "primaryCta": "Découvrir les machines"
+    "headline": "L'art du café.",
+    "supporting": "Des machines d'exception, du café d'origine, et tout l'univers pour une expérience parfaite.",
+    "eyebrow": "Promotion exclusive",
+    "headlineLine1": "L'art",
+    "headlineLine2": "du café",
+    "promoLabel": "Jusqu'à",
+    "promoPercent": "-20%",
+    "promoDescription": "Sur une sélection de machines",
+    "cta": "Découvrir l'offre",
+    "process": {
+      "origin": "Origine",
+      "roasting": "Torréfaction",
+      "grinding": "Moulu",
+      "extraction": "Extraction"
+    },
+    "discoverEyebrow": "Découvrir",
+    "discoverLabel": "Notre univers",
+    "metrics": {
+      "experience": { "value": "10+", "label": "Années d'expertise" },
+      "clients": { "value": "870+", "label": "Clients satisfaits" },
+      "passion": { "value": "100%", "label": "Passion du café" }
+    },
+    "scrollLabel": "Scroller"
   },
   "FindYourMachine": {
     "heading": "Quelle expérience café recherchez-vous ?",

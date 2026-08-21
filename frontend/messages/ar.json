@@ -136,7 +136,9 @@
     "errorDescription": "حدث خطأ أثناء تحميل الكتالوج. حاول مرة أخرى بعد قليل."
   },
   "Nav": {
+    "home": "الرئيسية",
     "machines": "الآلات",
+    "machinesMenu": "آلاتنا",
     "coffeeAccessories": "القهوة والإكسسوارات",
     "used": "مستعمل",
     "services": "الخدمات",
@@ -144,12 +146,33 @@
     "openMenu": "فتح القائمة",
     "closeMenu": "إغلاق القائمة",
     "menuTitle": "القائمة",
-    "primaryNavigation": "التنقل الرئيسي"
+    "primaryNavigation": "التنقل الرئيسي",
+    "language": "تغيير اللغة"
   },
   "Hero": {
-    "headline": "القهوة، بطريقة مختلفة.",
-    "supporting": "آلات مختارة، مفحوصة، ومُجهّزة بعناية فائقة.",
-    "primaryCta": "اكتشف آلاتنا"
+    "headline": "فنّ القهوة.",
+    "supporting": "آلات استثنائية، قهوة أصيلة المنشأ، وعالم كامل لتجربة مثالية.",
+    "eyebrow": "عرض حصري",
+    "headlineLine1": "فنّ",
+    "headlineLine2": "القهوة",
+    "promoLabel": "حتى",
+    "promoPercent": "-20%",
+    "promoDescription": "على تشكيلة مختارة من الآلات",
+    "cta": "اكتشف العرض",
+    "process": {
+      "origin": "المنشأ",
+      "roasting": "التحميص",
+      "grinding": "الطحن",
+      "extraction": "الاستخلاص"
+    },
+    "discoverEyebrow": "اكتشف",
+    "discoverLabel": "عالمنا",
+    "metrics": {
+      "experience": { "value": "+10", "label": "سنوات من الخبرة" },
+      "clients": { "value": "+870", "label": "عملاء راضون" },
+      "passion": { "value": "100%", "label": "شغف بالقهوة" }
+    },
+    "scrollLabel": "مرر للأسفل"
   },
   "FindYourMachine": {
     "heading": "ما نوع تجربة القهوة التي تبحث عنها؟",
