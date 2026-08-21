@@ -18,6 +18,10 @@ pnpm install
 pnpm dev                      # http://localhost:3000
 ```
 
+For a complete installation guide (exact requirements, every environment
+variable, WordPress/WooCommerce setup, production build, deployment, and
+troubleshooting), see **[INSTALL.md](./INSTALL.md)**.
+
 ## Structure
 
 ```
