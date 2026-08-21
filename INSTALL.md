@@ -1,11 +1,20 @@
 # COFEO Installation Guide
 
 This guide documents exactly what this repository requires to run, based
-on an audit of the actual code (`package.json`, `next.config.ts`,
-`config/env.ts`, `lib/woocommerce/*`, `lib/media/*`, the `wordpress/custom-plugin`
-source, `docker-compose.yml`, and `scripts/setup.sh`). Where the repository
-does not pin or specify something, that is stated explicitly instead of
-being guessed.
+on an audit of the actual code (`frontend/package.json`,
+`frontend/next.config.ts`, `frontend/config/env.ts`,
+`frontend/lib/woocommerce/*`, `frontend/lib/media/*`, the
+`wordpress/custom-plugin` source, `docker-compose.yml`, and
+`scripts/setup.sh`). Where the repository does not pin or specify
+something, that is stated explicitly instead of being guessed.
+
+**The Next.js application lives entirely inside `frontend/`** — its
+`package.json`, `app/`, `components/`, `lib/`, `public/`, `next.config.ts`,
+and `.env.example` are all under `frontend/`, not at the repository root.
+Everything else at the root (`docker-compose.yml`, `wordpress/`, `docs/`,
+`scripts/`) supports the *optional* local WordPress/WooCommerce backend,
+not the frontend app itself. Every command below states which directory it
+runs from.
 
 ## 1. Architecture
 
@@ -28,19 +37,20 @@ WooCommerce data (WordPress database)
 
 Key points confirmed by the code:
 
-- The frontend is a **server-to-server integration**. `lib/woocommerce/store-client.ts`,
-  `checkout.ts`, `shipping-cities.ts`, and `bank-transfer.ts` all call
-  `serverEnv.WORDPRESS_API_URL` from server-only modules (Server Actions /
-  Server Components). The browser never receives WooCommerce credentials
-  and never calls WordPress directly — there is no browser→WordPress CORS
-  boundary to configure (see section 6).
+- The frontend is a **server-to-server integration**. `frontend/lib/woocommerce/store-client.ts`,
+  `checkout.ts`, `shipping-cities.ts`, and `bank-transfer.ts` (all in
+  `frontend/lib/woocommerce/`) call `serverEnv.WORDPRESS_API_URL` from
+  server-only modules (Server Actions / Server Components). The browser
+  never receives WooCommerce credentials and never calls WordPress
+  directly — there is no browser→WordPress CORS boundary to configure
+  (see section 6).
 - Guest-cart identity (WooCommerce's `Cart-Token` + `Nonce`) is stored in an
   `httpOnly` cookie on the **Next.js** domain (`cofeo_cart_token`, see
-  `lib/cart/cart-cookie.ts`), not on the WordPress domain.
-- The homepage's "Featured Machines" section (`app/[locale]/page.tsx`) uses
-  hardcoded fictional data from `lib/demo-data/products.ts` — **not** live
-  WooCommerce data. The catalogue, product pages, cart, and checkout are
-  all live Store API data.
+  `frontend/lib/cart/cart-cookie.ts`), not on the WordPress domain.
+- The homepage's "Featured Machines" section (`frontend/app/[locale]/page.tsx`)
+  uses hardcoded fictional data from `frontend/lib/demo-data/products.ts`
+  — **not** live WooCommerce data. The catalogue, product pages, cart, and
+  checkout are all live Store API data.
 
 ### Product-image processing route
 
@@ -88,6 +98,8 @@ The Next.js app lives in `frontend/` and uses **pnpm** with the committed
 `frontend/pnpm-lock.yaml`. The exact pnpm version is pinned via
 `packageManager` in `frontend/package.json`.
 
+Run from the **repository root** (right after `cd cofeo` in section 3):
+
 ```bash
 cd frontend
 corepack enable
@@ -109,7 +121,7 @@ malformed).
 |---|---|---|---|
 | `WORDPRESS_API_URL` | **Yes** | Server only | Base URL of the WordPress/WooCommerce instance (e.g. `https://cms.example.com`). Every Store API, REST API v3, and `cofeo/v1` call is built from this. Must be a valid URL (`z.url()`). |
 | `NEXT_PUBLIC_SITE_URL` | **Yes** | Public (bundled into the client) | Canonical public URL of the Next.js frontend itself (e.g. `https://www.cofeo.ma`). Must be a valid URL (`z.url()`). |
-| `WC_CONSUMER_KEY` | No | Server only | WooCommerce REST API v3 OAuth1.0a consumer key (`lib/woocommerce/rest-client.ts`). **Not currently called from anywhere in the app** — the client that uses it (`wcRestFetch`) exists for future private/admin operations but has no caller today. Leave empty unless you specifically need it. |
+| `WC_CONSUMER_KEY` | No | Server only | WooCommerce REST API v3 OAuth1.0a consumer key (`frontend/lib/woocommerce/rest-client.ts`). **Not currently called from anywhere in the app** — the client that uses it (`wcRestFetch`) exists for future private/admin operations but has no caller today. Leave empty unless you specifically need it. |
 | `WC_CONSUMER_SECRET` | No | Server only | Paired secret for `WC_CONSUMER_KEY`. Same "no current caller" note applies. |
 
 Example values (placeholders only):
@@ -123,7 +135,7 @@ WC_CONSUMER_SECRET=
 ```
 
 This file already exists as `frontend/.env.example` in the repository and
-was verified to match `config/env.ts` exactly — no changes were needed.
+was verified to match `frontend/config/env.ts` exactly — no changes were needed.
 
 ### Separate: the repo-root `.env` (Docker stack only)
 
@@ -149,8 +161,8 @@ Only what is confirmed by the frontend code and the bundled
   `/cart/update-item`, `/cart/remove-item`, `/cart/update-customer`),
   checkout (`/checkout`). **Public, no authentication.**
 - `GET /wp-json/wc/v3/*` — WooCommerce REST API v3, OAuth1.0a-signed.
-  Present in the code (`rest-client.ts`) but **not currently called by any
-  feature** (see section 5).
+  Present in the code (`frontend/lib/woocommerce/rest-client.ts`) but
+  **not currently called by any feature** (see section 5).
 - `GET /wp-json/cofeo/v1/shipping-cities` — city master list, served by the
   bundled `wordpress/custom-plugin`. **Public, no authentication.**
 - `GET /wp-json/cofeo/v1/bank-transfer` — bank-transfer payment details,
@@ -162,34 +174,37 @@ Only what is confirmed by the frontend code and the bundled
 1. **Pretty permalinks** must be enabled (`scripts/setup.sh` sets
    `/%postname%/`) — the Store API and the custom `cofeo/v1` namespace both
    depend on WordPress rewrite rules being active.
-2. **WooCommerce Brands** must be available — `lib/woocommerce/products.ts`
+2. **WooCommerce Brands** must be available — `frontend/lib/woocommerce/products.ts`
    reads `product.brands[0].name` from the Store API response (the
    `product_brand` taxonomy). Without it, every product's brand renders
    empty.
 3. A **`pa_condition` global product attribute** (taxonomy `pa_condition`)
    with terms whose **slugs** are exactly: `neuf`, `excellent-etat`,
-   `tres-bon-etat`, `bon-etat` (`lib/woocommerce/products.ts`,
+   `tres-bon-etat`, `bon-etat` (`frontend/lib/woocommerce/products.ts`,
    `CONDITION_SLUG_TO_KEY`). Any product without this attribute simply
    renders with no condition badge — not a hard failure, but the
    catalogue's condition filter/badges depend on it.
 4. **The `wordpress/custom-plugin` (COFEO Core) must be installed and
    active**, and requires WooCommerce to already be active (it self-disables
-   with an admin notice otherwise — `cofeo-core.php`).
+   with an admin notice otherwise — `wordpress/custom-plugin/cofeo-core.php`).
 5. **Shipping rates must be seeded once, manually** — `scripts/setup.sh`
-   does **not** do this. Run inside the WordPress container/host:
+   does **not** do this. If you use this repo's bundled Docker dev stack,
+   run from the **repository root** (where `docker-compose.yml` lives):
    ```bash
-   wp cofeo-shipping seed-rates
+   docker compose run --rm wpcli cofeo-shipping seed-rates
    ```
-   This creates the `cofeo_shipping_rates` option (a default rate plus
-   Mohammedia/Casablanca overrides — see
+   On any other WordPress host, run the equivalent `wp cofeo-shipping
+   seed-rates` directly with that host's own wp-cli. This creates the
+   `cofeo_shipping_rates` option (a default rate plus Mohammedia/Casablanca
+   overrides — see
    `wordpress/custom-plugin/shipping/class-cofeo-shipping-cli.php` for the
    exact values). Without this step, shipping cost resolution has nothing
    to read. City names themselves need no seeding — they're read directly
    from the bundled `wordpress/custom-plugin/shipping/data/cities.txt` at
    runtime.
 6. **Bank-transfer payment method** (`cofeo_bank_transfer` gateway) **ships
-   disabled by default** (`class-cofeo-bank-transfer-gateway.php` /
-   `-settings.php`). Enable and fill in its details from wp-admin →
+   disabled by default** (`wordpress/custom-plugin/checkout/class-cofeo-bank-transfer-gateway.php`
+   / `-settings.php`). Enable and fill in its details from wp-admin →
    WooCommerce → Settings → Payments if you want this payment option to
    appear at checkout; leave disabled otherwise (the frontend already
    handles "not enabled" gracefully — `getBankTransferDetails()` fails
@@ -206,7 +221,8 @@ domain, not WordPress's.
 
 ## 7. Development
 
-Commands that actually exist in `frontend/package.json`:
+Commands that actually exist in `frontend/package.json`. Run from the
+**repository root**:
 
 ```bash
 cd frontend
@@ -214,7 +230,8 @@ pnpm install
 pnpm dev          # http://localhost:3000 (Turbopack dev server)
 ```
 
-Other available scripts:
+Other available scripts (run from `frontend/`, i.e. continuing in the same
+directory as above):
 
 ```bash
 pnpm lint         # eslint
@@ -224,10 +241,10 @@ pnpm test:watch   # vitest, watch mode
 ```
 
 If you also want a local WordPress/WooCommerce backend (Docker/Colima),
-the repository ships one:
+the repository ships one. Run this from the **repository root** (where
+`docker-compose.yml` and `scripts/setup.sh` live — not from `frontend/`):
 
 ```bash
-cd ..                          # repository root
 cp .env.example .env           # fill in values
 ./scripts/setup.sh             # idempotent: brings up db + wordpress + adminer,
                                 # installs WP core + WooCommerce on first run,
@@ -239,7 +256,8 @@ instance to point `WORDPRESS_API_URL` at.
 
 ## 8. Production build
 
-The exact commands defined in `frontend/package.json`:
+The exact commands defined in `frontend/package.json`. Run from the
+**repository root**:
 
 ```bash
 cd frontend
@@ -251,8 +269,8 @@ pnpm start        # next start — serves the build on port 3000 by default
 need a different port, e.g. `pnpm start -- -p 4000`.
 
 There is no `output: "export"` or `output: "standalone"` set in
-`next.config.ts` — this is a standard Next.js Node.js server build, not a
-static export.
+`frontend/next.config.ts` — this is a standard Next.js Node.js server
+build, not a static export.
 
 ## 9. Deployment
 
@@ -272,13 +290,15 @@ Docker-based; it's whatever Node.js hosting you choose to run
    (`ALLOWED_PRODUCT_IMAGE_HOSTS`) to your production WordPress media host
    — it currently only allows `http://localhost:8080/wp-content/uploads/**`.
    This is a source-code change (not an env var) and the same list also
-   feeds `next.config.ts`'s `images.remotePatterns`, so both the trim route
-   and `next/image` need it updated together. `dangerouslyAllowLocalIP` in
-   `next.config.ts` exists only for the local dev host and is not relevant
-   once the media host is a real domain.
+   feeds `frontend/next.config.ts`'s `images.remotePatterns`, so both the
+   trim route and `next/image` need it updated together.
+   `dangerouslyAllowLocalIP` in `frontend/next.config.ts` exists only for
+   the local dev host and is not relevant once the media host is a real
+   domain.
 3. Set `WORDPRESS_API_URL` and `NEXT_PUBLIC_SITE_URL` to their real HTTPS
    values (section 5).
-4. Build and run: `pnpm install --frozen-lockfile && pnpm build && pnpm start`.
+4. Build and run, from inside `frontend/`:
+   `pnpm install --frozen-lockfile && pnpm build && pnpm start`.
 5. Put a reverse proxy in front of `next start` (which listens on plain
    HTTP) to terminate HTTPS and handle the public domain. An example Nginx
    config, based on the actual app (single Node process on port 3000, no
@@ -361,8 +381,8 @@ or `NEXT_PUBLIC_SITE_URL` is missing or not a valid URL. Check
 (production).
 
 **Can't reach WordPress / "Failed to reach the Store API"** — this is
-`AppError("NETWORK_ERROR", ...)` from `store-client.ts` / `checkout.ts` /
-`shipping-cities.ts`. Confirm `WORDPRESS_API_URL` is correct and reachable
+`AppError("NETWORK_ERROR", ...)` from `frontend/lib/woocommerce/store-client.ts`
+/ `checkout.ts` / `shipping-cities.ts`. Confirm `WORDPRESS_API_URL` is correct and reachable
 from wherever the Next.js process runs (not just from your own machine —
 this is a server-to-server call).
 
@@ -403,7 +423,7 @@ genuine build/runtime issue.
 
 **App starts but checkout/cart cookie doesn't persist** — `cofeo_cart_token`
 is set with `secure: true` whenever `NODE_ENV === "production"`
-(`lib/cart/cart-cookie.ts`). Serving production over plain HTTP (no
+(`frontend/lib/cart/cart-cookie.ts`). Serving production over plain HTTP (no
 reverse-proxy HTTPS) means browsers will refuse to store this cookie —
 confirm HTTPS termination is actually in front of the app (section 9).
 
@@ -412,7 +432,7 @@ confirm HTTPS termination is actually in front of the app (section 9).
 No CI/CD or deployment automation exists in this repository — the
 following is a manual workflow consistent with the deployment approach in
 section 9 (a single Node.js process, no containers for the frontend
-itself):
+itself). Run from the **repository root**:
 
 ```bash
 git pull
@@ -434,7 +454,7 @@ still match your deployment before restarting.
   already exclude these — verified against the actual tracked file list.
 - **Never expose `WC_CONSUMER_KEY` / `WC_CONSUMER_SECRET`, WordPress admin
   credentials, or database credentials** in client code, logs, or commit
-  history. `WC_CONSUMER_KEY`/`SECRET` are read only from `config/env.ts`'s
+  history. `WC_CONSUMER_KEY`/`SECRET` are read only from `frontend/config/env.ts`'s
   server-only `serverEnv`, which cannot be imported from a Client
   Component (build error by design — see the comment at the top of
   `frontend/config/env.ts`).
