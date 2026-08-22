@@ -18,6 +18,7 @@ type StoreApiProduct = {
     regular_price: string;
     sale_price: string;
     currency_minor_unit: number;
+    currency_code: string;
   };
   brands?: { id: number; name: string; slug: string }[];
   categories: { id: number; name: string; slug: string }[];
@@ -66,6 +67,12 @@ export type ProductDetail = {
   shortDescription: string;
   price: number;
   originalPrice?: number;
+  /** ISO 4217 code (e.g. "MAD"), straight from the Store API's own
+   * `prices.currency_code` — needed for Offer.priceCurrency in the
+   * Product JSON-LD (see lib/seo/product-schema.ts); nothing before
+   * that capture it, since every price display on this site already
+   * assumes MAD. */
+  currency: string;
   available: boolean;
   warranty: boolean;
 };
@@ -193,6 +200,7 @@ function mapProductDetail(product: StoreApiProduct): ProductDetail {
     shortDescription: stripHtmlToText(product.short_description),
     price: activePrice,
     originalPrice: regularPrice > activePrice ? regularPrice : undefined,
+    currency: product.prices.currency_code,
     available: product.is_in_stock,
     // Confirmed universal business fact (all coffee machines carry a
     // 1-year warranty) — not per-product WooCommerce data.

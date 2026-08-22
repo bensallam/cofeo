@@ -15,6 +15,10 @@ import { ProcessStep } from "@/components/homepage/process-step";
 import { getProductBySlug, getProducts, type ProductDetail } from "@/lib/woocommerce/products";
 import { isValidProductSlug } from "@/lib/validation/product-slug";
 import { AppError } from "@/lib/errors/app-error";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildProductJsonLd } from "@/lib/seo/product-schema";
+import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-schema";
+import { absoluteUrl } from "@/lib/seo/url";
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -62,6 +66,7 @@ export default async function ProductPage({ params }: PageProps) {
   const catalogueT = await getTranslations("Catalogue");
   const findYourMachineT = await getTranslations("FindYourMachine");
   const usedRefurbishedT = await getTranslations("UsedRefurbished");
+  const navT = await getTranslations("Nav");
 
   let product: ProductDetail | null;
   try {
@@ -90,6 +95,15 @@ export default async function ProductPage({ params }: PageProps) {
       : []),
     { label: product.name },
   ];
+
+  const canonicalUrl = absoluteUrl(`/${locale}/machines/${slug}`);
+  const productJsonLd = buildProductJsonLd({ product, locale, slug });
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd({
+    locale,
+    homeLabel: navT("home"),
+    items: breadcrumbItems,
+    currentUrl: canonicalUrl,
+  });
 
   // Trust narrative only applies to used/refurbished units — a new
   // machine has nothing to reassure a buyer about. Only the confirmed
@@ -120,6 +134,8 @@ export default async function ProductPage({ params }: PageProps) {
   return (
     <Section>
       <Container>
+        <JsonLd data={productJsonLd} />
+        <JsonLd data={breadcrumbJsonLd} />
         <Breadcrumb items={breadcrumbItems} label={t("breadcrumbLabel")} />
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[3fr_2fr] lg:gap-12">
