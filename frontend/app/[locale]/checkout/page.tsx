@@ -46,7 +46,7 @@ export default async function CheckoutPage({ params }: PageProps) {
   const cities = filterCheckoutCities(allCities);
 
   return (
-    <Section>
+    <Section tone="dark">
       <Container>
         <Link
           href="/machines"

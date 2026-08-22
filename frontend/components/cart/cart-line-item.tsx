@@ -30,7 +30,7 @@ export function CartLineItem({ item, currency, onUpdateQuantity, onRemove }: Car
   }
 
   return (
-    <div className="flex gap-4 rounded-(--radius-card) border border-border bg-surface p-4">
+    <div className="flex gap-4 rounded-(--radius-card) border border-border bg-surface/40 p-4 backdrop-blur-xl backdrop-saturate-150">
       <Link
         href={`/machines/${item.slug}`}
         className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-(--radius-control) bg-surface-hover"

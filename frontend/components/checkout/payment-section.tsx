@@ -68,7 +68,7 @@ export function PaymentSection({
   const t = useTranslations("Checkout");
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-8">
+    <div className="flex flex-col gap-4 rounded-(--radius-card) border border-border bg-surface/40 p-8 backdrop-blur-xl backdrop-saturate-150">
       <h2 className="text-body-l font-medium text-text-primary">{t("paymentHeading")}</h2>
 
       {paymentMethods.length === 0 ? (
@@ -87,7 +87,7 @@ export function PaymentSection({
               <div key={method}>
                 <label
                   className={`flex cursor-pointer items-start gap-3 rounded-(--radius-card) border p-4 transition-colors duration-200 ${
-                    isSelected ? "border-2 border-text-primary p-[calc(1rem-1px)]" : "border-border hover:border-border-strong"
+                    isSelected ? "border-2 border-gold p-[calc(1rem-1px)]" : "border-border hover:border-border-strong"
                   }`}
                 >
                   <input
@@ -96,7 +96,7 @@ export function PaymentSection({
                     value={method}
                     checked={isSelected}
                     onChange={() => onChange(method)}
-                    className="mt-0.5 accent-text-primary"
+                    className="mt-0.5 accent-gold"
                   />
                   {icon && (
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-(--radius-control) bg-bg text-text-primary [&_svg]:size-4.5">

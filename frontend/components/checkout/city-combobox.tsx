@@ -128,9 +128,9 @@ export function CityCombobox({
           onKeyDown={handleKeyDown}
           placeholder={hint}
           className={cn(
-            "w-full rounded-xl border bg-surface px-3.5 py-3 pe-10 text-body text-text-primary",
+            "w-full rounded-(--radius-control) border bg-surface px-3.5 py-3 pe-10 text-body text-text-primary",
             "placeholder:text-text-muted transition-colors duration-200",
-            error ? "border-error" : "border-border-strong focus-visible:border-text-primary",
+            error ? "border-error" : "border-border-strong focus-visible:border-gold",
           )}
         />
         <svg
@@ -150,7 +150,7 @@ export function CityCombobox({
         <ul
           id={listboxId}
           role="listbox"
-          className="absolute top-full z-10 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-border bg-surface-elevated py-1.5 shadow-(--shadow-elevated)"
+          className="absolute top-full z-10 mt-2 max-h-64 w-full overflow-y-auto rounded-(--radius-card) border border-border bg-surface-elevated py-1.5 shadow-(--shadow-elevated)"
         >
           {filtered.map((city, index) => (
             <li

@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductLoading() {
   return (
-    <Section>
+    <Section tone="dark">
       <Container>
         <Skeleton className="mb-6 h-4 w-64" />
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">

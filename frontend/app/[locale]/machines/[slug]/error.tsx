@@ -16,7 +16,7 @@ export default function ProductError({ reset }: { error: Error; reset: () => voi
   const catalogueT = useTranslations("Catalogue");
 
   return (
-    <Section>
+    <Section tone="dark">
       <Container>
         <ErrorState
           title={t("errorTitle")}

@@ -71,7 +71,7 @@ export function CartPageClient({ initialCart, relatedProducts }: CartPageClientP
           </Link>
         </div>
 
-        <div className="flex flex-col gap-6 rounded-(--radius-card) border border-border bg-surface p-6 lg:sticky lg:top-8 lg:h-fit">
+        <div className="flex flex-col gap-6 rounded-(--radius-card) border border-border bg-surface/40 p-6 backdrop-blur-xl backdrop-saturate-150 lg:sticky lg:top-8 lg:h-fit">
           <CartSummary cart={cart} />
           <Button variant="primary" href="/checkout">
             {t("proceedToCheckout")}

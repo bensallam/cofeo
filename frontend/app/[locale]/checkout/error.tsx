@@ -11,7 +11,7 @@ export default function CheckoutError({ reset }: { error: Error; reset: () => vo
   const catalogueT = useTranslations("Catalogue");
 
   return (
-    <Section>
+    <Section tone="dark">
       <Container>
         <ErrorState
           title={t("errorTitle")}

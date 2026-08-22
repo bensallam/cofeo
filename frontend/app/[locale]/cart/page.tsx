@@ -74,7 +74,7 @@ export default async function CartPage({ params }: PageProps) {
   const relatedProducts = cart.items.length > 0 ? await getCartRecommendations(cart) : [];
 
   return (
-    <Section>
+    <Section tone="dark">
       <Container>
         <Breadcrumb items={[{ label: t("heading") }]} label={productT("breadcrumbLabel")} />
 

@@ -91,7 +91,7 @@ export default async function MachinesPage({ params, searchParams }: PageProps) 
       : "";
 
   return (
-    <Section>
+    <Section tone="dark">
       <Container>
         <Breadcrumb items={[{ label: t("heading") }]} label={productT("breadcrumbLabel")} />
 
@@ -102,20 +102,22 @@ export default async function MachinesPage({ params, searchParams }: PageProps) 
 
         <Divider className="mt-8 mb-10" />
 
-        <div className="lg:grid lg:grid-cols-[200px_1fr] lg:gap-8">
+        <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-8">
           <aside className="hidden lg:block">
-            <div className="mb-6 flex items-center justify-between">
-              <p className="text-caption font-medium tracking-wide text-text-primary uppercase">
-                {t("filtersHeading")}
-              </p>
-              <Link
-                href={buildCatalogueHref(filters, { category: undefined, condition: undefined, q: undefined })}
-                className="text-body-s text-text-muted underline decoration-dotted transition-colors duration-200 hover:text-text-primary"
-              >
-                {t("clearAllLabel")}
-              </Link>
+            <div className="rounded-(--radius-card) border border-border bg-surface/40 p-5 backdrop-blur-xl backdrop-saturate-150">
+              <div className="mb-6 flex items-center justify-between">
+                <p className="text-caption font-medium tracking-wide text-text-primary uppercase">
+                  {t("filtersHeading")}
+                </p>
+                <Link
+                  href={buildCatalogueHref(filters, { category: undefined, condition: undefined, q: undefined })}
+                  className="text-body-s text-text-muted underline decoration-dotted transition-colors duration-200 hover:text-gold"
+                >
+                  {t("clearAllLabel")}
+                </Link>
+              </div>
+              <FilterSidebar filters={filters} categories={categories} categoryLabels={categoryLabels} />
             </div>
-            <FilterSidebar filters={filters} categories={categories} categoryLabels={categoryLabels} />
           </aside>
 
           <div>

@@ -58,6 +58,13 @@
   --color-error: #b42318; /* 6.02:1 on bg */
   --color-error-surface: color-mix(in srgb, var(--color-error) 10%, var(--color-bg));
 
+  /* ---- Accent: warm metallic gold ----
+   * The one deliberate departure from "monochrome by design" above —
+   * introduced for the Home hero (see coffee-universe-hero.tsx) and
+   * promoted here now that the dark theme scope below also needs it,
+   * rather than staying a value re-declared in more than one place. */
+  --color-gold: #c9a35e;
+
 
   /* ---- Typography ----
    * Latin: IBM Plex Sans. Arabic: IBM Plex Sans Arabic — swapped at
@@ -129,6 +136,55 @@
   --text-body-l--line-height: 1.75;
   --text-body--line-height: 1.75;
   --text-body-s--line-height: 1.65;
+}
+
+/*
+ * Dark/gold theme scope — extends the premium dark aesthetic already
+ * established by the sticky header and Home hero (header.tsx,
+ * coffee-universe-hero.tsx) to the Catalogue, Product, Cart, and
+ * Checkout routes. Applied via `data-theme="dark"` on each of those
+ * routes' own top-level Section (see Section's `tone` prop) — not at
+ * the document root, so the Home page's own body sections and the
+ * Footer stay on the original light palette, untouched.
+ *
+ * This repaints the exact same semantic tokens components already
+ * consume (bg-surface, text-text-primary, border-border, ...) with a
+ * second value set — not a parallel design system. Every value below
+ * reuses an existing primitive from the ramp above (plus --color-gold
+ * just above); only the feedback colors get genuinely new values,
+ * because the light-mode ones were tuned for contrast on warm white
+ * and read as near-invisible dark-on-dark against black.
+ */
+[data-theme="dark"] {
+  --color-bg: var(--color-gray-1000);
+  --color-surface: var(--color-gray-950);
+  --color-surface-elevated: var(--color-gray-950);
+  --color-surface-hover: color-mix(in srgb, white 6%, var(--color-gray-950));
+
+  --color-text-primary: var(--color-gray-0);
+  --color-text-secondary: var(--color-gray-200);
+  --color-text-muted: var(--color-gray-400); /* ~6.6:1 on black */
+  --color-text-inverse: var(--color-gray-1000);
+
+  --color-border: var(--color-gray-800);
+  --color-border-strong: var(--color-gray-600);
+
+  --color-button-primary-bg: var(--color-gold);
+  --color-button-primary-bg-hover: color-mix(in srgb, var(--color-gold) 85%, black);
+  --color-button-primary-text: var(--color-gray-1000);
+  --color-button-secondary-bg: transparent;
+  --color-button-secondary-text: var(--color-gray-0);
+  --color-button-secondary-border: var(--color-gray-600);
+
+  --color-focus-ring: var(--color-gold);
+  --color-focus-offset: var(--color-gray-1000);
+
+  --color-success: #5fae87; /* ~7.3:1 on black */
+  --color-success-surface: color-mix(in srgb, var(--color-success) 14%, var(--color-bg));
+  --color-warning: #d1a13a; /* ~8.1:1 on black */
+  --color-warning-surface: color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));
+  --color-error: #e2685c; /* ~6.4:1 on black */
+  --color-error-surface: color-mix(in srgb, var(--color-error) 14%, var(--color-bg));
 }
 
 @layer base {

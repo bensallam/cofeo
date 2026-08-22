@@ -117,7 +117,7 @@ export function CheckoutForm({ cities, initialCart, paymentMethods, bankTransfer
           mobile stacking (info → payment → summary → CTA), no separate
           mobile-only markup needed. */}
       <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-5 rounded-xl border border-border bg-surface p-8">
+        <div className="flex flex-col gap-5 rounded-(--radius-card) border border-border bg-surface/40 p-8 backdrop-blur-xl backdrop-saturate-150">
           <h2 className="text-body-l font-medium text-text-primary">{t("customerInfoHeading")}</h2>
           <div className="flex flex-col gap-4">
             <Input
