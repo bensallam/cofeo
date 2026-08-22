@@ -143,7 +143,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
               aria-label={t("galleryImageLabel", { index: index + 1, total: images.length })}
               className={cn(
                 "relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-(--radius-control) border transition-colors duration-200",
-                index === activeIndex ? "border-gold" : "border-border",
+                index === activeIndex ? "border-bronze" : "border-border",
               )}
             >
               <ProductImage src={image.src} alt="" sizes="80px" />

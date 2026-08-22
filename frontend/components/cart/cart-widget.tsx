@@ -28,7 +28,6 @@ export function CartWidget() {
       <IconButton
         aria-label={t("openCartLabel", { count: cart.itemsCount })}
         onClick={() => setIsOpen(true)}
-        variant="ghost-inverse"
         className="relative"
       >
         <CartIcon />

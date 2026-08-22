@@ -130,7 +130,7 @@ export function CityCombobox({
           className={cn(
             "w-full rounded-(--radius-control) border bg-surface px-3.5 py-3 pe-10 text-body text-text-primary",
             "placeholder:text-text-muted transition-colors duration-200",
-            error ? "border-error" : "border-border-strong focus-visible:border-gold",
+            error ? "border-error" : "border-border-strong focus-visible:border-bronze",
           )}
         />
         <svg

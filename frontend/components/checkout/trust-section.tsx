@@ -23,7 +23,7 @@ export function TrustSection() {
       {items.map((item) => (
         <div
           key={item.key}
-          className="flex min-w-0 flex-col items-center justify-center gap-2 rounded-(--radius-card) border border-border bg-bg px-4 py-6 text-center shadow-sm"
+          className="flex min-w-0 flex-col items-center justify-center gap-2 rounded-(--radius-card) border border-border bg-surface px-4 py-6 text-center shadow-sm"
         >
           <span className="text-text-primary [&_svg]:size-6" aria-hidden="true">
             {item.icon}

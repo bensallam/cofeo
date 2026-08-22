@@ -10,13 +10,23 @@
 @theme {
   /* ---- Primitives: neutral ramp ---- */
   --color-gray-0: #ffffff;
-  --color-gray-50: #f5f5f2; /* warm white */
+  --color-gray-50: #f7f5f0; /* warm ivory */
   --color-gray-200: #d9d9d6;
   --color-gray-400: #8a8a86;
   --color-gray-600: #5c5c5c;
   --color-gray-800: #3f3f3f;
-  --color-gray-950: #111111;
+  --color-gray-950: #171717; /* deep charcoal */
   --color-gray-1000: #000000;
+
+  /* ---- Primitives: coffee-brand warm tones ----
+   * Espresso is the brand's own secondary-text/accent color (warm dark
+   * brown, distinct from the neutral charcoal above) — used wherever the
+   * neutral ramp above would otherwise read as generically "dark gray"
+   * instead of specifically "coffee." Bronze is the sole accent color,
+   * used sparingly (interactive states, focus rings) — never a base
+   * surface or body-text color. */
+  --color-espresso: #3a2922;
+  --color-bronze: #b08a4a; /* muted coffee gold — accent only, never >10% of a view */
 
   /* ---- Semantic: surfaces ---- */
   --color-bg: var(--color-gray-50);
@@ -25,45 +35,40 @@
   --color-surface-hover: var(--color-gray-50);
 
   /* ---- Semantic: text (all AA-verified against --color-bg / --color-surface) ---- */
-  --color-text-primary: var(--color-gray-950); /* 17.3:1 on bg */
-  --color-text-secondary: var(--color-gray-800); /* 9.6:1 on bg */
-  --color-text-muted: var(--color-gray-600); /* 6.1:1 on bg */
+  --color-text-primary: var(--color-gray-950); /* ~16.4:1 on bg */
+  --color-text-secondary: var(--color-espresso); /* ~12.7:1 on bg — warm, not neutral gray */
+  --color-text-muted: color-mix(in srgb, var(--color-espresso) 58%, var(--color-bg) 42%); /* ~5.8:1 on bg */
   --color-text-inverse: var(--color-gray-0);
 
   /* ---- Semantic: borders ----
-   * `border` is decorative only (dividers, card hairlines) — 1.4:1, not
-   * meant to be the sole indicator of anything interactive.
-   * `border-strong` meets the WCAG 2.2 non-text 3:1 requirement and is
-   * for interactive element boundaries (Input, Select, secondary Button). */
-  --color-border: var(--color-gray-200);
-  --color-border-strong: var(--color-gray-400); /* 3.47:1 on surface */
+   * `border` is decorative only (dividers, card hairlines) — not meant
+   * to be the sole indicator of anything interactive. `border-strong`
+   * meets the WCAG 2.2 non-text 3:1 requirement and is for interactive
+   * element boundaries (Input, Select, secondary Button). Both are
+   * warm-gray (a light espresso tint), not neutral gray — a subtle,
+   * site-wide brand cue that costs nothing in contrast. */
+  --color-border: color-mix(in srgb, var(--color-gray-200) 85%, var(--color-espresso) 15%);
+  --color-border-strong: color-mix(in srgb, var(--color-gray-400) 80%, var(--color-espresso) 20%); /* ~3.5:1 on surface */
 
   /* ---- Semantic: buttons ---- */
   --color-button-primary-bg: var(--color-gray-950);
-  --color-button-primary-bg-hover: var(--color-gray-1000);
+  --color-button-primary-bg-hover: color-mix(in srgb, var(--color-gray-950) 88%, var(--color-bronze) 12%);
   --color-button-primary-text: var(--color-gray-0);
   --color-button-secondary-bg: transparent;
   --color-button-secondary-text: var(--color-gray-950);
   --color-button-secondary-border: var(--color-gray-400);
 
-  /* ---- Semantic: focus (monochrome by design — no accent color) ---- */
-  --color-focus-ring: var(--color-gray-1000);
+  /* ---- Semantic: focus ---- */
+  --color-focus-ring: var(--color-bronze);
   --color-focus-offset: var(--color-gray-0);
 
-  /* ---- Semantic: system feedback (only place color appears) ---- */
+  /* ---- Semantic: system feedback (only other place color appears) ---- */
   --color-success: #2f6b4f; /* 5.76:1 on bg */
   --color-success-surface: color-mix(in srgb, var(--color-success) 10%, var(--color-bg));
   --color-warning: #8a5a00; /* 5.43:1 on bg */
   --color-warning-surface: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg));
   --color-error: #b42318; /* 6.02:1 on bg */
   --color-error-surface: color-mix(in srgb, var(--color-error) 10%, var(--color-bg));
-
-  /* ---- Accent: warm metallic gold ----
-   * The one deliberate departure from "monochrome by design" above —
-   * introduced for the Home hero (see coffee-universe-hero.tsx) and
-   * promoted here now that the dark theme scope below also needs it,
-   * rather than staying a value re-declared in more than one place. */
-  --color-gold: #c9a35e;
 
 
   /* ---- Typography ----
@@ -136,55 +141,6 @@
   --text-body-l--line-height: 1.75;
   --text-body--line-height: 1.75;
   --text-body-s--line-height: 1.65;
-}
-
-/*
- * Dark/gold theme scope — extends the premium dark aesthetic already
- * established by the sticky header and Home hero (header.tsx,
- * coffee-universe-hero.tsx) to the Catalogue, Product, Cart, and
- * Checkout routes. Applied via `data-theme="dark"` on each of those
- * routes' own top-level Section (see Section's `tone` prop) — not at
- * the document root, so the Home page's own body sections and the
- * Footer stay on the original light palette, untouched.
- *
- * This repaints the exact same semantic tokens components already
- * consume (bg-surface, text-text-primary, border-border, ...) with a
- * second value set — not a parallel design system. Every value below
- * reuses an existing primitive from the ramp above (plus --color-gold
- * just above); only the feedback colors get genuinely new values,
- * because the light-mode ones were tuned for contrast on warm white
- * and read as near-invisible dark-on-dark against black.
- */
-[data-theme="dark"] {
-  --color-bg: var(--color-gray-1000);
-  --color-surface: var(--color-gray-950);
-  --color-surface-elevated: var(--color-gray-950);
-  --color-surface-hover: color-mix(in srgb, white 6%, var(--color-gray-950));
-
-  --color-text-primary: var(--color-gray-0);
-  --color-text-secondary: var(--color-gray-200);
-  --color-text-muted: var(--color-gray-400); /* ~6.6:1 on black */
-  --color-text-inverse: var(--color-gray-1000);
-
-  --color-border: var(--color-gray-800);
-  --color-border-strong: var(--color-gray-600);
-
-  --color-button-primary-bg: var(--color-gold);
-  --color-button-primary-bg-hover: color-mix(in srgb, var(--color-gold) 85%, black);
-  --color-button-primary-text: var(--color-gray-1000);
-  --color-button-secondary-bg: transparent;
-  --color-button-secondary-text: var(--color-gray-0);
-  --color-button-secondary-border: var(--color-gray-600);
-
-  --color-focus-ring: var(--color-gold);
-  --color-focus-offset: var(--color-gray-1000);
-
-  --color-success: #5fae87; /* ~7.3:1 on black */
-  --color-success-surface: color-mix(in srgb, var(--color-success) 14%, var(--color-bg));
-  --color-warning: #d1a13a; /* ~8.1:1 on black */
-  --color-warning-surface: color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));
-  --color-error: #e2685c; /* ~6.4:1 on black */
-  --color-error-surface: color-mix(in srgb, var(--color-error) 14%, var(--color-bg));
 }
 
 @layer base {

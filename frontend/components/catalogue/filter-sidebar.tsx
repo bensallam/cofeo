@@ -128,7 +128,7 @@ function FilterOption({
         aria-hidden="true"
         className={cn(
           "flex size-3.5 shrink-0 items-center justify-center rounded-[3px] border transition-colors duration-200",
-          active ? "border-gold bg-gold" : "border-border-strong group-hover:border-gold",
+          active ? "border-bronze bg-bronze" : "border-border-strong group-hover:border-bronze",
         )}
       />
       <span

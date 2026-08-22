@@ -7,8 +7,8 @@ import { routing, type Locale } from "@/i18n/routing";
 import { cn } from "@/lib/design/cn";
 
 /**
- * Circular glass language control for the dark-glass header pill and the
- * dark mobile drawer — a different visual language from the text-based
+ * Circular glass language control for the header pill and the mobile
+ * drawer — a different visual language from the text-based
  * `LanguageSwitcher` (which stays exactly as-is for the Footer, a
  * light-surface caller this component doesn't touch). Both components
  * share the same underlying locale mechanism (next-intl's routing +
@@ -75,7 +75,7 @@ export function LanguageSwitcherCircle({ className, dropdown = "down" }: Languag
         aria-expanded={isOpen}
         aria-label={t("language")}
         onClick={() => setIsOpen((open) => !open)}
-        className="relative flex size-9 items-center justify-center rounded-full border border-white/25 bg-gray-1000/50 shadow-(--shadow-elevated) backdrop-blur-xl backdrop-saturate-150 transition-colors duration-200 hover:bg-gray-1000/65"
+        className="relative flex size-9 items-center justify-center rounded-full border border-border bg-surface/70 shadow-(--shadow-elevated) backdrop-blur-md transition-colors duration-200 hover:bg-surface"
       >
         <span aria-hidden="true" className="flex size-full items-center justify-center overflow-hidden rounded-full text-base leading-none">
           {LOCALE_META[activeLocale].flag}
@@ -83,7 +83,7 @@ export function LanguageSwitcherCircle({ className, dropdown = "down" }: Languag
         <span
           aria-hidden="true"
           className={cn(
-            "absolute -end-0.5 -bottom-0.5 flex size-3.5 items-center justify-center rounded-full border border-white/25 bg-gray-1000 text-text-inverse/80 transition-transform duration-200",
+            "absolute -end-0.5 -bottom-0.5 flex size-3.5 items-center justify-center rounded-full border border-border bg-gray-0 text-text-secondary transition-transform duration-200",
             isOpen && "rotate-180",
           )}
         >
@@ -95,7 +95,7 @@ export function LanguageSwitcherCircle({ className, dropdown = "down" }: Languag
         <div
           role="menu"
           className={cn(
-            "absolute end-0 z-20 w-40 divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/25 bg-gray-1000/60 py-1 shadow-(--shadow-elevated) backdrop-blur-xl backdrop-saturate-150",
+            "absolute end-0 z-20 w-40 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface/90 py-1 shadow-(--shadow-elevated) backdrop-blur-md",
             dropdown === "up" ? "bottom-full mb-3" : "top-full mt-3",
           )}
         >
@@ -112,8 +112,8 @@ export function LanguageSwitcherCircle({ className, dropdown = "down" }: Languag
                   router.replace(pathname, { locale });
                 }}
                 className={cn(
-                  "flex w-full items-center gap-2.5 px-3 py-2.5 text-start text-body-s transition-colors duration-200 hover:bg-white/10",
-                  isActive ? "font-medium text-text-inverse" : "text-text-inverse/85",
+                  "flex w-full items-center gap-2.5 px-3 py-2.5 text-start text-body-s transition-colors duration-200 hover:bg-surface-hover",
+                  isActive ? "font-medium text-text-primary" : "text-text-secondary",
                 )}
               >
                 <span className="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full text-[13px] leading-none">

@@ -194,7 +194,7 @@ export default async function ProductPage({ params }: PageProps) {
                     {categoryLabel && (
                       <div className="flex items-center gap-3">
                         <span
-                          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-bg text-text-primary"
+                          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface text-text-primary"
                           aria-hidden="true"
                         >
                           <TagIcon />
@@ -208,7 +208,7 @@ export default async function ProductPage({ params }: PageProps) {
                     {product.sku && (
                       <div className="flex items-center gap-3">
                         <span
-                          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-bg text-text-primary"
+                          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface text-text-primary"
                           aria-hidden="true"
                         >
                           <SkuIcon />
@@ -222,7 +222,7 @@ export default async function ProductPage({ params }: PageProps) {
                     {product.warranty && product.available && (
                       <div className="flex items-center gap-3">
                         <span
-                          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-bg text-text-primary"
+                          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface text-text-primary"
                           aria-hidden="true"
                         >
                           <ShieldIcon />

@@ -87,7 +87,7 @@ export function PaymentSection({
               <div key={method}>
                 <label
                   className={`flex cursor-pointer items-start gap-3 rounded-(--radius-card) border p-4 transition-colors duration-200 ${
-                    isSelected ? "border-2 border-gold p-[calc(1rem-1px)]" : "border-border hover:border-border-strong"
+                    isSelected ? "border-2 border-bronze p-[calc(1rem-1px)]" : "border-border hover:border-border-strong"
                   }`}
                 >
                   <input
@@ -96,7 +96,7 @@ export function PaymentSection({
                     value={method}
                     checked={isSelected}
                     onChange={() => onChange(method)}
-                    className="mt-0.5 accent-gold"
+                    className="mt-0.5 accent-bronze"
                   />
                   {icon && (
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-(--radius-control) bg-bg text-text-primary [&_svg]:size-4.5">

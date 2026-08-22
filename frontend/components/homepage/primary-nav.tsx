@@ -16,8 +16,7 @@ type PrimaryNavProps = {
   otherItems: NavItem[];
 };
 
-const NAV_LINK =
-  "text-body-s text-text-inverse transition-colors duration-200 hover:text-text-inverse/70";
+const NAV_LINK = "text-body-s text-text-secondary transition-colors duration-200 hover:text-bronze";
 
 /**
  * Only the "Machines" item gets a dropdown — `leadingItems` (Home) and
@@ -31,8 +30,8 @@ const NAV_LINK =
  * this app has no distinct shop landing separate from /machines and no
  * about/contact pages — see the Header component's own doc comment.
  *
- * Dropdown panel is glass (translucent dark + backdrop-blur), matching
- * the header pill itself — see header.tsx.
+ * Dropdown panel is glass (translucent warm-white + backdrop-blur),
+ * matching the header pill itself — see header.tsx.
  *
  * Opens on hover (desktop pointer) and on click of the chevron button
  * (keyboard/touch accessible — a real <button> with aria-expanded), closes
@@ -101,7 +100,7 @@ export function PrimaryNav({
 
       <div ref={containerRef} className="relative" onMouseEnter={openNow} onMouseLeave={closeSoon}>
         <div className="flex items-center gap-1">
-          <Link href={machinesHref} className={cn(NAV_LINK, isMachinesActive && "font-medium text-text-inverse")}>
+          <Link href={machinesHref} className={cn(NAV_LINK, isMachinesActive && "font-medium text-text-primary")}>
             {machinesLabel}
           </Link>
           <button
@@ -110,7 +109,7 @@ export function PrimaryNav({
             aria-haspopup="true"
             aria-label={machinesLabel}
             onClick={() => setIsOpen((open) => !open)}
-            className="text-text-inverse/60 transition-colors duration-200 hover:text-text-inverse"
+            className="text-text-muted transition-colors duration-200 hover:text-bronze"
           >
             <ChevronIcon open={isOpen} />
           </button>
@@ -119,7 +118,7 @@ export function PrimaryNav({
         {isOpen && (
           <div
             role="menu"
-            className="absolute start-0 top-full z-20 mt-3 w-56 divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/25 bg-gray-1000/60 py-1 shadow-(--shadow-elevated) backdrop-blur-xl backdrop-saturate-150"
+            className="absolute start-0 top-full z-20 mt-3 w-56 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface/90 py-1 shadow-(--shadow-elevated) backdrop-blur-md"
           >
             {machineCategories.map((item) => (
               <Link
@@ -127,7 +126,7 @@ export function PrimaryNav({
                 href={item.href}
                 role="menuitem"
                 onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 text-body-s text-text-inverse/85 transition-colors duration-200 hover:bg-white/10 hover:text-text-inverse"
+                className="block px-4 py-3 text-body-s text-text-secondary transition-colors duration-200 hover:bg-surface-hover hover:text-text-primary"
               >
                 {item.label}
               </Link>

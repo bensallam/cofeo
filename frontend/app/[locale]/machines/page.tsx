@@ -111,7 +111,7 @@ export default async function MachinesPage({ params, searchParams }: PageProps) 
                 </p>
                 <Link
                   href={buildCatalogueHref(filters, { category: undefined, condition: undefined, q: undefined })}
-                  className="text-body-s text-text-muted underline decoration-dotted transition-colors duration-200 hover:text-gold"
+                  className="text-body-s text-text-muted underline decoration-dotted transition-colors duration-200 hover:text-bronze"
                 >
                   {t("clearAllLabel")}
                 </Link>

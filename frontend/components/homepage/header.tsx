@@ -62,6 +62,14 @@ import { CartWidget } from "@/components/cart/cart-widget";
  * it above page content but below the mobile/cart Drawer's z-50 (see
  * ui/drawer.tsx) so an open drawer still layers over the sticky header.
  *
+ * PILL: a bright warm-glass pill (bg-surface/70 — rgba(255,255,255,0.70)
+ * over the surface token — with a subtle blur, a warm-gray border, and a
+ * soft shadow), floating above the page rather than a solid bar. The
+ * `cofeo-logo.png` asset itself is white-on-transparent (designed to sit
+ * on a dark surface), so it gets its own small espresso chip behind it
+ * — the one piece of the pill that stays dark — rather than requiring
+ * the whole nav bar to be dark just so the logo reads.
+ *
  * LANGUAGE SWITCHER: circular flag control (see
  * language-switcher-circle.tsx), replacing the old inline "FR / AR / EN"
  * text switcher here — that component (`LanguageSwitcher`) is untouched
@@ -100,16 +108,17 @@ export async function Header() {
     <header className="sticky top-0 z-40">
       <Container className="py-4 sm:py-6">
         <div
-          className="flex h-16 items-center justify-between gap-4 rounded-full border border-white/25 bg-gray-1000/50 px-5 shadow-(--shadow-elevated) backdrop-blur-xl backdrop-saturate-150 sm:px-8"
+          className="flex h-16 items-center justify-between gap-4 rounded-full border border-border bg-surface/70 px-5 shadow-(--shadow-elevated) backdrop-blur-md sm:px-8"
         >
-          <Link href="/" className="shrink-0">
+          <Link href="/" className="shrink-0 rounded-full bg-espresso py-2.5 pe-5 ps-4 sm:pe-6 sm:ps-5">
             {/* Plain <img>, not next/image: next.config.ts's images.localPatterns
              * is an allowlist (Next 16) currently scoped to the product-image
              * API routes only — a small, already-optimized static logo doesn't
              * need on-the-fly optimization, so this avoids widening that
-             * allowlist for an unrelated asset. */}
+             * allowlist for an unrelated asset. The logo itself is white-only
+             * (see the header doc comment), hence the espresso chip behind it. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/cofeo-logo.png" alt="COFEO" width={780} height={243} className="h-7 w-auto sm:h-8" />
+            <img src="/cofeo-logo.png" alt="COFEO" width={780} height={243} className="h-8 w-auto sm:h-9" />
           </Link>
 
           <PrimaryNav

@@ -22,13 +22,11 @@ type ProductCardProps = {
 
 /**
  * The image dominates the composition by design (per brief) — text
- * block below is deliberately compact. A glass card frame (subtle
- * border + translucent surface) gives the card its own boundary on a
- * dark page, where the old borderless/shadowless treatment (relying on
- * grid gap + a light page bg alone) had nothing to read against; the
- * image itself is unchanged — still edge-to-edge in its own 4:5 slot,
- * still the dominant element, just clipped by the card's own radius
- * now instead of carrying its own.
+ * block below is deliberately compact. A warm-white card frame (subtle
+ * border + soft shadow) gives the card its own boundary against the
+ * page's ivory background; the image itself is unchanged — still
+ * edge-to-edge in its own 4:5 slot, still the dominant element, just
+ * clipped by the card's own radius now instead of carrying its own.
  */
 export function ProductCard({
   imageSrc,
@@ -48,7 +46,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "flex flex-col overflow-hidden rounded-(--radius-card) border border-border bg-surface/40 backdrop-blur-xl backdrop-saturate-150 transition-colors duration-200 hover:border-gold/40",
+        "flex flex-col overflow-hidden rounded-(--radius-card) border border-border bg-surface shadow-(--shadow-elevated) transition-all duration-200 hover:-translate-y-0.5 hover:border-bronze/50 hover:shadow-lg",
         className || null,
       )}
     >

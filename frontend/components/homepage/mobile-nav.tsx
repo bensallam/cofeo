@@ -25,23 +25,18 @@ export function MobileNav({ navItems, machinesHref, machineCategories }: MobileN
 
   return (
     <>
-      <IconButton
-        aria-label={t("openMenu")}
-        onClick={() => setIsOpen(true)}
-        variant="ghost-inverse"
-        className="md:hidden"
-      >
+      <IconButton aria-label={t("openMenu")} onClick={() => setIsOpen(true)} className="md:hidden">
         <MenuIcon />
       </IconButton>
 
-      <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={t("menuTitle")} variant="dark">
+      <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={t("menuTitle")}>
         <nav className="flex flex-col gap-1">
           {navItems.map((item) => (
             <React.Fragment key={item.label}>
               <Link
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className="rounded-(--radius-control) px-2 py-2.5 text-body-l text-text-inverse transition-colors duration-200 hover:bg-white/10"
+                className="rounded-(--radius-control) px-2 py-2.5 text-body-l text-text-primary transition-colors duration-200 hover:bg-surface-hover"
               >
                 {item.label}
               </Link>
@@ -52,7 +47,7 @@ export function MobileNav({ navItems, machinesHref, machineCategories }: MobileN
                       key={category.href}
                       href={category.href}
                       onClick={() => setIsOpen(false)}
-                      className="rounded-(--radius-control) px-2 py-2 text-body-s text-text-inverse/70 transition-colors duration-200 hover:bg-white/10 hover:text-text-inverse"
+                      className="rounded-(--radius-control) px-2 py-2 text-body-s text-text-secondary transition-colors duration-200 hover:bg-surface-hover hover:text-text-primary"
                     >
                       {category.label}
                     </Link>

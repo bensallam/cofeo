@@ -10,11 +10,6 @@ type DrawerProps = {
   title: string;
   children: React.ReactNode;
   className?: string;
-  /** Dark glass panel (used by the mobile nav menu, to match the header's
-   * dark glassmorphism theme) instead of the default light one. Defaults
-   * to the original light appearance so every other existing caller (the
-   * cart mini-cart) is completely unaffected. */
-  variant?: "light" | "dark";
 };
 
 const FOCUSABLE_SELECTOR =
@@ -29,7 +24,7 @@ const FOCUSABLE_SELECTOR =
  * per the Phase 2 scope decision — hardened now that MobileNav is its
  * first real production usage.)
  */
-export function Drawer({ isOpen, onClose, title, children, className, variant = "light" }: DrawerProps) {
+export function Drawer({ isOpen, onClose, title, children, className }: DrawerProps) {
   const titleId = React.useId();
   const panelRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<Element | null>(null);
@@ -109,23 +104,14 @@ export function Drawer({ isOpen, onClose, title, children, className, variant = 
         aria-labelledby={titleId}
         tabIndex={-1}
         className={cn(
-          "absolute inset-y-0 end-0 flex w-full max-w-sm flex-col gap-4 overflow-y-auto p-6",
-          variant === "dark"
-            ? "rounded-s-3xl border-s border-white/25 bg-gray-1000/60 text-text-inverse backdrop-blur-xl backdrop-saturate-150"
-            : "bg-surface-elevated",
+          "absolute inset-y-0 end-0 flex w-full max-w-sm flex-col gap-4 overflow-y-auto bg-surface-elevated p-6",
           "shadow-(--shadow-elevated) transition-transform duration-300 ease-(--ease-precise)",
           "focus:outline-none",
           isOpen ? "translate-x-0" : "translate-x-full rtl:-translate-x-full",
           className || null,
         )}
       >
-        <h2
-          id={titleId}
-          className={cn(
-            "text-heading-s font-medium",
-            variant === "dark" ? "text-text-inverse" : "text-text-primary",
-          )}
-        >
+        <h2 id={titleId} className="text-heading-s font-medium text-text-primary">
           {title}
         </h2>
         {children}
