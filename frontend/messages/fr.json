@@ -133,7 +133,8 @@
     "emptyTitle": "Aucune machine ne correspond à ces critères",
     "emptyDescription": "Essayez d'ajuster votre recherche ou vos filtres.",
     "errorTitle": "Impossible de charger les machines",
-    "errorDescription": "Une erreur est survenue lors du chargement du catalogue. Réessayez dans un instant."
+    "errorDescription": "Une erreur est survenue lors du chargement du catalogue. Réessayez dans un instant.",
+    "discoverLabel": "Découvrir"
   },
   "Nav": {
     "home": "Accueil",
@@ -172,7 +173,8 @@
       "clients": { "value": "870+", "label": "Clients satisfaits" },
       "passion": { "value": "100%", "label": "Passion du café" }
     },
-    "scrollLabel": "Scroller"
+    "scrollLabel": "Scroller",
+    "journey": { "bean": "Le grain", "aroma": "L'arôme" }
   },
   "FindYourMachine": {
     "heading": "Quelle expérience café recherchez-vous ?",

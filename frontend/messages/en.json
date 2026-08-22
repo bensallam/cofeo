@@ -133,7 +133,8 @@
     "emptyTitle": "No machines match these filters",
     "emptyDescription": "Try adjusting your search or filters.",
     "errorTitle": "Couldn't load machines",
-    "errorDescription": "Something went wrong loading the catalogue. Try again in a moment."
+    "errorDescription": "Something went wrong loading the catalogue. Try again in a moment.",
+    "discoverLabel": "Discover"
   },
   "Nav": {
     "home": "Home",
@@ -172,7 +173,8 @@
       "clients": { "value": "870+", "label": "Satisfied customers" },
       "passion": { "value": "100%", "label": "Coffee passion" }
     },
-    "scrollLabel": "Scroll"
+    "scrollLabel": "Scroll",
+    "journey": { "bean": "The bean", "aroma": "The aroma" }
   },
   "FindYourMachine": {
     "heading": "What kind of coffee experience are you looking for?",

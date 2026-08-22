@@ -102,22 +102,22 @@ export default async function MachinesPage({ params, searchParams }: PageProps) 
 
         <Divider className="mt-8 mb-10" />
 
-        <div className="lg:grid lg:grid-cols-[260px_1fr] lg:gap-8">
+        <div className="lg:grid lg:grid-cols-[240px_1fr] lg:gap-12">
+          {/* No card chrome (border/bg/blur) — filters read as part of the
+              page's own typography, not a boxed ecommerce sidebar. */}
           <aside className="hidden lg:block">
-            <div className="rounded-(--radius-card) border border-border bg-surface/40 p-5 backdrop-blur-xl backdrop-saturate-150">
-              <div className="mb-6 flex items-center justify-between">
-                <p className="text-caption font-medium tracking-wide text-text-primary uppercase">
-                  {t("filtersHeading")}
-                </p>
-                <Link
-                  href={buildCatalogueHref(filters, { category: undefined, condition: undefined, q: undefined })}
-                  className="text-body-s text-text-muted underline decoration-dotted transition-colors duration-200 hover:text-bronze"
-                >
-                  {t("clearAllLabel")}
-                </Link>
-              </div>
-              <FilterSidebar filters={filters} categories={categories} categoryLabels={categoryLabels} />
+            <div className="mb-8 flex items-center justify-between border-b border-border pb-4">
+              <p className="text-caption font-medium tracking-[0.2em] text-text-primary uppercase">
+                {t("filtersHeading")}
+              </p>
+              <Link
+                href={buildCatalogueHref(filters, { category: undefined, condition: undefined, q: undefined })}
+                className="text-body-s text-text-muted underline decoration-dotted transition-colors duration-200 hover:text-bronze"
+              >
+                {t("clearAllLabel")}
+              </Link>
             </div>
+            <FilterSidebar filters={filters} categories={categories} categoryLabels={categoryLabels} />
           </aside>
 
           <div>
@@ -156,7 +156,7 @@ export default async function MachinesPage({ params, searchParams }: PageProps) 
 
             {!loadError && result && result.products.length > 0 && (
               <>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-3">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-14 lg:grid-cols-3">
                   {result.products.map((product) => (
                     <Link key={product.id} href={`/machines/${product.slug}`}>
                       <ProductCard

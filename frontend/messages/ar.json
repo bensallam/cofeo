@@ -133,7 +133,8 @@
     "emptyTitle": "لا توجد آلات مطابقة لهذه الفلاتر",
     "emptyDescription": "حاول تعديل بحثك أو عوامل التصفية.",
     "errorTitle": "تعذر تحميل الآلات",
-    "errorDescription": "حدث خطأ أثناء تحميل الكتالوج. حاول مرة أخرى بعد قليل."
+    "errorDescription": "حدث خطأ أثناء تحميل الكتالوج. حاول مرة أخرى بعد قليل.",
+    "discoverLabel": "اكتشف"
   },
   "Nav": {
     "home": "الرئيسية",
@@ -172,7 +173,8 @@
       "clients": { "value": "+870", "label": "عملاء راضون" },
       "passion": { "value": "100%", "label": "شغف بالقهوة" }
     },
-    "scrollLabel": "مرر للأسفل"
+    "scrollLabel": "مرر للأسفل",
+    "journey": { "bean": "الحبة", "aroma": "العبير" }
   },
   "FindYourMachine": {
     "heading": "ما نوع تجربة القهوة التي تبحث عنها؟",
