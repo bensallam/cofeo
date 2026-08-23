@@ -5,22 +5,20 @@
  * mutation. Everything else in lib/woocommerce/order-status-mutation.ts
  * is pure business logic that trusts whatever `AdminAuthContext` it's
  * handed — this file is what's responsible for constructing that
- * context from a real, verified admin session, and it does not have one
- * to work with yet: COFEO has no authentication surface at all today
- * (no session cookie, no login route, no user/role model — confirmed by
- * inspecting the app before writing this).
+ * context from a real, verified session.
  *
- * `getAdminAuthContext()` below is the single, explicit connection point
- * for Phase 3+: once a real admin authentication mechanism exists, that
- * is the only place this file should change — read the verified session
- * there and return a real `AdminAuthContext`. Until then it always
- * returns `null`, and `updateOrderStatusAction` always answers
- * UNAUTHORIZED as a result, for every caller including a legitimate
- * future admin. This is deliberate: inventing a header check, a query
- * param, or a client-supplied role flag here would be exactly the "fake
- * client-side authorization mechanism" this phase must not build, and
- * would be worse than not shipping the feature yet.
+ * `getAdminAuthContext()` below is the connection point Phase 2 left
+ * for this: it now reads the real signed session (lib/auth/session.ts,
+ * Phase 3A), but only ever returns a non-null context when that
+ * session's `role` is `"ADMIN"` — a role the session itself derived
+ * server-side from WordPress's own `manage_woocommerce` capability at
+ * login time (see class-cofeo-auth-rest.php), never from anything a
+ * client supplied. A `CUSTOMER` session, an anonymous caller, or a
+ * forged/tampered cookie (its HMAC signature fails verification inside
+ * `getSession` before `role` is ever read) all fall through to the
+ * same `null` → UNAUTHORIZED path.
  */
+import { getSession } from "@/lib/auth/session";
 import {
   transitionOrderCofeoStatus,
   type AdminAuthContext,
@@ -28,12 +26,10 @@ import {
 } from "@/lib/woocommerce/order-status-mutation";
 import type { CofeoStatusKey } from "@/lib/woocommerce/order-status";
 
-/**
- * Always returns `null` — see the file-level docblock. Not a TODO left
- * to chance: this is the named seam a real implementation replaces.
- */
 async function getAdminAuthContext(): Promise<AdminAuthContext | null> {
-  return null;
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") return null;
+  return { actorId: String(session.userId), actorEmail: session.email, isAdmin: true };
 }
 
 export async function updateOrderStatusAction(

@@ -69,5 +69,14 @@ function cofeo_bootstrap() {
 	require_once COFEO_PLUGIN_DIR . 'checkout/class-cofeo-bank-transfer-gateway.php';
 	require_once COFEO_PLUGIN_DIR . 'checkout/class-cofeo-bank-transfer-admin.php';
 	require_once COFEO_PLUGIN_DIR . 'checkout/class-cofeo-bank-transfer-rest.php';
+
+	// Auth (Phase 3A): customer registration/login for the frontend's
+	// own signed session cookie. A WooCommerce customer is a WordPress
+	// user with the `customer` role — this never creates a second
+	// customer record, and password storage/verification is entirely
+	// WordPress core's own (wp_insert_user/wp_check_password), never
+	// reimplemented here.
+	require_once COFEO_PLUGIN_DIR . 'auth/class-cofeo-auth-rate-limit.php';
+	require_once COFEO_PLUGIN_DIR . 'auth/class-cofeo-auth-rest.php';
 }
 add_action( 'plugins_loaded', 'cofeo_bootstrap' );

@@ -380,5 +380,36 @@
         "description": "نحن هنا لمساعدتك"
       }
     }
+  },
+  "Auth": {
+    "loginTitle": "تسجيل الدخول",
+    "registerTitle": "إنشاء حساب",
+    "emailLabel": "البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "confirmPasswordLabel": "تأكيد كلمة المرور",
+    "firstNameLabel": "الاسم الأول",
+    "lastNameLabel": "اسم العائلة",
+    "loginButton": "تسجيل الدخول",
+    "registerButton": "إنشاء حسابي",
+    "logoutButton": "تسجيل الخروج",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "accountCreated": "تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.",
+    "requiredField": "هذا الحقل مطلوب.",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين.",
+    "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "rateLimited": "محاولات كثيرة جدًا. يرجى المحاولة لاحقًا.",
+    "emailAlreadyExists": "يوجد حساب بالفعل بهذا البريد الإلكتروني.",
+    "serverError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "noAccountYet": "ليس لديك حساب بعد؟",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "createAccountLink": "إنشاء حساب",
+    "loginLink": "تسجيل الدخول",
+    "passwordRequirements": "8 أحرف على الأقل، تحتوي على حرف ورقم.",
+    "account": {
+      "greeting": "مرحبًا {name}",
+      "heading": "حسابي",
+      "myOrders": "طلباتي",
+      "myOrdersComingSoon": "قريبًا."
+    }
   }
 }

@@ -380,5 +380,36 @@
         "description": "À votre écoute"
       }
     }
+  },
+  "Auth": {
+    "loginTitle": "Connexion",
+    "registerTitle": "Créer un compte",
+    "emailLabel": "Adresse e-mail",
+    "passwordLabel": "Mot de passe",
+    "confirmPasswordLabel": "Confirmer le mot de passe",
+    "firstNameLabel": "Prénom",
+    "lastNameLabel": "Nom",
+    "loginButton": "Se connecter",
+    "registerButton": "Créer mon compte",
+    "logoutButton": "Déconnexion",
+    "invalidCredentials": "E-mail ou mot de passe incorrect.",
+    "accountCreated": "Compte créé avec succès. Vous pouvez maintenant vous connecter.",
+    "requiredField": "Ce champ est requis.",
+    "passwordMismatch": "Les mots de passe ne correspondent pas.",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "rateLimited": "Trop de tentatives. Veuillez réessayer plus tard.",
+    "emailAlreadyExists": "Un compte existe déjà avec cette adresse e-mail.",
+    "serverError": "Une erreur est survenue. Réessayez.",
+    "noAccountYet": "Pas encore de compte ?",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "createAccountLink": "Créer un compte",
+    "loginLink": "Se connecter",
+    "passwordRequirements": "Au moins 8 caractères, avec une lettre et un chiffre.",
+    "account": {
+      "greeting": "Bonjour {name}",
+      "heading": "Mon compte",
+      "myOrders": "Mes commandes",
+      "myOrdersComingSoon": "Bientôt disponible."
+    }
   }
 }

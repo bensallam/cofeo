@@ -12,6 +12,11 @@ type WcOrderV3 = {
   number: string;
   order_key: string;
   status: string;
+  /** 0 for a guest order. Compared against a session's `wooCustomerId`
+   *  by `assertCustomerOwnsOrder` (lib/auth/order-ownership.ts) — the
+   *  server-side source of truth for order ownership, never a value
+   *  the browser supplies. */
+  customer_id: number;
   currency: string;
   date_created: string;
   total: string;
@@ -32,6 +37,7 @@ type WcOrderV3 = {
 export type OrderDetails = {
   orderId: number;
   orderNumber: string;
+  customerId: number;
   /** Raw WooCommerce status (e.g. "processing") — for internal/debug
    *  use only. Customer-facing UI must use `cofeoStatus` instead; see
    *  lib/woocommerce/order-status.ts for why the two can differ. */
@@ -66,6 +72,7 @@ function mapOrder(raw: WcOrderV3): OrderDetails {
   return {
     orderId: raw.id,
     orderNumber: raw.number,
+    customerId: raw.customer_id,
     status: raw.status,
     cofeoStatus: resolveCofeoStatus(raw.status, typeof metaStatus === "string" ? metaStatus : null),
     dateCreated: raw.date_created,

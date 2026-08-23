@@ -380,5 +380,36 @@
         "description": "We're here to help"
       }
     }
+  },
+  "Auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create an account",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm password",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "loginButton": "Log in",
+    "registerButton": "Create my account",
+    "logoutButton": "Log out",
+    "invalidCredentials": "Incorrect email or password.",
+    "accountCreated": "Account created successfully. You can now log in.",
+    "requiredField": "This field is required.",
+    "passwordMismatch": "Passwords do not match.",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "rateLimited": "Too many attempts. Please try again later.",
+    "emailAlreadyExists": "An account already exists with this email address.",
+    "serverError": "Something went wrong. Please try again.",
+    "noAccountYet": "Don't have an account yet?",
+    "alreadyHaveAccount": "Already have an account?",
+    "createAccountLink": "Create an account",
+    "loginLink": "Log in",
+    "passwordRequirements": "At least 8 characters, with a letter and a number.",
+    "account": {
+      "greeting": "Hello {name}",
+      "heading": "My account",
+      "myOrders": "My orders",
+      "myOrdersComingSoon": "Coming soon."
+    }
   }
 }
