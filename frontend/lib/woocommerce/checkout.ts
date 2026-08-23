@@ -37,6 +37,16 @@ type StoreApiAddress = {
  */
 const COFEO_BUSINESS_EMAIL = "contact@cofeo.ma";
 
+/**
+ * Lets `lib/woocommerce/order.ts` tell an order's real billing email
+ * apart from this fallback, so the confirmation page never displays
+ * COFEO's own inbox back to a guest as "your email" — it hides that
+ * row instead. A plain string export, not a secret.
+ */
+export function isFallbackBillingEmail(email: string): boolean {
+  return email === COFEO_BUSINESS_EMAIL;
+}
+
 type StoreApiCheckoutDraft = {
   order_id: number;
   order_key: string;
@@ -45,6 +55,10 @@ type StoreApiCheckoutDraft = {
   billing_address: StoreApiAddress;
   shipping_address: StoreApiAddress;
   payment_method: string;
+  // Populated on the pre-completion draft (GET). On the completed-order
+  // response (POST succeeding), WooCommerce has already cleared the
+  // cart the order was created from, so this comes back `null` —
+  // confirmed live, see mapPlacedOrder below.
   __experimentalCart: {
     needs_payment: boolean;
     payment_methods: string[];
@@ -55,7 +69,7 @@ type StoreApiCheckoutDraft = {
       currency_minor_unit: number;
     };
     items: { name: string; quantity: number }[];
-  };
+  } | null;
   errors?: { code: string; message: string }[];
 };
 
@@ -72,9 +86,6 @@ export type PlacedOrder = {
   orderNumber: string;
   status: string;
   paymentMethod: string;
-  total: number;
-  currency: string;
-  items: { name: string; quantity: number }[];
   shippingCity: string;
 };
 
@@ -84,6 +95,7 @@ function toDecimal(minorUnitsAmount: string, minorUnit: number): number {
 
 function mapCheckoutDraft(raw: StoreApiCheckoutDraft): CheckoutDraft {
   const cart = raw.__experimentalCart;
+  if (!cart) throw new AppError("SERVER_ERROR", "Checkout draft response was missing its cart");
   return {
     needsPayment: cart.needs_payment,
     paymentMethods: cart.payment_methods,
@@ -92,17 +104,23 @@ function mapCheckoutDraft(raw: StoreApiCheckoutDraft): CheckoutDraft {
   };
 }
 
+/**
+ * On a completed order (POST /checkout succeeding), `__experimentalCart`
+ * comes back `null` — WooCommerce has already cleared the cart the order
+ * was created from, so there is no cart left to report totals/items for
+ * (confirmed live: crashed here on every real order until this was
+ * narrowed). None of that is needed anyway — the confirmation page reads
+ * the real order back from the REST API v3 (lib/woocommerce/order.ts),
+ * so only the top-level order fields, which are always present, are
+ * mapped here.
+ */
 function mapPlacedOrder(raw: StoreApiCheckoutDraft): PlacedOrder {
-  const cart = raw.__experimentalCart;
   return {
     orderId: raw.order_id,
     orderKey: raw.order_key,
     orderNumber: raw.order_number,
     status: raw.status,
     paymentMethod: raw.payment_method,
-    total: toDecimal(cart.totals.total_price, cart.totals.currency_minor_unit),
-    currency: cart.totals.currency_code,
-    items: cart.items.map((item) => ({ name: item.name, quantity: item.quantity })),
     shippingCity: raw.shipping_address.city,
   };
 }

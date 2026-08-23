@@ -1,5 +1,7 @@
 "use server";
 
+import { redirect } from "next/navigation";
+import type { Locale } from "@/i18n/routing";
 import {
   checkoutAddressInputSchema,
   checkoutCityInputSchema,
@@ -9,11 +11,15 @@ import {
 import { getShippingCities } from "@/lib/woocommerce/shipping-cities";
 import { getCartTokenCookie, setCartTokenCookie, clearCartTokenCookie } from "@/lib/cart/cart-cookie";
 import { fetchCart, updateCartCustomer, type Cart, type CheckoutAddress } from "@/lib/woocommerce/cart";
-import { getCheckoutDraft, placeOrder, type PlacedOrder } from "@/lib/woocommerce/checkout";
+import { getCheckoutDraft, placeOrder } from "@/lib/woocommerce/checkout";
 import { AppError, type ErrorCode } from "@/lib/errors/app-error";
 
 export type CheckoutActionResult = { ok: true; cart: Cart } | { ok: false; code: ErrorCode };
-export type PlaceOrderActionResult = { ok: true; order: PlacedOrder } | { ok: false; code: ErrorCode };
+/** Success has no payload: on success this action redirects server-side
+ * (see the `redirect()` call at the end of placeOrderAction) rather
+ * than returning a value — see that function's own doc comment for
+ * why a client-side `router.push` after the fact doesn't work here. */
+export type PlaceOrderActionResult = { ok: false; code: ErrorCode };
 
 /**
  * Same recovery pattern as lib/actions/cart-actions.ts (kept as a
@@ -141,6 +147,13 @@ export async function updateCheckoutAddressAction(input: {
  * which uses it as the billing email when present and falls back to
  * COFEO's own business inbox server-side otherwise — see its docblock
  * in lib/woocommerce/checkout.ts.
+ *
+ * REDIRECT, NOT A RETURN VALUE: on success this calls `redirect()`
+ * straight to the real order — id + the order's own `orderKey`, the
+ * same secure guest-order-access mechanism WooCommerce's own "order
+ * received" page uses, see lib/woocommerce/order.ts. Called after the
+ * try/catch below finishes, never inside it, so `redirect()`'s internal
+ * throw is never mistaken for a real error.
  */
 export async function placeOrderAction(input: {
   fullName: string;
@@ -149,6 +162,7 @@ export async function placeOrderAction(input: {
   city: string;
   address1: string;
   paymentMethod: string;
+  locale: Locale;
 }): Promise<PlaceOrderActionResult> {
   const parsed = placeOrderInputSchema.safeParse(input);
   if (!parsed.success) return { ok: false, code: "VALIDATION_ERROR" };
@@ -190,8 +204,9 @@ export async function placeOrderAction(input: {
     address1: parsed.data.address1,
   };
 
+  let placed;
   try {
-    const result = await placeOrder({
+    placed = await placeOrder({
       cartToken: draftResult.cartToken,
       nonce: draftResult.nonce,
       billingAddress: address,
@@ -199,10 +214,12 @@ export async function placeOrderAction(input: {
       paymentMethod: parsed.data.paymentMethod,
       email: parsed.data.email,
     });
-    await setCartTokenCookie(result.cartToken);
-    return { ok: true, order: result.order };
+    await setCartTokenCookie(placed.cartToken);
   } catch (error) {
     if (error instanceof AppError) return { ok: false, code: error.code };
     return { ok: false, code: "SERVER_ERROR" };
   }
+
+  const query = new URLSearchParams({ order: String(placed.order.orderId), key: placed.order.orderKey });
+  return redirect(`/${input.locale}/order-confirmation?${query.toString()}`);
 }

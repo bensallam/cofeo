@@ -1,11 +1,13 @@
 import * as React from "react";
 import { cn } from "@/lib/design/cn";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 type TextareaProps = Omit<React.ComponentPropsWithoutRef<"textarea">, "id"> & {
   label: string;
   hint?: string;
   error?: string;
   id?: string;
+  required?: boolean;
 };
 
 /**
@@ -14,7 +16,7 @@ type TextareaProps = Omit<React.ComponentPropsWithoutRef<"textarea">, "id"> & {
  * input is too cramped for the expected content (e.g. a full delivery
  * address with building/floor/landmark details).
  */
-export function Textarea({ label, hint, error, id, className, rows = 3, ...props }: TextareaProps) {
+export function Textarea({ label, hint, error, id, required, className, rows = 3, ...props }: TextareaProps) {
   const generatedId = React.useId();
   const textareaId = id ?? generatedId;
   const hintId = hint ? `${textareaId}-hint` : undefined;
@@ -24,12 +26,14 @@ export function Textarea({ label, hint, error, id, className, rows = 3, ...props
     <div className="flex flex-col gap-1.5">
       <label htmlFor={textareaId} className="text-body-s font-medium text-text-primary">
         {label}
+        {required && <RequiredMark />}
       </label>
       <textarea
         id={textareaId}
         rows={rows}
         aria-describedby={cn(hintId || null, errorId || null) || undefined}
         aria-invalid={Boolean(error) || undefined}
+        aria-required={required || undefined}
         className={cn(
           "rounded-(--radius-control) border bg-surface px-3.5 py-3 text-body text-text-primary",
           "placeholder:text-text-muted",

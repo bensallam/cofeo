@@ -71,12 +71,18 @@ export async function CoffeeJourneyHero() {
       </section>
 
       {/* Arrival — the scroll hands off here once the mark has formed.
-          A short gradient at the top bridges the hero's own espresso hue
-          into the site's near-black tokens rather than cutting hard.
-          `data-theme="dark"` here directly (not via Section, this is a
-          hand-rolled section) — Home is the one page that stays dark
-          past its hero; every other route defaults to the light scope. */}
-      <section data-theme="dark" className="relative bg-bg">
+          Only the Hero canvas itself is pure black; this panel is a warm
+          coffee-brown gradient, the first step of the "black → warm →
+          cream → light → brown → dark close" journey (see page.tsx for
+          the rest of it). `data-theme="dark"` (not via Section, this is
+          a hand-rolled section) keeps text/border tokens white-appropriate
+          — only `background` is overridden per-element to the brown
+          gradient instead of the scope's own near-black `--color-bg`. */}
+      <section
+        data-theme="dark"
+        className="relative"
+        style={{ background: "linear-gradient(180deg, #1c130d 0%, #2a1f18 45%, #241a13 100%)" }}
+      >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#1c130d] to-transparent"

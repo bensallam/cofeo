@@ -309,6 +309,17 @@
     "emptyTitle": "Your cart is empty",
     "emptyDescription": "Add a machine to your cart before checking out.",
     "backToCatalogue": "Back to machines",
+    "orderConfirmation": {
+      "title": "Order confirmed",
+      "thanks": "Thank you for your order.",
+      "orderInfoHeading": "Order information",
+      "dateLabel": "Date",
+      "yourProductsHeading": "Your products",
+      "summaryHeading": "Summary",
+      "shippingAddressHeading": "Shipping address",
+      "notFoundTitle": "Order not found",
+      "notFoundDescription": "This confirmation link is invalid or has expired."
+    },
     "errors": {
       "fullName": "Please enter your full name.",
       "email": "Invalid email address.",

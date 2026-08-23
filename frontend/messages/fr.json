@@ -309,6 +309,17 @@
     "emptyTitle": "Votre panier est vide",
     "emptyDescription": "Ajoutez une machine à votre panier avant de passer commande.",
     "backToCatalogue": "Retour aux machines",
+    "orderConfirmation": {
+      "title": "Commande confirmée",
+      "thanks": "Merci pour votre commande.",
+      "orderInfoHeading": "Informations de commande",
+      "dateLabel": "Date",
+      "yourProductsHeading": "Vos produits",
+      "summaryHeading": "Récapitulatif",
+      "shippingAddressHeading": "Adresse de livraison",
+      "notFoundTitle": "Commande introuvable",
+      "notFoundDescription": "Ce lien de confirmation est invalide ou a expiré."
+    },
     "errors": {
       "fullName": "Veuillez indiquer votre nom complet.",
       "email": "Adresse e-mail invalide.",

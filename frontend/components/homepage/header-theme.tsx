@@ -16,8 +16,13 @@ export function useHeaderTheme() {
 }
 
 const LIGHT_PILL = "border border-border bg-surface/80 shadow-(--shadow-elevated) backdrop-blur-xl";
-const DARK_PILL =
-  "border border-white/[0.16] bg-white/[0.055] shadow-(--shadow-elevated) backdrop-blur-xl";
+// A black base under the white sheen (not just bg-white/[0.055] alone):
+// Home now scrolls through light sections too (cream/white/brown), not
+// just the black Hero, and a barely-there white haze loses all contrast
+// floating over a pale background. The black base keeps the pill legible
+// against anything behind it; the white gradient below still gives it
+// the "inflated glass" sheen.
+const DARK_PILL = "border border-white/[0.16] bg-black/35 shadow-(--shadow-elevated) backdrop-blur-xl";
 
 /**
  * The nav pill's own theme — independent of every other page's tokens,
@@ -54,7 +59,7 @@ export function HeaderThemeShell({ children, className }: { children: React.Reac
         {isHome && (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-1/2 rounded-t-full bg-gradient-to-b from-white/[0.05] to-transparent"
+            className="pointer-events-none absolute inset-x-0 top-0 h-1/2 rounded-t-full bg-gradient-to-b from-white/[0.08] to-transparent"
           />
         )}
         {children}

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -10,13 +10,12 @@ import { PhoneInput } from "@/components/checkout/phone-input";
 import { OrderReview } from "@/components/checkout/order-review";
 import { PaymentSection } from "@/components/checkout/payment-section";
 import { TrustSection } from "@/components/checkout/trust-section";
-import { OrderConfirmation } from "@/components/checkout/order-confirmation";
 import { updateCheckoutCityAction, placeOrderAction } from "@/lib/actions/checkout-actions";
 import { placeOrderInputSchema } from "@/lib/validation/checkout";
 import type { Cart } from "@/lib/woocommerce/cart-types";
-import type { PlacedOrder } from "@/lib/woocommerce/checkout";
 import type { BankTransferDetails } from "@/lib/woocommerce/bank-transfer";
 import type { ErrorCode } from "@/lib/errors/app-error";
+import type { Locale } from "@/i18n/routing";
 
 type CheckoutFormProps = {
   cities: string[];
@@ -29,6 +28,17 @@ type FieldErrors = Partial<
   Record<"fullName" | "email" | "phone" | "city" | "address1" | "paymentMethod", string>
 >;
 
+// Explicit ids (rather than each field's own auto-generated one) purely
+// so a failed submit can focus the first invalid field — visual order
+// on the page, which is also validation priority here.
+const FIELD_IDS = {
+  fullName: "checkout-full-name",
+  phone: "checkout-phone",
+  city: "checkout-city",
+  address1: "checkout-address1",
+} as const;
+const FIELD_ORDER = ["fullName", "phone", "city", "address1"] as const;
+
 /**
  * City selection auto-triggers a shipping-only update (Phase 8). The
  * rest of the fields, plus payment method, only ever submit together
@@ -40,6 +50,7 @@ type FieldErrors = Partial<
  */
 export function CheckoutForm({ cities, initialCart, paymentMethods, bankTransferDetails }: CheckoutFormProps) {
   const t = useTranslations("Checkout");
+  const locale = useLocale() as Locale;
   const [cart, setCart] = React.useState(initialCart);
   const [fullName, setFullName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -52,7 +63,6 @@ export function CheckoutForm({ cities, initialCart, paymentMethods, bankTransfer
   const [fieldErrors, setFieldErrors] = React.useState<FieldErrors>({});
   const [orderErrorCode, setOrderErrorCode] = React.useState<ErrorCode | null>(null);
   const [isPlacingOrder, startOrderTransition] = React.useTransition();
-  const [placedOrder, setPlacedOrder] = React.useState<PlacedOrder | null>(null);
 
   function handleCityChange(nextCity: string) {
     setCity(nextCity);
@@ -92,23 +102,26 @@ export function CheckoutForm({ cities, initialCart, paymentMethods, bankTransfer
         }
       }
       setFieldErrors(nextErrors);
+
+      // Not just the asterisk/error text — move focus to the first
+      // invalid field so keyboard/screen-reader users land right on it.
+      const firstInvalid = FIELD_ORDER.find((key) => nextErrors[key]);
+      if (firstInvalid) {
+        document.getElementById(FIELD_IDS[firstInvalid])?.focus();
+      }
       return;
     }
 
     setFieldErrors({});
     setOrderErrorCode(null);
     startOrderTransition(async () => {
-      const result = await placeOrderAction(parsed.data);
-      if (result.ok) {
-        setPlacedOrder(result.order);
-      } else {
-        setOrderErrorCode(result.code);
-      }
+      // On success this call never returns normally — the action itself
+      // redirects server-side straight to /order-confirmation (see its
+      // own doc comment for why that has to happen there and not here).
+      // Only the failure shape is left to handle on this end.
+      const result = await placeOrderAction({ ...parsed.data, locale });
+      setOrderErrorCode(result.code);
     });
-  }
-
-  if (placedOrder) {
-    return <OrderConfirmation order={placedOrder} bankTransferDetails={bankTransferDetails} />;
   }
 
   return (
@@ -121,11 +134,13 @@ export function CheckoutForm({ cities, initialCart, paymentMethods, bankTransfer
           <h2 className="text-body-l font-medium text-text-primary">{t("customerInfoHeading")}</h2>
           <div className="flex flex-col gap-4">
             <Input
+              id={FIELD_IDS.fullName}
               label={t("fullNameLabel")}
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
               error={fieldErrors.fullName}
               autoComplete="name"
+              required
             />
             <Input
               label={t("emailLabel")}
@@ -138,13 +153,16 @@ export function CheckoutForm({ cities, initialCart, paymentMethods, bankTransfer
               autoComplete="email"
             />
             <PhoneInput
+              id={FIELD_IDS.phone}
               label={t("phoneLabel")}
               placeholder={t("phonePlaceholder")}
               value={phone}
               onChange={setPhone}
               error={fieldErrors.phone}
+              required
             />
             <CityCombobox
+              id={FIELD_IDS.city}
               cities={cities}
               value={city}
               onChange={handleCityChange}
@@ -152,13 +170,16 @@ export function CheckoutForm({ cities, initialCart, paymentMethods, bankTransfer
               hint={t("citySearchHint")}
               moreResultsHint={t("moreCitiesHint")}
               error={fieldErrors.city ?? (shippingErrorCode ? t("errors.city") : undefined)}
+              required
             />
             <Textarea
+              id={FIELD_IDS.address1}
               label={t("address1Label")}
               value={address1}
               onChange={(event) => setAddress1(event.target.value)}
               error={fieldErrors.address1}
               autoComplete="street-address"
+              required
             />
           </div>
         </div>

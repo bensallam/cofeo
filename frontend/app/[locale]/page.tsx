@@ -95,9 +95,17 @@ export default async function HomePage({ params }: PageProps) {
           one asymmetric spread instead of two separate boxed sections:
           the three real category entry points on the left, the three
           brand pillars as a numbered list on the right, offset down for
-          asymmetry rather than aligned in a neat row. */}
-      <Section spacing="lg" tone="dark">
-        <Container>
+          asymmetry rather than aligned in a neat row.
+          Only the Hero canvas + Arrival panel above are dark — this is
+          the journey's first light stop (warm cream), so a soft top
+          gradient bridges the Arrival panel's brown into it rather than
+          cutting hard. */}
+      <Section spacing="lg" className="relative bg-[#f3eee7]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#241a13]/25 to-transparent"
+        />
+        <Container className="relative">
           <Heading level={2} size="xl" className="max-w-2xl">
             {findYourMachine("heading")}
           </Heading>
@@ -132,8 +140,10 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* MACHINES — demo data only, see lib/demo-data/products.ts. Large
           editorial tiles (see EditorialProductFeature), not a dense
-          ecommerce grid — this is four curated pieces, not a catalogue. */}
-      <Section spacing="lg" tone="dark" id="featured-machines">
+          ecommerce grid — this is four curated pieces, not a catalogue.
+          Crisp white/light-neutral: the "showroom" stop in the journey,
+          distinct from the cream section before it. */}
+      <Section spacing="lg" className="bg-white" id="featured-machines">
         <Container>
           <Heading level={2} size="xl" className="max-w-xl">
             {featuredMachines("heading")}
@@ -161,8 +171,16 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* ACCESSORIES-position section — real content is the brand list
           (no accessories catalogue exists yet); presented as a large
-          typographic wall rather than a small muted caption row. */}
-      <Section spacing="sm" tone="dark">
+          typographic wall on a deep coffee-brown gradient, the journey's
+          "roasted" stop — rather than a small muted caption row on a
+          plain background. `data-theme="dark"` for white-appropriate
+          text; `background` overridden per-element same as the Arrival
+          panel, not the scope's own near-black. */}
+      <Section
+        spacing="md"
+        data-theme="dark"
+        style={{ background: "linear-gradient(160deg, #2a1f18 0%, #3a2a20 55%, #4a3428 100%)" }}
+      >
         <Container>
           <Heading level={2} size="s" className="mb-8 text-text-muted">
             {brands("heading")}
@@ -180,8 +198,10 @@ export default async function HomePage({ params }: PageProps) {
       <Divider />
 
       {/* DISCOVERY — the used/refurbished trust process, direction A
-          approved; large numerals carry more of the composition now. */}
-      <Section tone="dark" id="used-refurbished">
+          approved; large numerals carry more of the composition now.
+          Soft ivory: the journey's calm stop between the brown brand
+          wall and the closing dark CTA. */}
+      <Section className="bg-[#faf8f4]" id="used-refurbished">
         <Container>
           <div className="max-w-2xl">
             <Heading level={2} size="l">
@@ -200,7 +220,10 @@ export default async function HomePage({ params }: PageProps) {
       <Divider />
 
       {/* BRAND — Services teaser + Final CTA merged into one closing
-          statement instead of two stacked sections. */}
+          statement instead of two stacked sections. Closes the journey
+          back on the site's dark scope (plain near-black, same as the
+          Hero/Arrival), echoing the opening rather than ending on yet
+          another light tone. */}
       <Section spacing="lg" tone="dark" id="services">
         <Container>
           <div className="flex flex-col items-start gap-8">

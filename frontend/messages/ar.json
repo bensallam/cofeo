@@ -309,6 +309,17 @@
     "emptyTitle": "سلتك فارغة",
     "emptyDescription": "أضف آلة إلى سلتك قبل إتمام الطلب.",
     "backToCatalogue": "العودة إلى الآلات",
+    "orderConfirmation": {
+      "title": "تم تأكيد طلبك",
+      "thanks": "شكرًا لك على طلبك.",
+      "orderInfoHeading": "معلومات الطلب",
+      "dateLabel": "التاريخ",
+      "yourProductsHeading": "منتجاتك",
+      "summaryHeading": "الملخص",
+      "shippingAddressHeading": "عنوان التوصيل",
+      "notFoundTitle": "الطلب غير موجود",
+      "notFoundDescription": "رابط التأكيد هذا غير صالح أو منتهي الصلاحية."
+    },
     "errors": {
       "fullName": "يرجى إدخال اسمك الكامل.",
       "email": "بريد إلكتروني غير صالح.",

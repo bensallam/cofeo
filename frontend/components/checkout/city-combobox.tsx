@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/design/cn";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 const MAX_RESULTS = 50;
 
@@ -14,6 +15,7 @@ type CityComboboxProps = {
   moreResultsHint?: string;
   error?: string;
   id?: string;
+  required?: boolean;
 };
 
 /**
@@ -34,6 +36,7 @@ export function CityCombobox({
   moreResultsHint,
   error,
   id,
+  required,
 }: CityComboboxProps) {
   const generatedId = React.useId();
   const comboboxId = id ?? generatedId;
@@ -104,6 +107,7 @@ export function CityCombobox({
     <div className="relative flex flex-col gap-1.5">
       <label htmlFor={comboboxId} className="text-body-s font-medium text-text-primary uppercase">
         {label}
+        {required && <RequiredMark />}
       </label>
       <div className="relative">
         <input
@@ -116,6 +120,7 @@ export function CityCombobox({
           aria-autocomplete="list"
           aria-describedby={cn(hintId || null, errorId || null) || undefined}
           aria-invalid={Boolean(error) || undefined}
+          aria-required={required || undefined}
           autoComplete="off"
           value={query}
           onChange={(event) => {

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/design/cn";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 type PhoneInputProps = {
   label: string;
@@ -8,6 +9,7 @@ type PhoneInputProps = {
   placeholder?: string;
   error?: string;
   id?: string;
+  required?: boolean;
 };
 
 /**
@@ -23,7 +25,7 @@ type PhoneInputProps = {
  * badge inside the same bordered box, so this is its own small
  * composite instead.
  */
-export function PhoneInput({ label, value, onChange, placeholder, error, id }: PhoneInputProps) {
+export function PhoneInput({ label, value, onChange, placeholder, error, id, required }: PhoneInputProps) {
   const generatedId = React.useId();
   const inputId = id ?? generatedId;
   const errorId = error ? `${inputId}-error` : undefined;
@@ -32,6 +34,7 @@ export function PhoneInput({ label, value, onChange, placeholder, error, id }: P
     <div className="flex flex-col gap-1.5">
       <label htmlFor={inputId} className="text-body-s font-medium text-text-primary">
         {label}
+        {required && <RequiredMark />}
       </label>
       <div
         dir="ltr"
@@ -57,6 +60,7 @@ export function PhoneInput({ label, value, onChange, placeholder, error, id }: P
           onChange={(event) => onChange(event.target.value)}
           aria-describedby={errorId}
           aria-invalid={Boolean(error) || undefined}
+          aria-required={required || undefined}
           className="min-w-0 flex-1 bg-transparent px-3.5 py-3 text-body text-text-primary placeholder:text-text-muted focus:outline-none"
         />
       </div>

@@ -1,18 +1,20 @@
 import * as React from "react";
 import { cn } from "@/lib/design/cn";
+import { RequiredMark } from "@/components/ui/required-mark";
 
 type InputProps = Omit<React.ComponentPropsWithoutRef<"input">, "id"> & {
   label: string;
   hint?: string;
   error?: string;
   id?: string;
+  required?: boolean;
 };
 
 /**
  * Self-contained field: owns its label/hint/error association via a
  * generated id, so callers can't forget to wire aria-describedby.
  */
-export function Input({ label, hint, error, id, className, ...props }: InputProps) {
+export function Input({ label, hint, error, id, required, className, ...props }: InputProps) {
   const generatedId = React.useId();
   const inputId = id ?? generatedId;
   const hintId = hint ? `${inputId}-hint` : undefined;
@@ -22,11 +24,13 @@ export function Input({ label, hint, error, id, className, ...props }: InputProp
     <div className="flex flex-col gap-1.5">
       <label htmlFor={inputId} className="text-body-s font-medium text-text-primary">
         {label}
+        {required && <RequiredMark />}
       </label>
       <input
         id={inputId}
         aria-describedby={cn(hintId || null, errorId || null) || undefined}
         aria-invalid={Boolean(error) || undefined}
+        aria-required={required || undefined}
         className={cn(
           "rounded-(--radius-control) border bg-surface px-3.5 py-2.5 text-body text-text-primary",
           "placeholder:text-text-muted",
