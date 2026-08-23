@@ -8,67 +8,70 @@
  */
 
 @theme {
-  /* ---- Primitives: neutral ramp ---- */
+  /* ---- Primitives: near-black ramp ---- */
   --color-gray-0: #ffffff;
-  --color-gray-50: #f7f5f0; /* warm ivory */
-  --color-gray-200: #d9d9d6;
-  --color-gray-400: #8a8a86;
-  --color-gray-600: #5c5c5c;
-  --color-gray-800: #3f3f3f;
-  --color-gray-950: #171717; /* deep charcoal */
-  --color-gray-1000: #000000;
+  --color-gray-50: #e7e7e7;
+  --color-gray-200: #a5a5a5;
+  --color-gray-400: #6b6b6b;
+  --color-gray-600: #3a3a3a;
+  --color-gray-800: #141414;
+  --color-gray-950: #0d0d0d;
+  --color-gray-1000: #080808;
 
-  /* ---- Primitives: coffee-brand warm tones ----
-   * Espresso is the brand's own secondary-text/accent color (warm dark
-   * brown, distinct from the neutral charcoal above) — used wherever the
-   * neutral ramp above would otherwise read as generically "dark gray"
-   * instead of specifically "coffee." Bronze is the sole accent color,
-   * used sparingly (interactive states, focus rings) — never a base
-   * surface or body-text color. */
-  --color-espresso: #3a2922;
-  --color-bronze: #b08a4a; /* muted coffee gold — accent only, never >10% of a view */
+  /* ---- Primitives: coffee-brand accent ----
+   * The sole accent color — used sparingly (interactive states, focus
+   * rings, small highlights), never a base surface or body-text color,
+   * never the dominant hue of a view. */
+  --color-bronze: #c6a46c; /* warm coffee-gold accent — accent only, never >10% of a view */
 
   /* ---- Semantic: surfaces ---- */
-  --color-bg: var(--color-gray-50);
-  --color-surface: var(--color-gray-0);
-  --color-surface-elevated: var(--color-gray-0);
-  --color-surface-hover: var(--color-gray-50);
+  --color-bg: var(--color-gray-950); /* #0d0d0d */
+  --color-surface: var(--color-gray-800); /* #141414 — opaque card default */
+  --color-surface-elevated: color-mix(in srgb, white 3%, var(--color-surface));
+  --color-surface-hover: color-mix(in srgb, white 5%, var(--color-surface));
 
-  /* ---- Semantic: text (all AA-verified against --color-bg / --color-surface) ---- */
-  --color-text-primary: var(--color-gray-950); /* ~16.4:1 on bg */
-  --color-text-secondary: var(--color-espresso); /* ~12.7:1 on bg — warm, not neutral gray */
-  --color-text-muted: color-mix(in srgb, var(--color-espresso) 58%, var(--color-bg) 42%); /* ~5.8:1 on bg */
-  --color-text-inverse: var(--color-gray-0);
+  /* ---- Semantic: text ---- */
+  --color-text-primary: var(--color-gray-0); /* #fff — ~19:1 on bg */
+  --color-text-secondary: var(--color-gray-50); /* #e7e7e7 — ~16.5:1 on bg */
+  --color-text-muted: var(--color-gray-200); /* #a5a5a5 — ~7.4:1 on bg */
+  --color-text-inverse: var(--color-gray-950);
 
   /* ---- Semantic: borders ----
-   * `border` is decorative only (dividers, card hairlines) — not meant
-   * to be the sole indicator of anything interactive. `border-strong`
-   * meets the WCAG 2.2 non-text 3:1 requirement and is for interactive
-   * element boundaries (Input, Select, secondary Button). Both are
-   * warm-gray (a light espresso tint), not neutral gray — a subtle,
-   * site-wide brand cue that costs nothing in contrast. */
-  --color-border: color-mix(in srgb, var(--color-gray-200) 85%, var(--color-espresso) 15%);
-  --color-border-strong: color-mix(in srgb, var(--color-gray-400) 80%, var(--color-espresso) 20%); /* ~3.5:1 on surface */
+   * `border` is decorative only (dividers, card hairlines) — a thin,
+   * barely-there white hairline (rgba(255,255,255,0.08), the same
+   * glass-surface alpha used for header/dropdown panels). `border-strong`
+   * is for interactive element boundaries (Input, Select, secondary
+   * Button) and needs to read clearly against both --color-bg and
+   * --color-surface, so it sits at a higher, non-transparent value
+   * rather than a higher alpha (a translucent border over two different
+   * dark surfaces contrasts inconsistently; a solid one doesn't). */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: var(--color-gray-400); /* #6b6b6b — ~3.4:1 on surface */
 
-  /* ---- Semantic: buttons ---- */
-  --color-button-primary-bg: var(--color-gray-950);
-  --color-button-primary-bg-hover: color-mix(in srgb, var(--color-gray-950) 88%, var(--color-bronze) 12%);
-  --color-button-primary-text: var(--color-gray-0);
+  /* ---- Semantic: buttons ----
+   * Primary is a bright white pill (the "Apple keynote" CTA), not gold
+   * — gold stays a small accent (focus rings, active states), never the
+   * dominant color of the page's most-repeated interactive element. */
+  --color-button-primary-bg: var(--color-gray-0);
+  --color-button-primary-bg-hover: color-mix(in srgb, var(--color-gray-0) 88%, var(--color-bronze) 12%);
+  --color-button-primary-text: var(--color-gray-950);
   --color-button-secondary-bg: transparent;
-  --color-button-secondary-text: var(--color-gray-950);
+  --color-button-secondary-text: var(--color-gray-0);
   --color-button-secondary-border: var(--color-gray-400);
 
   /* ---- Semantic: focus ---- */
   --color-focus-ring: var(--color-bronze);
-  --color-focus-offset: var(--color-gray-0);
+  --color-focus-offset: var(--color-bg);
 
-  /* ---- Semantic: system feedback (only other place color appears) ---- */
-  --color-success: #2f6b4f; /* 5.76:1 on bg */
-  --color-success-surface: color-mix(in srgb, var(--color-success) 10%, var(--color-bg));
-  --color-warning: #8a5a00; /* 5.43:1 on bg */
-  --color-warning-surface: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg));
-  --color-error: #b42318; /* 6.02:1 on bg */
-  --color-error-surface: color-mix(in srgb, var(--color-error) 10%, var(--color-bg));
+  /* ---- Semantic: system feedback (only other place color appears) ----
+   * Retuned for contrast against near-black — the values a light-bg
+   * system needs (dark, saturated) read as near-invisible here. */
+  --color-success: #5fae87; /* ~7.3:1 on bg */
+  --color-success-surface: color-mix(in srgb, var(--color-success) 14%, var(--color-bg));
+  --color-warning: #d1a13a; /* ~8.1:1 on bg */
+  --color-warning-surface: color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));
+  --color-error: #e2685c; /* ~6.4:1 on bg */
+  --color-error-surface: color-mix(in srgb, var(--color-error) 14%, var(--color-bg));
 
 
   /* ---- Typography ----
@@ -105,12 +108,12 @@
   /* ---- Spacing / layout ---- */
   --container-max: 80rem; /* 1280px */
 
-  /* ---- Radius: restrained, never fully rounded ---- */
-  --radius-control: 0.25rem; /* inputs, badges, buttons */
-  --radius-card: 0.375rem;
+  /* ---- Radius: premium, generously rounded ---- */
+  --radius-control: 1rem; /* 16px — inputs, badges, buttons */
+  --radius-card: 1.5rem; /* 24px — product/panel cards */
 
   /* ---- Shadow: very restrained, elevation only where truly needed ---- */
-  --shadow-elevated: 0 8px 24px -8px rgb(0 0 0 / 0.16);
+  --shadow-elevated: 0 8px 32px -8px rgb(0 0 0 / 0.5);
 
   /* ---- Motion easing (mirrored in lib/design/motion.ts for Motion/JS) ---- */
   --ease-precise: cubic-bezier(0.22, 1, 0.36, 1);

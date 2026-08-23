@@ -71,8 +71,8 @@ export async function CoffeeJourneyHero() {
       </section>
 
       {/* Arrival — the scroll hands off here once the mark has formed.
-          A short gradient at the top bridges the dark atelier above
-          into the site's ivory palette rather than cutting hard. */}
+          A short gradient at the top bridges the hero's own espresso hue
+          into the site's near-black tokens rather than cutting hard. */}
       <section className="relative bg-bg">
         <div
           aria-hidden="true"
@@ -93,7 +93,7 @@ export async function CoffeeJourneyHero() {
               </div>
               <Link
                 href="/machines"
-                className="group mt-2 inline-flex w-fit items-center gap-3 rounded-full bg-text-primary px-7 py-3.5 text-xs font-medium tracking-[0.2em] text-text-inverse uppercase transition-colors duration-200 hover:bg-espresso"
+                className="group mt-2 inline-flex w-fit items-center gap-3 rounded-full bg-button-primary-bg px-7 py-3.5 text-xs font-medium tracking-[0.2em] text-button-primary-text uppercase transition-colors duration-200 hover:bg-button-primary-bg-hover"
               >
                 {t("cta")}
                 <ArrowRightIcon className="size-3.5 transition-transform duration-300 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
