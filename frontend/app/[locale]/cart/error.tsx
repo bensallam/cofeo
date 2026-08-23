@@ -11,7 +11,7 @@ export default function CartError({ reset }: { error: Error; reset: () => void }
   const catalogueT = useTranslations("Catalogue");
 
   return (
-    <Section tone="dark">
+    <Section>
       <Container>
         <ErrorState
           title={t("errorTitle")}

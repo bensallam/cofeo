@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { IconButton } from "@/components/ui/icon-button";
 import { Drawer } from "@/components/ui/drawer";
 import { LanguageSwitcherCircle } from "@/components/homepage/language-switcher-circle";
+import { useHeaderTheme } from "@/components/homepage/header-theme";
 
 type NavItem = { href: string; label: string };
 
@@ -21,6 +22,7 @@ type MobileNavProps = {
 
 export function MobileNav({ navItems, machinesHref, machineCategories }: MobileNavProps) {
   const t = useTranslations("Nav");
+  const theme = useHeaderTheme();
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
@@ -29,7 +31,7 @@ export function MobileNav({ navItems, machinesHref, machineCategories }: MobileN
         <MenuIcon />
       </IconButton>
 
-      <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={t("menuTitle")}>
+      <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={t("menuTitle")} theme={theme}>
         <nav className="flex flex-col gap-1">
           {navItems.map((item) => (
             <React.Fragment key={item.label}>

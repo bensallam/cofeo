@@ -8,7 +8,7 @@ export default async function ProductNotFound() {
   const t = await getTranslations("Product");
 
   return (
-    <Section tone="dark">
+    <Section>
       <Container>
         <EmptyState
           title={t("notFoundTitle")}

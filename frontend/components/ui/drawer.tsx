@@ -10,6 +10,13 @@ type DrawerProps = {
   title: string;
   children: React.ReactNode;
   className?: string;
+  /** Portaled to document.body (see below), so it sits outside whatever
+   * `data-theme` scope its trigger lives in — plain CSS custom property
+   * inheritance doesn't follow a portal. Callers whose trigger lives in
+   * a dark-scoped tree (the Home header's pill) pass "dark" explicitly
+   * so the panel's own semantic-token classes repaint to match instead
+   * of silently falling back to light. Defaults to "light". */
+  theme?: "light" | "dark";
 };
 
 const FOCUSABLE_SELECTOR =
@@ -24,7 +31,7 @@ const FOCUSABLE_SELECTOR =
  * per the Phase 2 scope decision — hardened now that MobileNav is its
  * first real production usage.)
  */
-export function Drawer({ isOpen, onClose, title, children, className }: DrawerProps) {
+export function Drawer({ isOpen, onClose, title, children, className, theme = "light" }: DrawerProps) {
   const titleId = React.useId();
   const panelRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<Element | null>(null);
@@ -103,6 +110,7 @@ export function Drawer({ isOpen, onClose, title, children, className }: DrawerPr
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
+        data-theme={theme === "dark" ? "dark" : undefined}
         className={cn(
           "absolute inset-y-0 end-0 flex w-full max-w-sm flex-col gap-4 overflow-y-auto bg-surface-elevated p-6",
           "shadow-(--shadow-elevated) transition-transform duration-300 ease-(--ease-precise)",

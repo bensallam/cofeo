@@ -8,70 +8,61 @@
  */
 
 @theme {
-  /* ---- Primitives: near-black ramp ---- */
+  /* ---- Primitives: warm-neutral ramp (the site-wide default — every
+   * page except Home, see the [data-theme="dark"] scope below) ---- */
   --color-gray-0: #ffffff;
-  --color-gray-50: #e7e7e7;
-  --color-gray-200: #a5a5a5;
-  --color-gray-400: #6b6b6b;
-  --color-gray-600: #3a3a3a;
-  --color-gray-800: #141414;
-  --color-gray-950: #0d0d0d;
-  --color-gray-1000: #080808;
+  --color-gray-50: #f4f1ec; /* warm beige/off-white */
+  --color-gray-200: #eceae6; /* light gray */
+  --color-gray-400: #b6b0a6; /* mid warm-gray, border-strong */
+  --color-gray-600: #6e6a63; /* muted text */
+  --color-gray-800: #4a4642; /* secondary text */
+  --color-gray-950: #2a2a2a; /* soft charcoal — primary text */
+  --color-gray-1000: #000000; /* scrims/overlays only, both themes */
 
   /* ---- Primitives: coffee-brand accent ----
    * The sole accent color — used sparingly (interactive states, focus
    * rings, small highlights), never a base surface or body-text color,
-   * never the dominant hue of a view. */
-  --color-bronze: #c6a46c; /* warm coffee-gold accent — accent only, never >10% of a view */
+   * never the dominant hue of a view. Same value in both themes. */
+  --color-bronze: #b89a6a; /* warm coffee-gold accent — accent only, never >10% of a view */
 
   /* ---- Semantic: surfaces ---- */
-  --color-bg: var(--color-gray-950); /* #0d0d0d */
-  --color-surface: var(--color-gray-800); /* #141414 — opaque card default */
-  --color-surface-elevated: color-mix(in srgb, white 3%, var(--color-surface));
-  --color-surface-hover: color-mix(in srgb, white 5%, var(--color-surface));
+  --color-bg: var(--color-gray-50); /* #f4f1ec */
+  --color-surface: var(--color-gray-0); /* #fff — opaque card default */
+  --color-surface-elevated: var(--color-gray-0);
+  --color-surface-hover: var(--color-gray-200);
 
   /* ---- Semantic: text ---- */
-  --color-text-primary: var(--color-gray-0); /* #fff — ~19:1 on bg */
-  --color-text-secondary: var(--color-gray-50); /* #e7e7e7 — ~16.5:1 on bg */
-  --color-text-muted: var(--color-gray-200); /* #a5a5a5 — ~7.4:1 on bg */
-  --color-text-inverse: var(--color-gray-950);
+  --color-text-primary: var(--color-gray-950); /* ~12.4:1 on bg */
+  --color-text-secondary: var(--color-gray-800); /* ~8.2:1 on bg */
+  --color-text-muted: var(--color-gray-600); /* ~4.9:1 on bg */
+  --color-text-inverse: var(--color-gray-0);
 
   /* ---- Semantic: borders ----
-   * `border` is decorative only (dividers, card hairlines) — a thin,
-   * barely-there white hairline (rgba(255,255,255,0.08), the same
-   * glass-surface alpha used for header/dropdown panels). `border-strong`
+   * `border` is decorative only (dividers, card hairlines). `border-strong`
    * is for interactive element boundaries (Input, Select, secondary
-   * Button) and needs to read clearly against both --color-bg and
-   * --color-surface, so it sits at a higher, non-transparent value
-   * rather than a higher alpha (a translucent border over two different
-   * dark surfaces contrasts inconsistently; a solid one doesn't). */
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-strong: var(--color-gray-400); /* #6b6b6b — ~3.4:1 on surface */
+   * Button) and needs the WCAG 2.2 non-text 3:1 minimum. */
+  --color-border: var(--color-gray-200);
+  --color-border-strong: var(--color-gray-400); /* ~3.1:1 on surface */
 
-  /* ---- Semantic: buttons ----
-   * Primary is a bright white pill (the "Apple keynote" CTA), not gold
-   * — gold stays a small accent (focus rings, active states), never the
-   * dominant color of the page's most-repeated interactive element. */
-  --color-button-primary-bg: var(--color-gray-0);
-  --color-button-primary-bg-hover: color-mix(in srgb, var(--color-gray-0) 88%, var(--color-bronze) 12%);
-  --color-button-primary-text: var(--color-gray-950);
+  /* ---- Semantic: buttons ---- */
+  --color-button-primary-bg: var(--color-gray-950);
+  --color-button-primary-bg-hover: color-mix(in srgb, var(--color-gray-950) 88%, var(--color-bronze) 12%);
+  --color-button-primary-text: var(--color-gray-0);
   --color-button-secondary-bg: transparent;
-  --color-button-secondary-text: var(--color-gray-0);
+  --color-button-secondary-text: var(--color-gray-950);
   --color-button-secondary-border: var(--color-gray-400);
 
   /* ---- Semantic: focus ---- */
   --color-focus-ring: var(--color-bronze);
-  --color-focus-offset: var(--color-bg);
+  --color-focus-offset: var(--color-gray-0);
 
-  /* ---- Semantic: system feedback (only other place color appears) ----
-   * Retuned for contrast against near-black — the values a light-bg
-   * system needs (dark, saturated) read as near-invisible here. */
-  --color-success: #5fae87; /* ~7.3:1 on bg */
-  --color-success-surface: color-mix(in srgb, var(--color-success) 14%, var(--color-bg));
-  --color-warning: #d1a13a; /* ~8.1:1 on bg */
-  --color-warning-surface: color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));
-  --color-error: #e2685c; /* ~6.4:1 on bg */
-  --color-error-surface: color-mix(in srgb, var(--color-error) 14%, var(--color-bg));
+  /* ---- Semantic: system feedback (only other place color appears) ---- */
+  --color-success: #2f6b4f; /* ~5.8:1 on bg */
+  --color-success-surface: color-mix(in srgb, var(--color-success) 10%, var(--color-bg));
+  --color-warning: #8a5a00; /* ~5.4:1 on bg */
+  --color-warning-surface: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg));
+  --color-error: #b42318; /* ~6.0:1 on bg */
+  --color-error-surface: color-mix(in srgb, var(--color-error) 10%, var(--color-bg));
 
 
   /* ---- Typography ----
@@ -144,6 +135,53 @@
   --text-body-l--line-height: 1.75;
   --text-body--line-height: 1.75;
   --text-body-s--line-height: 1.65;
+}
+
+/*
+ * Dark scope — the Home page ONLY (see Section's `tone="dark"` prop,
+ * applied to every Home section, and the header's own route check in
+ * header-theme.tsx which sets this same attribute on the nav pill while
+ * on "/"). Catalogue, Product, Cart, Checkout and everything else stay
+ * on the warm-neutral default above, untouched — this is a deliberate,
+ * intentional contrast between one cinematic entrance page and the rest
+ * of the (light, professional) site, not a site-wide theme.
+ *
+ * Every value below reuses an existing primitive (plus --color-bronze,
+ * the one accent shared by both themes) except the feedback colors,
+ * which need genuinely different values — the light-mode ones were
+ * tuned for contrast on warm beige and read as near-invisible against
+ * near-black.
+ */
+[data-theme="dark"] {
+  --color-bg: #080808;
+  --color-surface: #101010;
+  --color-surface-elevated: color-mix(in srgb, white 3%, var(--color-surface));
+  --color-surface-hover: color-mix(in srgb, white 5%, var(--color-surface));
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #d8d8d8;
+  --color-text-muted: #8a8a8a; /* ~6.5:1 on bg */
+  --color-text-inverse: var(--color-bg);
+
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-strong: #6b6b6b; /* ~3.4:1 on surface */
+
+  --color-button-primary-bg: #ffffff;
+  --color-button-primary-bg-hover: color-mix(in srgb, white 88%, var(--color-bronze) 12%);
+  --color-button-primary-text: var(--color-bg);
+  --color-button-secondary-bg: transparent;
+  --color-button-secondary-text: #ffffff;
+  --color-button-secondary-border: rgba(255, 255, 255, 0.22);
+
+  --color-focus-ring: var(--color-bronze);
+  --color-focus-offset: var(--color-bg);
+
+  --color-success: #5fae87; /* ~7.3:1 on bg */
+  --color-success-surface: color-mix(in srgb, var(--color-success) 14%, var(--color-bg));
+  --color-warning: #d1a13a; /* ~8.1:1 on bg */
+  --color-warning-surface: color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));
+  --color-error: #e2685c; /* ~6.4:1 on bg */
+  --color-error-surface: color-mix(in srgb, var(--color-error) 14%, var(--color-bg));
 }
 
 @layer base {

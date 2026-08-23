@@ -16,7 +16,7 @@ export default function MachinesError({ reset }: { error: Error; reset: () => vo
   const t = useTranslations("Catalogue");
 
   return (
-    <Section tone="dark">
+    <Section>
       <Container>
         <ErrorState
           title={t("errorTitle")}

@@ -1,10 +1,10 @@
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/container";
 import { LanguageSwitcherCircle } from "@/components/homepage/language-switcher-circle";
 import { MobileNav } from "@/components/homepage/mobile-nav";
 import { PrimaryNav } from "@/components/homepage/primary-nav";
 import { CartWidget } from "@/components/cart/cart-widget";
+import { HeaderThemeShell, HeaderLogo } from "@/components/homepage/header-theme";
 
 /**
  * No Search icon — it has no real functionality yet, and shipping a
@@ -62,12 +62,20 @@ import { CartWidget } from "@/components/cart/cart-widget";
  * it above page content but below the mobile/cart Drawer's z-50 (see
  * ui/drawer.tsx) so an open drawer still layers over the sticky header.
  *
- * PILL: a dark glass pill — a faint white haze (bg-white/[0.06], the
- * same alpha the rest of the dark system uses for glass surfaces) over
- * the page's own near-black background, thin white-hairline border,
- * soft blur, restrained shadow. The `cofeo-logo.png` asset is white-on-
- * transparent, drawn for exactly this kind of dark surface, so it sits
- * directly on the pill with no chip/backdrop needed.
+ * PILL THEME: route-driven, not page-driven — see header-theme.tsx.
+ * On Home ("/") the pill is dark "inflated glass" (a faint white haze,
+ * thin white-hairline border, soft inner highlight) floating over that
+ * page's own dark hero; everywhere else it's a light glass matching
+ * that route's own (warm-neutral) tokens, since only Home carries the
+ * dark visual identity — Catalogue/Product/Cart/Checkout stay light.
+ * `HeaderThemeShell` sets `data-theme="dark"` on the pill only for Home,
+ * which is what makes every semantic-token class below (PrimaryNav's
+ * text, CartWidget's icon, ...) repaint correctly without per-component
+ * theme logic.
+ *
+ * WIDTH: capped at 1050px and centered, independent of the page
+ * Container's own (much wider) max-width — this is meant to read as one
+ * compact floating object, not a bar spanning the content column.
  *
  * LANGUAGE SWITCHER: circular flag control (see
  * language-switcher-circle.tsx), replacing the old inline "FR / AR / EN"
@@ -106,38 +114,29 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-40">
       <Container className="py-4 sm:py-6">
-        <div
-          className="flex h-16 items-center justify-between gap-4 rounded-full border border-white/[0.08] bg-white/[0.06] px-5 shadow-(--shadow-elevated) backdrop-blur-xl sm:px-8"
-        >
-          <Link href="/" className="shrink-0">
-            {/* Plain <img>, not next/image: next.config.ts's images.localPatterns
-             * is an allowlist (Next 16) currently scoped to the product-image
-             * API routes only — a small, already-optimized static logo doesn't
-             * need on-the-fly optimization, so this avoids widening that
-             * allowlist for an unrelated asset. The logo itself is white-only,
-             * drawn for exactly this dark glass surface. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/cofeo-logo.png" alt="COFEO" width={780} height={243} className="h-7 w-auto sm:h-8" />
-          </Link>
+        <div className="mx-auto max-w-[1050px]">
+          <HeaderThemeShell>
+            <HeaderLogo />
 
-          <PrimaryNav
-            ariaLabel={t("primaryNavigation")}
-            leadingItems={leadingNavItems}
-            machinesHref={machinesHref}
-            machinesLabel={t("machinesMenu")}
-            machineCategories={machineCategories}
-            otherItems={otherNavItems}
-          />
-
-          <div className="flex items-center gap-2 sm:gap-4">
-            <LanguageSwitcherCircle className="hidden md:block" />
-            <CartWidget />
-            <MobileNav
-              navItems={mobileNavItems}
+            <PrimaryNav
+              ariaLabel={t("primaryNavigation")}
+              leadingItems={leadingNavItems}
               machinesHref={machinesHref}
+              machinesLabel={t("machinesMenu")}
               machineCategories={machineCategories}
+              otherItems={otherNavItems}
             />
-          </div>
+
+            <div className="flex items-center gap-2 sm:gap-4">
+              <LanguageSwitcherCircle className="hidden md:block" />
+              <CartWidget />
+              <MobileNav
+                navItems={mobileNavItems}
+                machinesHref={machinesHref}
+                machineCategories={machineCategories}
+              />
+            </div>
+          </HeaderThemeShell>
         </div>
       </Container>
     </header>

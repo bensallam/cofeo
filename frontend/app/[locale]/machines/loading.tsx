@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MachinesLoading() {
   return (
-    <Section tone="dark">
+    <Section>
       <Container>
         <Skeleton className="mb-8 h-10 w-48" />
         <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">

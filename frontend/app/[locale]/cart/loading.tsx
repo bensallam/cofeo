@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CartLoading() {
   return (
-    <Section tone="dark">
+    <Section>
       <Container>
         <Skeleton className="mb-8 h-8 w-32" />
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">

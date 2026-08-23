@@ -132,7 +132,7 @@ export default async function ProductPage({ params }: PageProps) {
   }
 
   return (
-    <Section tone="dark">
+    <Section>
       <Container>
         <JsonLd data={productJsonLd} />
         <JsonLd data={breadcrumbJsonLd} />

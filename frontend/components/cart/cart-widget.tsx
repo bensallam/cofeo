@@ -10,6 +10,7 @@ import { CartIcon } from "@/components/cart/cart-icon";
 import { CartLineItem } from "@/components/cart/cart-line-item";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { useCart } from "@/lib/cart/use-cart";
+import { useHeaderTheme } from "@/components/homepage/header-theme";
 
 /**
  * Deliberately fetches its own cart client-side on mount (see
@@ -20,6 +21,7 @@ import { useCart } from "@/lib/cart/use-cart";
  */
 export function CartWidget() {
   const t = useTranslations("Cart");
+  const theme = useHeaderTheme();
   const [isOpen, setIsOpen] = React.useState(false);
   const { cart, errorCode, availableQuantity, updateQuantity, remove } = useCart(null);
 
@@ -41,7 +43,7 @@ export function CartWidget() {
         )}
       </IconButton>
 
-      <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={t("miniCartTitle")}>
+      <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={t("miniCartTitle")} theme={theme}>
 
         {errorCode && (
           <p role="alert" className="text-body-s text-error">

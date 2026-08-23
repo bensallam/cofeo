@@ -8,12 +8,13 @@ const SPACING = {
 
 type SectionProps = React.ComponentPropsWithoutRef<"section"> & {
   spacing?: keyof typeof SPACING;
-  /** COFEO ships a single light, warm palette (see tokens.css) — there is
-   * no separate dark theme to scope anymore. "dark" is kept only so the
-   * Catalogue/Product/Cart/Checkout routes that pass it don't need a
-   * separate edit; it just explicitly repaints the section with the same
-   * ambient tokens (bg-bg/text-text-primary) every page already inherits,
-   * a no-op in practice. */
+  /** "dark" scopes the Home-only dark theme (see tokens.css's
+   * `[data-theme="dark"]` block) to this section and everything inside
+   * it — every semantic color utility already in use (bg-surface,
+   * text-text-primary, border-border, ...) repaints automatically, no
+   * per-component changes needed. Used exclusively by the Home page's
+   * own sections; every other route stays on the default "light" (the
+   * site-wide warm-neutral palette). */
   tone?: "light" | "dark";
 };
 
@@ -27,6 +28,7 @@ export function Section({
 }: SectionProps) {
   return (
     <section
+      data-theme={tone === "dark" ? "dark" : undefined}
       className={cn(SPACING[spacing], tone === "dark" && "bg-bg text-text-primary", className || null)}
       {...props}
     >

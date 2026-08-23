@@ -72,8 +72,11 @@ export async function CoffeeJourneyHero() {
 
       {/* Arrival — the scroll hands off here once the mark has formed.
           A short gradient at the top bridges the hero's own espresso hue
-          into the site's near-black tokens rather than cutting hard. */}
-      <section className="relative bg-bg">
+          into the site's near-black tokens rather than cutting hard.
+          `data-theme="dark"` here directly (not via Section, this is a
+          hand-rolled section) — Home is the one page that stays dark
+          past its hero; every other route defaults to the light scope. */}
+      <section data-theme="dark" className="relative bg-bg">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#1c130d] to-transparent"

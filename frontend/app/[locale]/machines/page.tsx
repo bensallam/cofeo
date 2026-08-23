@@ -91,7 +91,7 @@ export default async function MachinesPage({ params, searchParams }: PageProps) 
       : "";
 
   return (
-    <Section tone="dark">
+    <Section>
       <Container>
         <Breadcrumb items={[{ label: t("heading") }]} label={productT("breadcrumbLabel")} />
 

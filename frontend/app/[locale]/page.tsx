@@ -96,7 +96,7 @@ export default async function HomePage({ params }: PageProps) {
           the three real category entry points on the left, the three
           brand pillars as a numbered list on the right, offset down for
           asymmetry rather than aligned in a neat row. */}
-      <Section spacing="lg">
+      <Section spacing="lg" tone="dark">
         <Container>
           <Heading level={2} size="xl" className="max-w-2xl">
             {findYourMachine("heading")}
@@ -133,7 +133,7 @@ export default async function HomePage({ params }: PageProps) {
       {/* MACHINES — demo data only, see lib/demo-data/products.ts. Large
           editorial tiles (see EditorialProductFeature), not a dense
           ecommerce grid — this is four curated pieces, not a catalogue. */}
-      <Section spacing="lg" id="featured-machines">
+      <Section spacing="lg" tone="dark" id="featured-machines">
         <Container>
           <Heading level={2} size="xl" className="max-w-xl">
             {featuredMachines("heading")}
@@ -162,7 +162,7 @@ export default async function HomePage({ params }: PageProps) {
       {/* ACCESSORIES-position section — real content is the brand list
           (no accessories catalogue exists yet); presented as a large
           typographic wall rather than a small muted caption row. */}
-      <Section spacing="sm">
+      <Section spacing="sm" tone="dark">
         <Container>
           <Heading level={2} size="s" className="mb-8 text-text-muted">
             {brands("heading")}
@@ -181,7 +181,7 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* DISCOVERY — the used/refurbished trust process, direction A
           approved; large numerals carry more of the composition now. */}
-      <Section id="used-refurbished">
+      <Section tone="dark" id="used-refurbished">
         <Container>
           <div className="max-w-2xl">
             <Heading level={2} size="l">
@@ -201,7 +201,7 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* BRAND — Services teaser + Final CTA merged into one closing
           statement instead of two stacked sections. */}
-      <Section spacing="lg" id="services">
+      <Section spacing="lg" tone="dark" id="services">
         <Container>
           <div className="flex flex-col items-start gap-8">
             <div className="flex flex-col gap-2">
