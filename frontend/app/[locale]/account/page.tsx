@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
 import { Heading } from "@/components/ui/heading";
+import { Link } from "@/i18n/navigation";
 import { getSession } from "@/lib/auth/session";
 import { logoutAction } from "@/lib/actions/auth-actions";
 
@@ -58,9 +59,35 @@ export default async function AccountPage({ params }: PageProps) {
             <p className="text-body text-text-secondary">{t("heading")}</p>
           </div>
 
-          <div className="flex flex-col gap-2 rounded-(--radius-control) border border-border-strong p-4">
-            <span className="text-body-s font-medium text-text-primary">{t("myOrders")}</span>
-            <span className="text-caption text-text-muted">{t("myOrdersComingSoon")}</span>
+          <Link
+            href="/account/orders"
+            className="flex items-center justify-between gap-2 rounded-(--radius-control) border border-border-strong p-4 transition-colors duration-200 hover:bg-surface-hover"
+          >
+            <span className="flex items-center gap-2 text-body-s font-medium text-text-primary">
+              <span aria-hidden="true">📦</span>
+              {t("myOrders")}
+            </span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className="size-4 text-text-muted rtl:-scale-x-100"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
+            </svg>
+          </Link>
+
+          <div
+            className="flex items-center justify-between gap-2 rounded-(--radius-control) border border-border-strong p-4 opacity-60"
+            aria-disabled="true"
+          >
+            <span className="flex items-center gap-2 text-body-s font-medium text-text-primary">
+              <span aria-hidden="true">👤</span>
+              {t("myInfo")}
+            </span>
+            <span className="text-caption text-text-muted">{t("comingSoon")}</span>
           </div>
 
           <form action={boundLogout}>

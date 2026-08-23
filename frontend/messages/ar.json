@@ -409,7 +409,21 @@
       "greeting": "مرحبًا {name}",
       "heading": "حسابي",
       "myOrders": "طلباتي",
-      "myOrdersComingSoon": "قريبًا."
+      "myInfo": "معلوماتي",
+      "comingSoon": "قريبًا."
     }
+  },
+  "Account": {
+    "ordersHeading": "طلباتي",
+    "viewOrderCta": "عرض الطلب",
+    "noOrdersTitle": "ليس لديك أي طلبات بعد.",
+    "noOrdersCta": "اكتشف آلاتنا",
+    "itemsCount": "{count, plural, one {منتج واحد} two {منتجان} few {# منتجات} many {# منتجًا} other {# منتج}}",
+    "backToOrders": "العودة إلى الطلبات",
+    "orderDetailsHeading": "الطلب رقم {number}",
+    "discountLabel": "الخصم",
+    "paymentHeading": "الدفع",
+    "orderNotFoundTitle": "الطلب غير موجود",
+    "orderNotFoundDescription": "تعذر العثور على هذا الطلب."
   }
 }

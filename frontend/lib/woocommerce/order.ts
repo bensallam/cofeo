@@ -21,6 +21,7 @@ type WcOrderV3 = {
   date_created: string;
   total: string;
   shipping_total: string;
+  discount_total: string;
   payment_method: string;
   payment_method_title: string;
   billing: { first_name: string; last_name: string; phone: string; email: string };
@@ -47,6 +48,7 @@ export type OrderDetails = {
   currency: string;
   total: number;
   shippingTotal: number;
+  discountTotal: number;
   subtotal: number;
   paymentMethod: string;
   paymentMethodTitle: string;
@@ -79,6 +81,7 @@ function mapOrder(raw: WcOrderV3): OrderDetails {
     currency: raw.currency,
     total: Number(raw.total),
     shippingTotal: Number(raw.shipping_total),
+    discountTotal: Number(raw.discount_total),
     subtotal: items.reduce((sum, item) => sum + item.total, 0),
     paymentMethod: raw.payment_method,
     paymentMethodTitle: raw.payment_method_title,
@@ -119,4 +122,56 @@ export async function getOrderByKey(orderId: number, orderKey: string): Promise<
 
   if (!raw || raw.order_key !== orderKey) return null;
   return mapOrder(raw);
+}
+
+/**
+ * For an *authenticated* customer's own order-detail view (Phase 3B) —
+ * ownership here is established by comparing `customerId` against the
+ * caller's session `wooCustomerId` (see `assertCustomerOwnsOrder` in
+ * lib/auth/order-ownership.ts), not by an `order_key` the browser
+ * would have to supply, so this deliberately doesn't require one. It
+ * must never be called on behalf of a request without also checking
+ * that ownership — the id alone is not access control by itself.
+ */
+export async function getOrderById(orderId: number): Promise<OrderDetails | null> {
+  if (!Number.isInteger(orderId) || orderId <= 0) return null;
+
+  try {
+    const raw = await wcRestFetch<WcOrderV3>(`/orders/${orderId}`);
+    if (!raw) return null;
+    return mapOrder(raw);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The customer's own order list (Phase 3B, /account/orders) — scoped
+ * server-side via the WooCommerce REST API v3 `customer` query
+ * parameter, never by fetching every order and filtering in the
+ * browser. `wooCustomerId` must come from the caller's own verified
+ * session, never a value the browser supplies directly.
+ */
+export async function getOrdersByCustomerId(
+  wooCustomerId: number,
+  params?: { page?: number; perPage?: number },
+): Promise<OrderDetails[]> {
+  if (!Number.isInteger(wooCustomerId) || wooCustomerId <= 0) return [];
+
+  const page = params?.page ?? 1;
+  const perPage = params?.perPage ?? 20;
+  const query = new URLSearchParams({
+    customer: String(wooCustomerId),
+    page: String(page),
+    per_page: String(perPage),
+    orderby: "date",
+    order: "desc",
+  });
+
+  try {
+    const raw = await wcRestFetch<WcOrderV3[]>(`/orders?${query.toString()}`);
+    return raw.map(mapOrder);
+  } catch {
+    return [];
+  }
 }

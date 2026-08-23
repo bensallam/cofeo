@@ -409,7 +409,21 @@
       "greeting": "Bonjour {name}",
       "heading": "Mon compte",
       "myOrders": "Mes commandes",
-      "myOrdersComingSoon": "Bientôt disponible."
+      "myInfo": "Mes informations",
+      "comingSoon": "Bientôt disponible."
     }
+  },
+  "Account": {
+    "ordersHeading": "Mes commandes",
+    "viewOrderCta": "Voir la commande",
+    "noOrdersTitle": "Vous n'avez encore aucune commande.",
+    "noOrdersCta": "Découvrir nos machines",
+    "itemsCount": "{count, plural, one {# article} other {# articles}}",
+    "backToOrders": "Retour aux commandes",
+    "orderDetailsHeading": "Commande #{number}",
+    "discountLabel": "Réduction",
+    "paymentHeading": "Paiement",
+    "orderNotFoundTitle": "Commande introuvable",
+    "orderNotFoundDescription": "Cette commande est introuvable."
   }
 }

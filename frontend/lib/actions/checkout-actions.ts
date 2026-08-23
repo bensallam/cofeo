@@ -12,6 +12,8 @@ import { getShippingCities } from "@/lib/woocommerce/shipping-cities";
 import { getCartTokenCookie, setCartTokenCookie, clearCartTokenCookie } from "@/lib/cart/cart-cookie";
 import { fetchCart, updateCartCustomer, type Cart, type CheckoutAddress } from "@/lib/woocommerce/cart";
 import { getCheckoutDraft, placeOrder } from "@/lib/woocommerce/checkout";
+import { wcRestFetch } from "@/lib/woocommerce/rest-client";
+import { getSession } from "@/lib/auth/session";
 import { AppError, type ErrorCode } from "@/lib/errors/app-error";
 
 export type CheckoutActionResult = { ok: true; cart: Cart } | { ok: false; code: ErrorCode };
@@ -218,6 +220,33 @@ export async function placeOrderAction(input: {
   } catch (error) {
     if (error instanceof AppError) return { ok: false, code: error.code };
     return { ok: false, code: "SERVER_ERROR" };
+  }
+
+  // Best-effort only, and deliberately not inside the try/catch above:
+  // a failure here must never turn a successfully placed order into an
+  // error for the customer, nor block the redirect below. If whoever
+  // is checking out happens to be a logged-in COFEO customer, this is
+  // what makes the order show up in their own /account/orders (Phase
+  // 3B) — the Store API's own checkout endpoint has no way to attach a
+  // customer id itself (rightly so: it's an unauthenticated endpoint,
+  // and accepting an arbitrary customer id there would let anyone
+  // attribute an order to anyone), so this uses the existing
+  // admin-authenticated wcRestFetch client, the same one Phase 1/2
+  // already use for order-status meta, right after the order is
+  // confirmed to exist.
+  try {
+    const session = await getSession();
+    if (session) {
+      await wcRestFetch(`/orders/${placed.order.orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id: session.wooCustomerId }),
+      });
+    }
+  } catch {
+    // Best-effort — see comment above. The order already exists as a
+    // valid guest order either way; this only affects whether it also
+    // appears in the customer's own account.
   }
 
   const query = new URLSearchParams({ order: String(placed.order.orderId), key: placed.order.orderKey });

@@ -409,7 +409,21 @@
       "greeting": "Hello {name}",
       "heading": "My account",
       "myOrders": "My orders",
-      "myOrdersComingSoon": "Coming soon."
+      "myInfo": "My information",
+      "comingSoon": "Coming soon."
     }
+  },
+  "Account": {
+    "ordersHeading": "My orders",
+    "viewOrderCta": "View order",
+    "noOrdersTitle": "You don't have any orders yet.",
+    "noOrdersCta": "Discover our machines",
+    "itemsCount": "{count, plural, one {# item} other {# items}}",
+    "backToOrders": "Back to orders",
+    "orderDetailsHeading": "Order #{number}",
+    "discountLabel": "Discount",
+    "paymentHeading": "Payment",
+    "orderNotFoundTitle": "Order not found",
+    "orderNotFoundDescription": "This order could not be found."
   }
 }
