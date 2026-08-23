@@ -1,5 +1,6 @@
 import { wcRestFetch } from "@/lib/woocommerce/rest-client";
 import { isFallbackBillingEmail } from "@/lib/woocommerce/checkout";
+import { COFEO_STATUS_META_KEY, resolveCofeoStatus, type CofeoStatusKey } from "@/lib/woocommerce/order-status";
 
 /**
  * Minimal slice of the stable WooCommerce REST API v3 `GET /orders/{id}`
@@ -25,12 +26,17 @@ type WcOrderV3 = {
     total: string;
     image?: { src: string } | null;
   }[];
+  meta_data?: { key: string; value: unknown }[];
 };
 
 export type OrderDetails = {
   orderId: number;
   orderNumber: string;
+  /** Raw WooCommerce status (e.g. "processing") — for internal/debug
+   *  use only. Customer-facing UI must use `cofeoStatus` instead; see
+   *  lib/woocommerce/order-status.ts for why the two can differ. */
   status: string;
+  cofeoStatus: CofeoStatusKey;
   dateCreated: string;
   currency: string;
   total: number;
@@ -55,10 +61,13 @@ function mapOrder(raw: WcOrderV3): OrderDetails {
     imageSrc: item.image?.src,
   }));
 
+  const metaStatus = raw.meta_data?.find((entry) => entry.key === COFEO_STATUS_META_KEY)?.value;
+
   return {
     orderId: raw.id,
     orderNumber: raw.number,
     status: raw.status,
+    cofeoStatus: resolveCofeoStatus(raw.status, typeof metaStatus === "string" ? metaStatus : null),
     dateCreated: raw.date_created,
     currency: raw.currency,
     total: Number(raw.total),

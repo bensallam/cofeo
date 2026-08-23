@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Price } from "@/components/ui/price";
 import { ProductImage } from "@/components/ui/product-image";
 import { BankDetailsCard } from "@/components/checkout/bank-details-card";
+import { OrderStatusBadge } from "@/components/checkout/order-status-badge";
+import { OrderStatusTimeline } from "@/components/checkout/order-status-timeline";
 import { BANK_TRANSFER_METHOD_ID } from "@/lib/woocommerce/payment-methods";
 import { formatOrderDate } from "@/lib/i18n/date";
 import { formatPrice } from "@/lib/i18n/price";
@@ -51,9 +53,14 @@ export function OrderConfirmation({ order, bankTransferDetails }: OrderConfirmat
         <dl className="flex flex-col gap-2.5 text-body-s">
           <Row label={t("orderNumberLabel")} value={order.orderNumber} />
           <Row label={tc("dateLabel")} value={formatOrderDate(order.dateCreated, locale)} />
-          <Row label={t("orderStatusLabel")} value={order.status} />
+          <Row label={t("orderStatusLabel")} value={<OrderStatusBadge status={order.cofeoStatus} />} />
           {order.paymentMethodTitle && <Row label={t("paymentMethodLabel")} value={order.paymentMethodTitle} />}
         </dl>
+      </div>
+
+      <div className="flex flex-col gap-4 rounded-(--radius-card) border border-border bg-surface p-6">
+        <h2 className="text-body-l font-medium text-text-primary">{tc("timelineHeading")}</h2>
+        <OrderStatusTimeline status={order.cofeoStatus} />
       </div>
 
       <div className="flex flex-col gap-4">

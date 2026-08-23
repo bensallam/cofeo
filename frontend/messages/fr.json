@@ -314,11 +314,42 @@
       "thanks": "Merci pour votre commande.",
       "orderInfoHeading": "Informations de commande",
       "dateLabel": "Date",
+      "timelineHeading": "Suivi de commande",
       "yourProductsHeading": "Vos produits",
       "summaryHeading": "Récapitulatif",
       "shippingAddressHeading": "Adresse de livraison",
       "notFoundTitle": "Commande introuvable",
       "notFoundDescription": "Ce lien de confirmation est invalide ou a expiré."
+    },
+    "orderStatus": {
+      "NEW": {
+        "label": "Commande reçue",
+        "description": "Nous avons bien reçu votre commande."
+      },
+      "CONFIRMED": {
+        "label": "Commande confirmée",
+        "description": "Votre commande est confirmée et va être préparée."
+      },
+      "PREPARING": {
+        "label": "En préparation",
+        "description": "Votre commande est en cours de préparation."
+      },
+      "SHIPPED": {
+        "label": "Expédiée",
+        "description": "Votre commande a été expédiée."
+      },
+      "OUT_FOR_DELIVERY": {
+        "label": "En cours de livraison",
+        "description": "Votre commande est en cours de livraison."
+      },
+      "DELIVERED": {
+        "label": "Livrée",
+        "description": "Votre commande a été livrée."
+      },
+      "CANCELLED": {
+        "label": "Annulée",
+        "description": "Cette commande a été annulée."
+      }
     },
     "errors": {
       "fullName": "Veuillez indiquer votre nom complet.",

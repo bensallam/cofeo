@@ -314,11 +314,42 @@
       "thanks": "شكرًا لك على طلبك.",
       "orderInfoHeading": "معلومات الطلب",
       "dateLabel": "التاريخ",
+      "timelineHeading": "تتبع الطلب",
       "yourProductsHeading": "منتجاتك",
       "summaryHeading": "الملخص",
       "shippingAddressHeading": "عنوان التوصيل",
       "notFoundTitle": "الطلب غير موجود",
       "notFoundDescription": "رابط التأكيد هذا غير صالح أو منتهي الصلاحية."
+    },
+    "orderStatus": {
+      "NEW": {
+        "label": "تم استلام الطلب",
+        "description": "لقد استلمنا طلبك."
+      },
+      "CONFIRMED": {
+        "label": "تم تأكيد الطلب",
+        "description": "تم تأكيد طلبك وسيتم تحضيره."
+      },
+      "PREPARING": {
+        "label": "قيد التحضير",
+        "description": "جارٍ تحضير طلبك."
+      },
+      "SHIPPED": {
+        "label": "تم الشحن",
+        "description": "تم شحن طلبك."
+      },
+      "OUT_FOR_DELIVERY": {
+        "label": "قيد التوصيل",
+        "description": "طلبك في طريقه إليك."
+      },
+      "DELIVERED": {
+        "label": "تم التسليم",
+        "description": "تم تسليم طلبك."
+      },
+      "CANCELLED": {
+        "label": "تم إلغاء الطلب",
+        "description": "تم إلغاء هذه الطلبية."
+      }
     },
     "errors": {
       "fullName": "يرجى إدخال اسمك الكامل.",

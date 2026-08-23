@@ -314,11 +314,42 @@
       "thanks": "Thank you for your order.",
       "orderInfoHeading": "Order information",
       "dateLabel": "Date",
+      "timelineHeading": "Order tracking",
       "yourProductsHeading": "Your products",
       "summaryHeading": "Summary",
       "shippingAddressHeading": "Shipping address",
       "notFoundTitle": "Order not found",
       "notFoundDescription": "This confirmation link is invalid or has expired."
+    },
+    "orderStatus": {
+      "NEW": {
+        "label": "Order received",
+        "description": "We've received your order."
+      },
+      "CONFIRMED": {
+        "label": "Order confirmed",
+        "description": "Your order is confirmed and will be prepared."
+      },
+      "PREPARING": {
+        "label": "Preparing",
+        "description": "Your order is being prepared."
+      },
+      "SHIPPED": {
+        "label": "Shipped",
+        "description": "Your order has been shipped."
+      },
+      "OUT_FOR_DELIVERY": {
+        "label": "Out for delivery",
+        "description": "Your order is on its way."
+      },
+      "DELIVERED": {
+        "label": "Delivered",
+        "description": "Your order has been delivered."
+      },
+      "CANCELLED": {
+        "label": "Cancelled",
+        "description": "This order has been cancelled."
+      }
     },
     "errors": {
       "fullName": "Please enter your full name.",
