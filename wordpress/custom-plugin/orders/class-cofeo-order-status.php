@@ -19,14 +19,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  *     stock/payment/reporting internals and there is no safe reason to
  *     touch that;
  *
- * (b) enforces the exact same transition rules as
- *     lib/woocommerce/order-status.ts's canTransition() for ANY status
- *     change regardless of origin — an admin picking a new status in
- *     wp-admin, or COFEO's own secure mutation endpoint over the REST
- *     API both go through WooCommerce's normal set_status()/save()
- *     path, so both fire the same `woocommerce_order_status_changed`
- *     hook this class listens on. There is no separate enforcement
- *     path to keep in sync — one hook, one source of truth;
+ * (b) synchronizes COFEO's normalized status one way only, from
+ *     whatever real WooCommerce status the order is now in
+ *     (map_to_cofeo(), the same mapping lib/woocommerce/order-status.ts's
+ *     mapWooCommerceStatusToCofeoStatus() mirrors on the read side).
+ *     This hook NEVER writes an order status back to WooCommerce and
+ *     NEVER rejects/reverts a change — a manually authorized WooCommerce
+ *     admin correcting an order (including a "reverse" correction, e.g.
+ *     DELIVERED → PREPARING because the admin made a mistake) is
+ *     authoritative and must persist exactly as selected. WooCommerce
+ *     admin is intentionally NOT held to the linear
+ *     NEW→CONFIRMED→…→DELIVERED happy-path graph — that graph is
+ *     enforced only where a transition is requested through COFEO's own
+ *     app-initiated mutation path (lib/woocommerce/order-status-mutation.ts's
+ *     canTransition() check, which runs *before* any WooCommerce write
+ *     and therefore never reaches this hook for a rejected transition
+ *     in the first place). Two different trust levels, two different
+ *     places the rule applies — this hook is downstream of both and
+ *     must not re-litigate a decision a human admin already made;
  *
  * (c) writes the one audit order note per change. This is now the
  *     single authoritative place that happens: the Next.js mutation
@@ -48,30 +58,6 @@ class Cofeo_Order_Status {
 	 *  compatibility with historical orders and as the migration
 	 *  command's source (class-cofeo-order-status-cli.php). */
 	const LEGACY_META_KEY = '_cofeo_order_status';
-
-	/**
-	 * Mirrors `COFEO_STATUS_DEFINITIONS` in
-	 * lib/woocommerce/order-status.ts. Kept in sync by hand — there is
-	 * no shared source of truth across the PHP/TypeScript boundary;
-	 * any change to the transition graph on one side must be mirrored
-	 * on the other (both sides have tests asserting the exact same
-	 * transitions, see lib/woocommerce/order-status.test.ts and this
-	 * plugin's own tests).
-	 */
-	const TRANSITIONS = array(
-		'NEW'              => array( 'CONFIRMED', 'CANCELLED' ),
-		'CONFIRMED'        => array( 'PREPARING', 'CANCELLED' ),
-		'PREPARING'        => array( 'SHIPPED', 'CANCELLED' ),
-		'SHIPPED'          => array( 'OUT_FOR_DELIVERY', 'CANCELLED' ),
-		'OUT_FOR_DELIVERY' => array( 'DELIVERED', 'CANCELLED' ),
-		'DELIVERED'        => array(),
-		'CANCELLED'        => array(),
-	);
-
-	/** Order ids currently being reverted by this class itself — guards
-	 *  against the revert's own `update_status()` call re-entering
-	 *  `on_status_changed()` and looping (Phase 4A Section 7). */
-	private static $reverting = array();
 
 	public static function register_statuses() {
 		$definitions = array(
@@ -181,51 +167,24 @@ class Cofeo_Order_Status {
 		}
 	}
 
-	private static function can_transition( $from, $to ) {
-		if ( $from === $to ) {
-			return false;
-		}
-		return isset( self::TRANSITIONS[ $from ] ) && in_array( $to, self::TRANSITIONS[ $from ], true );
-	}
-
 	/**
 	 * Fires for EVERY WooCommerce order status change, from any origin.
-	 * An invalid COFEO-model transition is reverted (via `update_status()`,
-	 * WooCommerce's own CRUD method — never a raw database write) rather
-	 * than silently accepted; Section 13 is explicit that a UI-only
-	 * restriction is not enough. A valid transition, or a change that
-	 * doesn't move between distinct COFEO states at all (e.g.
-	 * pending → on-hold, both NEW), gets exactly one audit note.
+	 * This is a pure read-derived sync: it writes an audit note
+	 * describing the COFEO-normalized transition, and nothing else —
+	 * it never calls `set_status()`/`update_status()` itself, so a
+	 * self-triggered re-entry into this same hook is not something that
+	 * can happen. WooCommerce's own status is never second-guessed here
+	 * (see the class docblock, point (b)); an admin's manual change,
+	 * forward or backward, terminal or not, always persists exactly as
+	 * selected. A change that doesn't move between distinct COFEO
+	 * states at all (e.g. pending → on-hold, both NEW) still gets one
+	 * audit note, same as before.
 	 */
 	public static function on_status_changed( $order_id, $old_status, $new_status, $order ) {
-		if ( isset( self::$reverting[ $order_id ] ) ) {
-			unset( self::$reverting[ $order_id ] );
-			return;
-		}
-
 		$old_cofeo = self::map_to_cofeo( $old_status );
 		$new_cofeo = self::map_to_cofeo( $new_status );
 
 		if ( null === $old_cofeo || null === $new_cofeo ) {
-			return;
-		}
-
-		if ( $old_cofeo === $new_cofeo ) {
-			self::write_note( $order, $old_cofeo, $new_cofeo );
-			return;
-		}
-
-		if ( ! self::can_transition( $old_cofeo, $new_cofeo ) ) {
-			self::$reverting[ $order_id ] = true;
-			$order->update_status(
-				preg_replace( '/^wc-/', '', (string) $old_status ),
-				sprintf(
-					/* translators: 1: rejected COFEO status, 2: COFEO status reverted to */
-					__( 'Rejected invalid COFEO status transition to "%1$s" — reverted to "%2$s".', 'cofeo' ),
-					$new_cofeo,
-					$old_cofeo
-				)
-			);
 			return;
 		}
 
