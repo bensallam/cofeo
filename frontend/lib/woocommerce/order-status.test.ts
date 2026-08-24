@@ -37,6 +37,18 @@ describe("mapWooCommerceStatusToCofeoStatus", () => {
   it("falls back to NEW for an unrecognized status rather than assuming progress", () => {
     expect(mapWooCommerceStatusToCofeoStatus("some-custom-plugin-status")).toBe("NEW");
   });
+
+  it("maps the three Phase 4A custom WooCommerce statuses directly, no meta lookup needed", () => {
+    expect(mapWooCommerceStatusToCofeoStatus("cofeo-preparing")).toBe("PREPARING");
+    expect(mapWooCommerceStatusToCofeoStatus("cofeo-shipped")).toBe("SHIPPED");
+    expect(mapWooCommerceStatusToCofeoStatus("cofeo-outfordel")).toBe("OUT_FOR_DELIVERY");
+  });
+
+  it("strips a wc- prefix from the Phase 4A custom statuses too", () => {
+    expect(mapWooCommerceStatusToCofeoStatus("wc-cofeo-preparing")).toBe("PREPARING");
+    expect(mapWooCommerceStatusToCofeoStatus("wc-cofeo-shipped")).toBe("SHIPPED");
+    expect(mapWooCommerceStatusToCofeoStatus("wc-cofeo-outfordel")).toBe("OUT_FOR_DELIVERY");
+  });
 });
 
 describe("resolveCofeoStatus (WC status + _cofeo_order_status meta refinement)", () => {
@@ -57,6 +69,15 @@ describe("resolveCofeoStatus (WC status + _cofeo_order_status meta refinement)",
     expect(resolveCofeoStatus("cancelled", "SHIPPED")).toBe("CANCELLED");
     expect(resolveCofeoStatus("completed", "PREPARING")).toBe("DELIVERED");
     expect(resolveCofeoStatus("pending", "SHIPPED")).toBe("NEW");
+  });
+
+  it("Phase 4A: a real cofeo-* status is used directly, ignoring any leftover legacy meta", () => {
+    // A migrated (or freshly created) order's real status is already
+    // the source of truth — no meta lookup needed, and a stale meta
+    // value (e.g. "SHIPPED" left over from before a later real-status
+    // change) must never resurrect an earlier state.
+    expect(resolveCofeoStatus("cofeo-preparing", "SHIPPED")).toBe("PREPARING");
+    expect(resolveCofeoStatus("cofeo-outfordel", null)).toBe("OUT_FOR_DELIVERY");
   });
 
   it("ignores a meta value that isn't a legal refinement status", () => {

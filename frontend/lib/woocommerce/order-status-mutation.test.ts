@@ -42,26 +42,34 @@ describe("transitionOrderCofeoStatus — authorized, valid transitions", () => {
     expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "processing" });
   });
 
-  it("CONFIRMED → PREPARING (meta write, WC status untouched)", async () => {
+  it("CONFIRMED → PREPARING (Phase 4A: a real WC status write, cofeo-preparing)", async () => {
     mockOrder("processing");
     const result = await transitionOrderCofeoStatus(1, "PREPARING", ADMIN);
     expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "PREPARING" });
     const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
-    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({
-      meta_data: [{ key: "_cofeo_order_status", value: "PREPARING" }],
-    });
+    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "cofeo-preparing" });
   });
 
-  it("PREPARING → SHIPPED", async () => {
-    mockOrder("processing", "PREPARING");
+  it("PREPARING → SHIPPED (real status, no meta lookup needed for the current state)", async () => {
+    mockOrder("cofeo-preparing");
     const result = await transitionOrderCofeoStatus(1, "SHIPPED", ADMIN);
     expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "SHIPPED" });
+    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
+    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "cofeo-shipped" });
   });
 
   it("SHIPPED → OUT_FOR_DELIVERY", async () => {
-    mockOrder("processing", "SHIPPED");
+    mockOrder("cofeo-shipped");
     const result = await transitionOrderCofeoStatus(1, "OUT_FOR_DELIVERY", ADMIN);
     expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "OUT_FOR_DELIVERY" });
+    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
+    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "cofeo-outfordel" });
+  });
+
+  it("still honors legacy meta for an un-migrated historical order (PREPARING via meta -> SHIPPED)", async () => {
+    mockOrder("processing", "PREPARING");
+    const result = await transitionOrderCofeoStatus(1, "SHIPPED", ADMIN);
+    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "SHIPPED" });
   });
 
   it("OUT_FOR_DELIVERY → DELIVERED (WC status → completed)", async () => {
@@ -80,15 +88,19 @@ describe("transitionOrderCofeoStatus — authorized, valid transitions", () => {
     expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "cancelled" });
   });
 
-  it("writes an audit order note recording the transition and actor", async () => {
+  it("no longer writes a /notes call directly — the audit note is written by the PHP woocommerce_order_status_changed hook instead", async () => {
     mockOrder("processing");
     await transitionOrderCofeoStatus(7, "PREPARING", ADMIN);
     const noteCall = wcRestFetchMock.mock.calls.find(([path]) => (path as string).includes("/notes"));
-    expect(noteCall).toBeDefined();
-    const body = JSON.parse((noteCall?.[1] as RequestInit).body as string);
-    expect(body.customer_note).toBe(false);
-    expect(body.note).toContain("CONFIRMED → PREPARING");
-    expect(body.note).toContain(ADMIN.actorEmail);
+    expect(noteCall).toBeUndefined();
+  });
+
+  it("sends the acting admin's identity via the X-Cofeo-Actor header, so the PHP hook can attribute the note correctly", async () => {
+    mockOrder("processing");
+    await transitionOrderCofeoStatus(7, "PREPARING", ADMIN);
+    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
+    const headers = (putCall?.[1] as RequestInit).headers as Record<string, string>;
+    expect(headers["X-Cofeo-Actor"]).toBe(`${ADMIN.actorEmail} (${ADMIN.actorId})`);
   });
 });
 

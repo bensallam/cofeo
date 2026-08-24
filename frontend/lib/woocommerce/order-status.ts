@@ -103,7 +103,14 @@ export function isTerminalStatus(status: CofeoStatusKey): boolean {
 
 /**
  * WooCommerce → COFEO mapping. Grounded in this store's actual
- * checkout/payment architecture (not assumed):
+ * checkout/payment architecture (not assumed), and, as of Phase 4A, in
+ * three real custom WooCommerce order statuses registered by
+ * wordpress/custom-plugin/orders/class-cofeo-order-status.php — see
+ * that file's own docblock for why only these three are new statuses
+ * (PREPARING/SHIPPED/OUT_FOR_DELIVERY, the ones WooCommerce genuinely
+ * has no native equivalent for) while NEW/CONFIRMED/DELIVERED/
+ * CANCELLED continue mapping onto WooCommerce's own native statuses,
+ * only *relabeled* for the admin dropdown, never re-registered:
  *
  * - `pending`: order created, not yet actively handled → NEW.
  * - `on-hold`: set by the bank-transfer gateway while awaiting manual
@@ -113,21 +120,27 @@ export function isTerminalStatus(status: CofeoStatusKey): boolean {
  *   this is customer-facing NEW, not CONFIRMED.
  * - `processing`: WooCommerce's default post-payment status, and what
  *   COD orders land on immediately (no gateway-side status override) —
- *   the order is confirmed and being acted on → CONFIRMED. WooCommerce
- *   has no native status for the finer PREPARING/SHIPPED/
- *   OUT_FOR_DELIVERY steps that also happen while the WC status is
- *   still `processing`; see `resolveCofeoStatus` for how those are
- *   layered on without inventing a second order status field.
+ *   the order is confirmed and being acted on → CONFIRMED.
+ * - `cofeo-preparing` / `cofeo-shipped` / `cofeo-outfordel`: the real
+ *   WooCommerce statuses for these three steps (Phase 4A) — a direct
+ *   1:1 mapping, no meta lookup needed. `resolveCofeoStatus` below
+ *   still checks the legacy `_cofeo_order_status` meta as a fallback,
+ *   purely for orders created before this phase that were never
+ *   migrated (see the `wp cofeo-order-status migrate` command).
  * - `completed`: fulfillment finished → DELIVERED.
- * - `cancelled` / `failed` / `refunded`: none of these culminate in a
- *   delivered order → CANCELLED. Deliberately not split into a
- *   separate REFUNDED state — Phase 1 exposes exactly the 7 statuses
- *   specified, and refunded/failed/cancelled are equally "this order
- *   is not happening" from the customer's point of view.
- * - Anything else (custom/unknown plugin status, `trash`, ...): NEW —
- *   the least presumptuous fallback; claiming further progress on a
- *   status we don't recognize would risk exactly the "contradictory
- *   state" the mapping must avoid.
+ * - `cancelled` / `failed`: neither culminates in a delivered order →
+ *   CANCELLED.
+ * - `refunded`: also mapped to CANCELLED, unchanged from before Phase
+ *   4A — flagged there as a decision that may warrant a dedicated
+ *   COFEO status of its own rather than being silently folded into
+ *   CANCELLED (refunded implies the order *was* paid and fulfilled to
+ *   some degree before money moved back, a different business meaning
+ *   than "never happened"). Kept as the existing, safe, unchanged
+ *   behavior pending that explicit decision — see the Phase 4A report.
+ * - Anything else (custom/unknown plugin status, `trash`,
+ *   `checkout-draft`, ...): NEW — the least presumptuous fallback;
+ *   claiming further progress on a status we don't recognize would
+ *   risk exactly the "contradictory state" the mapping must avoid.
  */
 export function mapWooCommerceStatusToCofeoStatus(wcStatus: string): CofeoStatusKey {
   const normalized = wcStatus.replace(/^wc-/, "");
@@ -137,6 +150,12 @@ export function mapWooCommerceStatusToCofeoStatus(wcStatus: string): CofeoStatus
       return "NEW";
     case "processing":
       return "CONFIRMED";
+    case "cofeo-preparing":
+      return "PREPARING";
+    case "cofeo-shipped":
+      return "SHIPPED";
+    case "cofeo-outfordel":
+      return "OUT_FOR_DELIVERY";
     case "completed":
       return "DELIVERED";
     case "cancelled":
@@ -149,23 +168,28 @@ export function mapWooCommerceStatusToCofeoStatus(wcStatus: string): CofeoStatus
 }
 
 /**
- * The smallest safe extension for the logistics states WooCommerce
- * itself has no status for (PREPARING/SHIPPED/OUT_FOR_DELIVERY, all of
- * which happen while the WC order is still `processing`): a single
- * namespaced order meta field, `_cofeo_order_status`, matching this
- * plugin's own existing `_cofeo_*` meta convention (see
- * class-cofeo-shipping-product-promo.php). WooCommerce stays the only
- * order record — this is metadata *on* that record, never a second
- * one.
+ * LEGACY fallback only, as of Phase 4A. Before that phase,
+ * PREPARING/SHIPPED/OUT_FOR_DELIVERY had no real WooCommerce status of
+ * their own — they lived entirely in this namespaced order meta field
+ * while the real WC status stayed `processing` (matching this plugin's
+ * `_cofeo_*` meta convention, see class-cofeo-shipping-product-promo.php).
+ * WooCommerce stayed the only order record — this was metadata *on*
+ * that record, never a second one.
  *
- * The meta value is trusted only when it's a real refinement of the WC
- * status, never a contradiction of it: it must (a) be one of the
- * PREPARING/SHIPPED/OUT_FOR_DELIVERY sub-states, and (b) only apply
- * while the WC-status-derived base is CONFIRMED — a stray/stale meta
- * value left over from before a cancellation, for instance, can never
- * override a WC status that has since moved to DELIVERED or CANCELLED.
- * No admin UI writes this meta yet (Phase 1 is read-only); this
- * resolver is what a future Phase 2+ mutation would target.
+ * Phase 4A registered real `cofeo-preparing`/`cofeo-shipped`/
+ * `cofeo-outfordel` WooCommerce statuses (wordpress/custom-plugin/
+ * orders/class-cofeo-order-status.php) and stopped writing this meta
+ * going forward (lib/woocommerce/order-status-mutation.ts now writes
+ * the real status directly for every non-NEW target) — the resolver
+ * below now exists purely to keep historical, un-migrated orders
+ * readable (see the `wp cofeo-order-status migrate` command for moving
+ * them onto the real status instead). The meta value is trusted only
+ * when it's a real refinement of the WC status, never a contradiction
+ * of it: it must (a) be one of the PREPARING/SHIPPED/OUT_FOR_DELIVERY
+ * sub-states, and (b) only apply while the WC-status-derived base is
+ * CONFIRMED — a stray/stale meta value left over from before a
+ * cancellation, for instance, can never override a WC status that has
+ * since moved to DELIVERED or CANCELLED.
  */
 const COFEO_STATUS_META_KEY = "_cofeo_order_status";
 

@@ -78,5 +78,10 @@ function cofeo_bootstrap() {
 	// reimplemented here.
 	require_once COFEO_PLUGIN_DIR . 'auth/class-cofeo-auth-rate-limit.php';
 	require_once COFEO_PLUGIN_DIR . 'auth/class-cofeo-auth-rest.php';
+
+	// Order status (Phase 4A): unifies WooCommerce's own order status
+	// with the COFEO customer lifecycle — see that class's own docblock.
+	require_once COFEO_PLUGIN_DIR . 'orders/class-cofeo-order-status.php';
+	require_once COFEO_PLUGIN_DIR . 'orders/class-cofeo-order-status-cli.php';
 }
 add_action( 'plugins_loaded', 'cofeo_bootstrap' );

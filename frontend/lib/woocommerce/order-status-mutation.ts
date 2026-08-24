@@ -1,9 +1,23 @@
 /**
- * Server-only order-status mutation — the one place `_cofeo_order_status`
- * (or, for statuses that map onto a real WooCommerce status, the order's
- * actual `status`) is ever written. WooCommerce remains the single
- * source of truth: nothing here creates a second order record, and every
- * write is a real WooCommerce REST API v3 call.
+ * Server-only order-status mutation — the one place a COFEO order
+ * status is ever written from the app side. As of Phase 4A, every
+ * target status maps onto a real WooCommerce status (see
+ * WC_STATUS_FOR_COFEO_STATUS below and wordpress/custom-plugin/orders/
+ * class-cofeo-order-status.php) — nothing here writes the legacy
+ * `_cofeo_order_status` meta any more, and nothing here creates a
+ * second order record; every write is a real WooCommerce REST API v3
+ * call, exactly like an admin choosing a new status from the
+ * WooCommerce order screen would produce.
+ *
+ * The audit note for a successful change is written by that same PHP
+ * module's `woocommerce_order_status_changed` hook, not here — that
+ * hook fires for this REST API call just as much as for an admin
+ * changing status in wp-admin, so writing a note in both places would
+ * duplicate it. The `X-Cofeo-Actor` header below is how that hook
+ * still gets the *real* actor identity for a change that came from
+ * here, rather than falling back to whichever WordPress user owns the
+ * REST API consumer key/secret pair (always the same one, regardless
+ * of which COFEO admin actually triggered the change).
  *
  * This module is intentionally split from `lib/actions/admin-order-actions.ts`:
  * this file is pure, fully unit-testable business logic that takes an
@@ -58,19 +72,18 @@ type WcOrderStatusShape = {
 };
 
 /**
- * The COFEO statuses that map onto a *real* WooCommerce order status
- * rather than the `_cofeo_order_status` meta refinement — writing one
- * of these changes the order's actual status, exactly like an admin
- * would from the WooCommerce order screen. PREPARING/SHIPPED/
- * OUT_FOR_DELIVERY have no WooCommerce equivalent (all three happen
- * while the WC status is still `processing`), so those write the meta
- * field only, leaving the real WC status untouched. NEW never appears
- * here: nothing in the transition graph ever targets it (see
+ * Every COFEO status that can be a mutation *target* maps onto a real
+ * WooCommerce status — three onto the new `cofeo-*` statuses Phase 4A
+ * registered, the rest onto WooCommerce's own natives. NEW never
+ * appears here: nothing in the transition graph ever targets it (see
  * COFEO_STATUS_DEFINITIONS), so `canTransition` already rejects any
  * attempt to "set" it before this map would ever be consulted.
  */
-const WC_STATUS_FOR_COFEO_STATUS: Partial<Record<CofeoStatusKey, string>> = {
+const WC_STATUS_FOR_COFEO_STATUS: Record<Exclude<CofeoStatusKey, "NEW">, string> = {
   CONFIRMED: "processing",
+  PREPARING: "cofeo-preparing",
+  SHIPPED: "cofeo-shipped",
+  OUT_FOR_DELIVERY: "cofeo-outfordel",
   DELIVERED: "completed",
   CANCELLED: "cancelled",
 };
@@ -144,55 +157,29 @@ export async function transitionOrderCofeoStatus(
     return { success: false, code: "INVALID_TRANSITION" };
   }
 
+  // canTransition() already guarantees this — nothing in the
+  // transition graph ever targets NEW — but that isn't something
+  // TypeScript can narrow from a boolean function result. Belt and
+  // suspenders, not reachable in practice (see order-status.test.ts).
+  if (requestedStatus === "NEW") {
+    return { success: false, code: "INVALID_TRANSITION" };
+  }
+
   const targetWcStatus = WC_STATUS_FOR_COFEO_STATUS[requestedStatus];
   try {
-    if (targetWcStatus) {
-      await wcRestFetch(`/orders/${orderId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: targetWcStatus }),
-      });
-    } else {
-      await wcRestFetch(`/orders/${orderId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ meta_data: [{ key: COFEO_STATUS_META_KEY, value: requestedStatus }] }),
-      });
-    }
-    await writeAuditNote(orderId, currentCofeoStatus, requestedStatus, auth);
+    await wcRestFetch(`/orders/${orderId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        // Read by Cofeo_Order_Status::write_note() in the PHP plugin —
+        // see this file's own class-level docblock for why.
+        "X-Cofeo-Actor": `${auth.actorEmail} (${auth.actorId})`,
+      },
+      body: JSON.stringify({ status: targetWcStatus }),
+    });
   } catch {
     return { success: false, code: "WOOCOMMERCE_ERROR" };
   }
 
   return { success: true, orderId, cofeoStatus: requestedStatus };
-}
-
-/**
- * Audit trail via WooCommerce's own order notes (`POST /orders/{id}/
- * notes`) — the safest existing mechanism for this: visible on the
- * order in wp-admin, no second order/audit table, nothing beyond the
- * previous/new status, actor, and timestamp. `customer_note: false`
- * keeps it internal, never shown to the customer. A failure to write
- * the note does not roll back the status change itself (the note is
- * an audit trail of a write that already happened, not a precondition
- * for it) — it's caught by the caller's own try/catch and surfaces as
- * WOOCOMMERCE_ERROR, same as any other WooCommerce API failure here.
- */
-async function writeAuditNote(
-  orderId: number,
-  from: CofeoStatusKey,
-  to: CofeoStatusKey,
-  auth: AdminAuthContext,
-): Promise<void> {
-  const note = [
-    `COFEO status changed: ${from} → ${to}`,
-    `Actor: ${auth.actorEmail} (${auth.actorId})`,
-    `Timestamp: ${new Date().toISOString()}`,
-  ].join("\n");
-
-  await wcRestFetch(`/orders/${orderId}/notes`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ note, customer_note: false }),
-  });
 }
