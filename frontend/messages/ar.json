@@ -434,5 +434,9 @@
     "ctaLabel": "تتبع طلبي",
     "footerNote": "هذه رسالة آلية، يرجى عدم الرد عليها.",
     "signature": "فريق COFEO"
+  },
+  "OrderTimeline": {
+    "correctionHeading": "تصحيح الحالة",
+    "correctionNotice": "{fromLabel} في {fromDate}، ثم {toLabel} في {toDate}"
   }
 }

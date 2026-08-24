@@ -1,6 +1,15 @@
 import { wcRestFetch } from "@/lib/woocommerce/rest-client";
 import { isFallbackBillingEmail } from "@/lib/woocommerce/checkout";
-import { COFEO_STATUS_META_KEY, resolveCofeoStatus, type CofeoStatusKey } from "@/lib/woocommerce/order-status";
+import {
+  COFEO_STATUS_META_KEY,
+  STATUS_HISTORY_META_KEY,
+  STATUS_HISTORY_EVENT_META_KEY_PREFIX,
+  parseStatusHistory,
+  parseStatusHistoryEvent,
+  resolveCofeoStatus,
+  type CofeoStatusKey,
+  type StatusHistoryEvent,
+} from "@/lib/woocommerce/order-status";
 
 /**
  * Minimal slice of the stable WooCommerce REST API v3 `GET /orders/{id}`
@@ -44,6 +53,12 @@ export type OrderDetails = {
    *  lib/woocommerce/order-status.ts for why the two can differ. */
   status: string;
   cofeoStatus: CofeoStatusKey;
+  /** Phase 4C — append-only, read from the same order fetch below (no
+   *  extra API request). Empty for any order with no recorded events
+   *  yet (every order created before this feature shipped, or one
+   *  that simply hasn't changed status since). See
+   *  lib/woocommerce/order-status.ts's getOrderTimelineWithHistory(). */
+  statusHistory: StatusHistoryEvent[];
   dateCreated: string;
   currency: string;
   total: number;
@@ -59,6 +74,58 @@ export type OrderDetails = {
   shippingCity: string;
   items: { name: string; quantity: number; unitPrice: number; total: number; imageSrc?: string }[];
 };
+
+/**
+ * Phase 4C (hardened): rebuilds the ordered `StatusHistoryEvent[]`
+ * from two possible sources found in one order's `meta_data` —
+ * merged, never one replacing the other, so nothing already recorded
+ * is silently discarded:
+ *
+ * 1. The new, per-event format — one meta entry per event, key
+ *    prefixed `_cofeo_status_event_` (see class-cofeo-order-status.php's
+ *    append_history_event()), each holding exactly one event.
+ * 2. The LEGACY whole-array format (`_cofeo_status_history`) — still
+ *    read, never written to going forward.
+ *
+ * Sort order is deterministic: primarily each event's own `timestamp`
+ * (an ISO-8601 string — lexicographic string comparison already
+ * matches chronological order for same-length ISO timestamps), with a
+ * secondary tiebreaker for two events that land in the same rendered
+ * second — the microsecond-resolution sort prefix PHP embeds in each
+ * new-format meta key. This is exactly the scenario two genuinely
+ * concurrent status changes for the same order can produce: their
+ * `meta_data` rows can come back from the WooCommerce REST API in any
+ * order, not necessarily write order — reconstruction must not depend
+ * on array position, only on this deterministic key.
+ */
+function reconstructStatusHistory(metaData: WcOrderV3["meta_data"]): StatusHistoryEvent[] {
+  if (!metaData) return [];
+
+  const sortable: { event: StatusHistoryEvent; sortKey: string }[] = [];
+
+  for (const entry of metaData) {
+    if (!entry.key.startsWith(STATUS_HISTORY_EVENT_META_KEY_PREFIX)) continue;
+    const event = parseStatusHistoryEvent(entry.value);
+    if (!event) continue;
+    // Everything after the prefix, up to the random-suffix separator,
+    // is the fixed-width microsecond sort prefix PHP generated.
+    const idPart = entry.key.slice(STATUS_HISTORY_EVENT_META_KEY_PREFIX.length);
+    const sortPrefix = idPart.split("_")[0] ?? "";
+    sortable.push({ event, sortKey: `${event.timestamp}_${sortPrefix}` });
+  }
+
+  const legacyMeta = metaData.find((entry) => entry.key === STATUS_HISTORY_META_KEY)?.value;
+  parseStatusHistory(legacyMeta).forEach((event, index) => {
+    // No sub-second precision exists for legacy entries — their own
+    // original array position (already oldest-first) is the only
+    // ordering signal available, used only to break ties among
+    // themselves.
+    sortable.push({ event, sortKey: `${event.timestamp}_legacy_${String(index).padStart(6, "0")}` });
+  });
+
+  sortable.sort((a, b) => (a.sortKey < b.sortKey ? -1 : a.sortKey > b.sortKey ? 1 : 0));
+  return sortable.map((entry) => entry.event);
+}
 
 function mapOrder(raw: WcOrderV3): OrderDetails {
   const items = raw.line_items.map((item) => ({
@@ -77,6 +144,7 @@ function mapOrder(raw: WcOrderV3): OrderDetails {
     customerId: raw.customer_id,
     status: raw.status,
     cofeoStatus: resolveCofeoStatus(raw.status, typeof metaStatus === "string" ? metaStatus : null),
+    statusHistory: reconstructStatusHistory(raw.meta_data),
     dateCreated: raw.date_created,
     currency: raw.currency,
     total: Number(raw.total),

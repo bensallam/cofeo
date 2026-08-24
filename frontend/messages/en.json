@@ -434,5 +434,9 @@
     "ctaLabel": "Track my order",
     "footerNote": "This is an automated email, please do not reply.",
     "signature": "The COFEO team"
+  },
+  "OrderTimeline": {
+    "correctionHeading": "Status correction",
+    "correctionNotice": "{fromLabel} on {fromDate}, then {toLabel} on {toDate}"
   }
 }

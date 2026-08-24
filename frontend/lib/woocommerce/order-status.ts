@@ -249,3 +249,216 @@ export function getOrderTimeline(status: CofeoStatusKey): OrderTimeline {
 
   return { cancelled: false, steps };
 }
+
+/**
+ * Phase 4C — one append-only event recorded by
+ * wordpress/custom-plugin/orders/class-cofeo-order-status.php's
+ * `append_history_event()`. Deliberately carries no identity (no
+ * admin/customer email, no user id, no IP, no session/notification
+ * data) — only what the customer-facing timeline needs: which status,
+ * what it moved from, when, and the coarse admin/system distinction.
+ */
+export type StatusHistoryEvent = {
+  status: CofeoStatusKey;
+  previousStatus: CofeoStatusKey | null;
+  /** ISO-8601, as recorded by the PHP side (`gmdate('c')`). */
+  timestamp: string;
+  source: "admin" | "system";
+};
+
+/**
+ * LEGACY — the original Phase 4C storage key (one JSON array of every
+ * event). Superseded, before ever being committed, by the hardened
+ * per-event storage below: a shared array meant every write was a
+ * read-existing/modify/write-back cycle, a real lost-update race under
+ * two genuinely concurrent status changes for the same order. No
+ * longer written to by wordpress/custom-plugin/orders/class-cofeo-order-status.php
+ * — kept read-only so any order that already accumulated history
+ * under it (e.g. from local testing during that earlier iteration)
+ * doesn't lose it; see order.ts's reconstructStatusHistory(), which
+ * merges this with the new per-event records rather than discarding
+ * it. */
+export const STATUS_HISTORY_META_KEY = "_cofeo_status_history";
+
+/**
+ * Prefix for the hardened, per-event storage — mirrors
+ * `HISTORY_EVENT_META_KEY_PREFIX` in class-cofeo-order-status.php
+ * exactly; kept in sync by hand, the same convention
+ * `COFEO_STATUS_META_KEY` already uses for its own PHP-side
+ * counterpart. Each real order meta key is this prefix plus a
+ * microsecond-resolution sort prefix and a random suffix (see that
+ * PHP method's own docblock); order.ts's reconstructStatusHistory()
+ * is what turns the set of matching meta entries back into an
+ * ordered `StatusHistoryEvent[]`.
+ */
+export const STATUS_HISTORY_EVENT_META_KEY_PREFIX = "_cofeo_status_event_";
+
+function isCofeoStatusKeyValue(value: unknown): value is CofeoStatusKey {
+  return typeof value === "string" && (COFEO_STATUS_KEYS as readonly string[]).includes(value);
+}
+
+/**
+ * Validates and narrows one raw candidate object down to exactly the
+ * four known-safe fields `StatusHistoryEvent` declares — shared by
+ * both parsers below so the same strict rule applies identically to
+ * the legacy whole-array format and the new per-event format. Returns
+ * `null` (never throws) for anything that doesn't validate. This is
+ * the one place responsible for making sure an unexpected/extra
+ * property on a stored event (e.g. a hypothetical future `actorEmail`
+ * some other code path mistakenly wrote) can never reach a caller:
+ * only `status`/`previousStatus`/`timestamp`/`source` are ever copied
+ * out, by construction, regardless of what else the raw object
+ * contains.
+ */
+function parseStatusHistoryEventCandidate(candidate: unknown): StatusHistoryEvent | null {
+  if (typeof candidate !== "object" || candidate === null) return null;
+  const c = candidate as Record<string, unknown>;
+
+  if (!isCofeoStatusKeyValue(c.status)) return null;
+  if (typeof c.timestamp !== "string" || c.timestamp === "") return null;
+
+  const previousStatus = isCofeoStatusKeyValue(c.previousStatus) ? c.previousStatus : null;
+  const source = c.source === "admin" || c.source === "system" ? c.source : "system";
+
+  return { status: c.status, previousStatus, timestamp: c.timestamp, source };
+}
+
+/**
+ * Parses ONE event's raw JSON string — a single
+ * `_cofeo_status_event_<id>` order-meta value, the hardened Phase 4C
+ * storage format (one independent meta record per event, never a
+ * shared array — see class-cofeo-order-status.php's
+ * append_history_event()). Never throws: malformed JSON or a
+ * malformed/incomplete object both degrade to `null`, dropped by
+ * order.ts's reconstruction rather than breaking the page.
+ */
+export function parseStatusHistoryEvent(raw: unknown): StatusHistoryEvent | null {
+  if (typeof raw !== "string" || raw === "") return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  return parseStatusHistoryEventCandidate(parsed);
+}
+
+/**
+ * Parses the LEGACY `_cofeo_status_history` whole-array blob — see
+ * that constant's own docblock for why this format was superseded.
+ * Never throws; malformed JSON, a non-array value, or individual
+ * malformed entries all degrade to being silently dropped rather than
+ * thrown — a customer's order page must never break because of a
+ * history-parsing problem; worst case, they simply see no legacy
+ * history for that order.
+ */
+export function parseStatusHistory(raw: unknown): StatusHistoryEvent[] {
+  if (typeof raw !== "string" || raw === "") return [];
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(parsed)) return [];
+
+  const events: StatusHistoryEvent[] = [];
+  for (const entry of parsed) {
+    const event = parseStatusHistoryEventCandidate(entry);
+    if (event) events.push(event);
+  }
+  return events;
+}
+
+export type TimelineStepWithTimestamp = TimelineStep & { timestamp: string | null };
+
+/**
+ * A recorded event whose status moved to an earlier position than the
+ * one it came from — e.g. DELIVERED (position 6) corrected back to
+ * PREPARING (position 3). Surfaced as its own distinct callout by the
+ * UI, never woven into the forward ladder itself: the ladder's
+ * done/active/upcoming states continue to reflect only the *current*
+ * status (see getOrderTimelineWithHistory below), exactly as they did
+ * before Phase 4C — a correction is additional context alongside that
+ * ladder, not a change to how the ladder itself is computed.
+ */
+export type StatusCorrection = {
+  from: CofeoStatusKey;
+  to: CofeoStatusKey;
+  /** `null` only if the correction is the very first recorded event
+   *  for this order (no earlier occurrence of `from` was ever
+   *  captured) — never fabricated. */
+  fromTimestamp: string | null;
+  toTimestamp: string;
+};
+
+export type OrderTimelineWithHistory =
+  | { cancelled: false; steps: TimelineStepWithTimestamp[]; corrections: StatusCorrection[] }
+  | { cancelled: true; timestamp: string | null };
+
+/**
+ * Extends `getOrderTimeline` with real recorded timestamps and
+ * correction callouts, without changing what that function itself
+ * computes: the ladder's done/active/upcoming states still come
+ * entirely from the *current* `status`, exactly as before — current
+ * WooCommerce status remains the source of truth for current state
+ * (Phase 4C's own explicit requirement). History only adds read-only
+ * context on top: a timestamp for each step that was actually
+ * reached, and a separate list of corrections for any event that
+ * moved backward. A step with no matching event in `history` gets
+ * `timestamp: null` — never a fabricated date; this is the expected,
+ * common case for any order created before Phase 4C shipped, or for
+ * a step reached before this feature existed.
+ */
+export function getOrderTimelineWithHistory(
+  status: CofeoStatusKey,
+  history: readonly StatusHistoryEvent[] = [],
+): OrderTimelineWithHistory {
+  const base = getOrderTimeline(status);
+
+  // The most recent recorded timestamp for each status — a step
+  // reached more than once (e.g. re-confirmed after a correction)
+  // shows its latest occurrence, matching what "currently done since"
+  // should mean.
+  const latestTimestampFor = new Map<CofeoStatusKey, string>();
+  for (const event of history) {
+    latestTimestampFor.set(event.status, event.timestamp);
+  }
+
+  if (base.cancelled) {
+    return { cancelled: true, timestamp: latestTimestampFor.get("CANCELLED") ?? null };
+  }
+
+  const corrections: StatusCorrection[] = [];
+  for (const event of history) {
+    if (!event.previousStatus) continue;
+    const fromPosition = COFEO_STATUS_DEFINITIONS[event.previousStatus].position;
+    const toPosition = COFEO_STATUS_DEFINITIONS[event.status].position;
+    if (fromPosition === null || toPosition === null) continue;
+    if (toPosition < fromPosition) {
+      corrections.push({
+        from: event.previousStatus,
+        to: event.status,
+        fromTimestamp: latestTimestampFor.get(event.previousStatus) ?? null,
+        toTimestamp: event.timestamp,
+      });
+    }
+  }
+
+  return {
+    cancelled: false,
+    // Deliberately never attached to an "upcoming" step: a status can
+    // only be "upcoming" while also having a real recorded timestamp
+    // when it was reached once, then corrected away from (e.g.
+    // DELIVERED after a DELIVERED -> PREPARING correction) — showing
+    // that date next to an empty "not yet reached" circle would read
+    // as contradictory. That historical fact is what `corrections`
+    // above surfaces instead, explicitly, as its own callout.
+    steps: base.steps.map((step) => ({
+      ...step,
+      timestamp: step.state === "upcoming" ? null : (latestTimestampFor.get(step.key) ?? null),
+    })),
+    corrections,
+  };
+}

@@ -44,6 +44,26 @@ if ( ! defined( 'ABSPATH' ) ) {
  *     writes its own note, specifically to avoid a duplicate when a
  *     COFEO-initiated change fires this same hook.
  *
+ * (d) records one event to a customer-facing status-history log
+ *     (Phase 4C) — separate from both (b) and (c), containing no
+ *     admin identity, read by lib/woocommerce/order.ts's mapOrder()
+ *     in the exact same order GET call the customer account pages
+ *     already make (no extra network request). This is the only new
+ *     behavior Phase 4C adds to this file; nothing about (a)-(c), or
+ *     the persistence guarantee point (b) describes, changes.
+ *
+ *     Hardened storage (see append_history_event()): each event is
+ *     its own independent order-meta record under a globally-unique
+ *     key, never a single shared JSON array. The original Phase 4C
+ *     design stored the whole history as one blob under
+ *     LEGACY_HISTORY_META_KEY, which made every append a
+ *     read-existing-blob/modify/write-back cycle — a genuine
+ *     lost-update race under two truly concurrent writes for the same
+ *     order. That key is now read-only (kept solely so nothing
+ *     already recorded under it is silently discarded — see
+ *     lib/woocommerce/order.ts's reconstructStatusHistory()) and is
+ *     never written to again.
+ *
  * Uses only WooCommerce's own CRUD API ($order->set_status()/
  * update_status()/save(), wc_get_order(), wc_get_orders()) — never a
  * direct database write — so this is correct under both classic
@@ -58,6 +78,48 @@ class Cofeo_Order_Status {
 	 *  compatibility with historical orders and as the migration
 	 *  command's source (class-cofeo-order-status-cli.php). */
 	const LEGACY_META_KEY = '_cofeo_order_status';
+
+	/**
+	 * Phase 4C (hardened storage): prefix for the per-event meta keys
+	 * status-history entries are stored under — one order-meta record
+	 * per real COFEO status change, each under its own globally-unique
+	 * key (see append_history_event()), never a shared JSON array.
+	 * Each record's *value* is a JSON-encoded
+	 * `{status, previousStatus, timestamp, source}` object. Deliberately
+	 * carries NO identity (no admin email, no user id, no IP, no
+	 * session data) — only the coarse `source` category. Written
+	 * alongside, never instead of, the existing audit note below; this
+	 * is a pure additive record and never writes an order's `status`
+	 * field itself, so it cannot interact with the persistence fix in
+	 * `on_status_changed()` in any way.
+	 *
+	 * Why per-event keys instead of one array: WordPress/WooCommerce
+	 * order meta has no atomic "append to array" primitive — updating
+	 * one shared value is always read-existing/modify/write-back, and
+	 * two genuinely concurrent writes for the same order can race on
+	 * that read, with the second write's save silently clobbering the
+	 * first's already-appended entry. Giving every event its own
+	 * never-before-used key turns each write into a plain, independent
+	 * INSERT — WC_Data::add_meta_data() with a fresh key adds a new row
+	 * at save time, never reading or depending on any other meta row on
+	 * the order. Two inserts under two different unique keys cannot
+	 * collide at the database level regardless of timing, so this is
+	 * safe by construction, not by getting lucky with request timing.
+	 */
+	const HISTORY_EVENT_META_KEY_PREFIX = '_cofeo_status_event_';
+
+	/**
+	 * LEGACY — the original Phase 4C storage key, one JSON array of all
+	 * events. Superseded by HISTORY_EVENT_META_KEY_PREFIX above before
+	 * ever being committed, for exactly the lost-update race described
+	 * there. No longer written to. Kept only so any order that already
+	 * has data under this key (e.g. from local testing during that
+	 * earlier iteration) keeps showing it — see
+	 * lib/woocommerce/order.ts's reconstructStatusHistory(), which
+	 * merges this legacy blob with the new per-event records rather
+	 * than discarding it.
+	 */
+	const LEGACY_HISTORY_META_KEY = '_cofeo_status_history';
 
 	public static function register_statuses() {
 		$definitions = array(
@@ -188,7 +250,93 @@ class Cofeo_Order_Status {
 			return;
 		}
 
+		self::append_history_event( $order_id, $old_cofeo, $new_cofeo );
 		self::write_note( $order, $old_cofeo, $new_cofeo );
+	}
+
+	/**
+	 * Phase 4C (hardened): records one immutable event as its own
+	 * independent order-meta record — never overwrites or reorders
+	 * existing events, and never reads or depends on any of them
+	 * either. Even a "reverse" correction (e.g. DELIVERED -> PREPARING)
+	 * is recorded as a brand new record alongside the DELIVERED one,
+	 * never a rewrite of it; the customer-facing timeline
+	 * (lib/woocommerce/order-status.ts's getOrderTimelineWithHistory(),
+	 * fed by order.ts's reconstructStatusHistory()) is what turns "a
+	 * later event moved backward" into a visible correction notice, not
+	 * this method.
+	 *
+	 * Concurrency safety, precisely: `$event_key` is constructed to be
+	 * globally unique (a microsecond-resolution, fixed-width timestamp
+	 * plus random bytes — see the inline comment below), so
+	 * `add_meta_data()` here always adds a *new* meta row, never
+	 * updates an existing one. WC_Data::save_meta_data() persists only
+	 * the rows this specific in-memory `$order` object knows about
+	 * (loaded fresh a line above); a concurrent request's own
+	 * independent call to this same method, for the same order, is
+	 * writing under an entirely different key and is invisible to —
+	 * and unaffected by — this one. Two INSERTs under two different
+	 * unique keys cannot collide at the database level no matter how
+	 * their timing overlaps, under HPOS or legacy postmeta storage
+	 * alike. This is a correctness guarantee from the storage shape
+	 * itself, not something that depends on how quickly one request
+	 * beats another.
+	 *
+	 * Uses `save_meta_data()` rather than the broader `save()`
+	 * deliberately: it persists only the new meta row, without
+	 * re-triggering order-level save hooks (emails, stock, reporting,
+	 * ...) that a full `save()` would fire for no reason here, since
+	 * nothing about the order's status/line items/totals changed.
+	 */
+	private static function append_history_event( $order_id, $old_cofeo, $new_cofeo ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return;
+		}
+
+		// Fixed-width (20-char), zero-padded, microsecond-resolution
+		// timestamp so plain string comparison of this prefix always
+		// matches true chronological order — this is what
+		// order.ts's reconstructStatusHistory() sorts on to break ties
+		// between two events recorded within the same rendered second.
+		// The random suffix only guarantees key uniqueness even in the
+		// astronomically unlikely case two events for the same order
+		// are generated at the exact same microtime by two different
+		// processes; it plays no role in ordering.
+		$sort_prefix = str_pad( str_replace( '.', '', sprintf( '%020.6f', microtime( true ) ) ), 20, '0', STR_PAD_LEFT );
+		$event_key   = self::HISTORY_EVENT_META_KEY_PREFIX . $sort_prefix . '_' . bin2hex( random_bytes( 4 ) );
+
+		$event = array(
+			'status'         => $new_cofeo,
+			'previousStatus' => $old_cofeo,
+			'timestamp'      => gmdate( 'c' ),
+			'source'         => self::determine_history_source(),
+		);
+
+		$order->add_meta_data( $event_key, wp_json_encode( $event ), true );
+		$order->save_meta_data();
+	}
+
+	/**
+	 * Coarse-only classification — never the identity itself. A change
+	 * made by a real logged-in WordPress user (wp-admin) or via COFEO's
+	 * own authenticated mutation layer (`X-Cofeo-Actor` present, see
+	 * write_note()'s own docblock) is "admin"; anything else (a
+	 * checkout gateway auto-transitioning a new order, for instance) is
+	 * "system". Mirrors the same distinction current_user_actor()
+	 * already makes for the audit note, without ever exposing the
+	 * email/user id this history log is explicitly forbidden from
+	 * storing.
+	 */
+	private static function determine_history_source() {
+		if ( isset( $_SERVER['HTTP_X_COFEO_ACTOR'] ) ) {
+			return 'admin';
+		}
+		$user = wp_get_current_user();
+		if ( $user && $user->exists() ) {
+			return 'admin';
+		}
+		return 'system';
 	}
 
 	/**

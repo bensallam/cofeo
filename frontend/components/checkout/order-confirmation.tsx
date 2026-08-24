@@ -60,7 +60,7 @@ export function OrderConfirmation({ order, bankTransferDetails }: OrderConfirmat
 
       <div className="flex flex-col gap-4 rounded-(--radius-card) border border-border bg-surface p-6">
         <h2 className="text-body-l font-medium text-text-primary">{tc("timelineHeading")}</h2>
-        <OrderStatusTimeline status={order.cofeoStatus} />
+        <OrderStatusTimeline status={order.cofeoStatus} history={order.statusHistory} />
       </div>
 
       <div className="flex flex-col gap-4">

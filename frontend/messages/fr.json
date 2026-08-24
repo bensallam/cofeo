@@ -434,5 +434,9 @@
     "ctaLabel": "Suivre ma commande",
     "footerNote": "Cet e-mail a été envoyé automatiquement, merci de ne pas y répondre.",
     "signature": "L'équipe COFEO"
+  },
+  "OrderTimeline": {
+    "correctionHeading": "Correction de statut",
+    "correctionNotice": "{fromLabel} le {fromDate}, puis {toLabel} le {toDate}"
   }
 }
