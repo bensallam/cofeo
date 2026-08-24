@@ -425,5 +425,14 @@
     "paymentHeading": "Paiement",
     "orderNotFoundTitle": "Commande introuvable",
     "orderNotFoundDescription": "Cette commande est introuvable."
+  },
+  "OrderStatusEmail": {
+    "subject": "COFEO — Mise à jour de votre commande #{number}",
+    "greeting": "Bonjour {name},",
+    "greetingFallback": "Bonjour,",
+    "intro": "Votre commande #{number} a été mise à jour :",
+    "ctaLabel": "Suivre ma commande",
+    "footerNote": "Cet e-mail a été envoyé automatiquement, merci de ne pas y répondre.",
+    "signature": "L'équipe COFEO"
   }
 }

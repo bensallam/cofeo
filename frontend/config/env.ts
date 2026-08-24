@@ -19,6 +19,13 @@ const serverEnvSchema = z.object({
   // silently run with no way to verify a session's authenticity has
   // no real session security at all.
   SESSION_SECRET: z.string().min(32),
+  // Verifies inbound order-status webhook calls from the WordPress
+  // plugin (Phase 4B, class-cofeo-notification-dispatcher.php) —
+  // optional the same way the WC credentials are: no real value is
+  // configured for this environment yet, and the webhook route fails
+  // closed (rejects every request) rather than crashing at import
+  // time when it's unset. See app/api/webhooks/order-status-changed/route.ts.
+  COFEO_NOTIFICATION_WEBHOOK_SECRET: z.string().optional(),
 });
 
 const publicEnvSchema = z.object({
@@ -30,6 +37,7 @@ export const serverEnv = serverEnvSchema.parse({
   WC_CONSUMER_KEY: process.env.WC_CONSUMER_KEY,
   WC_CONSUMER_SECRET: process.env.WC_CONSUMER_SECRET,
   SESSION_SECRET: process.env.SESSION_SECRET,
+  COFEO_NOTIFICATION_WEBHOOK_SECRET: process.env.COFEO_NOTIFICATION_WEBHOOK_SECRET,
 });
 
 export const publicEnv = publicEnvSchema.parse({

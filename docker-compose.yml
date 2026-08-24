@@ -34,8 +34,22 @@ services:
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       WORDPRESS_DEBUG: 1
+      # Phase 4B: outbound order-status webhook to the Next.js app
+      # (class-cofeo-notification-dispatcher.php). Both optional — an
+      # unset secret means the dispatcher logs and skips rather than
+      # sending an unauthenticated call; see that class's docblock.
+      COFEO_NOTIFICATION_WEBHOOK_URL: ${COFEO_NOTIFICATION_WEBHOOK_URL:-}
+      COFEO_NOTIFICATION_WEBHOOK_SECRET: ${COFEO_NOTIFICATION_WEBHOOK_SECRET:-}
     ports:
       - "8080:80"
+    extra_hosts:
+      # Next.js runs natively on the host (`pnpm dev`), not as a
+      # compose service — this is how the wordpress container reaches
+      # it. Docker Desktop on macOS provides this mapping natively;
+      # explicit here because Colima (this project's runtime, see
+      # docs/adr/0001-local-environment-colima-docker.md) is not
+      # guaranteed to without it.
+      - "host.docker.internal:host-gateway"
     volumes:
       - wp_data:/var/www/html
       # Only the custom plugin is bind-mounted into the repo. WordPress

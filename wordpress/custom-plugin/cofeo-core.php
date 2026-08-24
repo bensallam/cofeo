@@ -83,5 +83,12 @@ function cofeo_bootstrap() {
 	// with the COFEO customer lifecycle — see that class's own docblock.
 	require_once COFEO_PLUGIN_DIR . 'orders/class-cofeo-order-status.php';
 	require_once COFEO_PLUGIN_DIR . 'orders/class-cofeo-order-status-cli.php';
+
+	// Notifications (Phase 4B): emits an order.status.changed event to
+	// the Next.js app for every WooCommerce status change — a second,
+	// independent listener on the same hook class-cofeo-order-status.php
+	// uses, never modifying that class. See that class's own docblock.
+	require_once COFEO_PLUGIN_DIR . 'notifications/class-cofeo-notification-settings.php';
+	require_once COFEO_PLUGIN_DIR . 'notifications/class-cofeo-notification-dispatcher.php';
 }
 add_action( 'plugins_loaded', 'cofeo_bootstrap' );

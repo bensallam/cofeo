@@ -425,5 +425,14 @@
     "paymentHeading": "الدفع",
     "orderNotFoundTitle": "الطلب غير موجود",
     "orderNotFoundDescription": "تعذر العثور على هذا الطلب."
+  },
+  "OrderStatusEmail": {
+    "subject": "COFEO — تحديث بخصوص طلبك رقم #{number}",
+    "greeting": "مرحباً {name}،",
+    "greetingFallback": "مرحباً،",
+    "intro": "تم تحديث طلبك رقم #{number}:",
+    "ctaLabel": "تتبع طلبي",
+    "footerNote": "هذه رسالة آلية، يرجى عدم الرد عليها.",
+    "signature": "فريق COFEO"
   }
 }

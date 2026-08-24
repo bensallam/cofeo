@@ -425,5 +425,14 @@
     "paymentHeading": "Payment",
     "orderNotFoundTitle": "Order not found",
     "orderNotFoundDescription": "This order could not be found."
+  },
+  "OrderStatusEmail": {
+    "subject": "COFEO — Update on your order #{number}",
+    "greeting": "Hello {name},",
+    "greetingFallback": "Hello,",
+    "intro": "Your order #{number} has been updated:",
+    "ctaLabel": "Track my order",
+    "footerNote": "This is an automated email, please do not reply.",
+    "signature": "The COFEO team"
   }
 }

@@ -249,6 +249,26 @@ export async function placeOrderAction(input: {
     // appears in the customer's own account.
   }
 
+  // Best-effort, unconditional (guest or logged-in alike): captures
+  // the locale the customer was actively checking out in — the only
+  // non-fabricated language signal available anywhere for this order
+  // (no account-level locale preference is stored; see Phase 4B's
+  // audit, Part 4). This is what lets a later order-status
+  // notification (lib/notifications/dispatch.ts) send in the right
+  // language instead of silently falling back to the store default.
+  // Same failure posture as the block above: never blocks the
+  // redirect, never turns a successfully placed order into an error.
+  try {
+    await wcRestFetch(`/orders/${placed.order.orderId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ meta_data: [{ key: "_cofeo_locale", value: input.locale }] }),
+    });
+  } catch {
+    // Best-effort — see comment above. Worst case, a later
+    // notification falls back to the store's default locale.
+  }
+
   const query = new URLSearchParams({ order: String(placed.order.orderId), key: placed.order.orderKey });
   return redirect(`/${input.locale}/order-confirmation?${query.toString()}`);
 }
