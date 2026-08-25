@@ -410,7 +410,8 @@
       "heading": "My account",
       "myOrders": "My orders",
       "myInfo": "My information",
-      "comingSoon": "Coming soon."
+      "comingSoon": "Coming soon.",
+      "loyaltyCta": "My loyalty points"
     }
   },
   "Account": {
@@ -454,6 +455,25 @@
     "statusUpdateError": "Could not update the status.",
     "customerHeading": "Customer",
     "paymentHeading": "Payment",
-    "backToOrders": "Back to orders"
+    "backToOrders": "Back to orders",
+    "loyaltyHeading": "Loyalty",
+    "loyaltyCustomerBalance": "Customer balance: {balance} pts",
+    "loyaltyEmptyTitle": "No loyalty transactions for this order."
+  },
+  "Loyalty": {
+    "heading": "My loyalty points",
+    "balanceLabel": "Current balance",
+    "totalEarnedLabel": "Total earned",
+    "totalReversedLabel": "Total deducted",
+    "historyHeading": "History",
+    "emptyTitle": "You don't have any loyalty points yet.",
+    "emptyDescription": "Your points will appear here once your first order is delivered.",
+    "pointsEarned": "+{points} pts",
+    "pointsReversed": "-{points} pts",
+    "reason": {
+      "ORDER_DELIVERED": "Order delivered",
+      "STATUS_CORRECTED": "Status correction"
+    },
+    "viewOrderCta": "View order #{number}"
   }
 }

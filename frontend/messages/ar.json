@@ -410,7 +410,8 @@
       "heading": "حسابي",
       "myOrders": "طلباتي",
       "myInfo": "معلوماتي",
-      "comingSoon": "قريبًا."
+      "comingSoon": "قريبًا.",
+      "loyaltyCta": "نقاط الولاء الخاصة بي"
     }
   },
   "Account": {
@@ -454,6 +455,25 @@
     "statusUpdateError": "تعذر تحديث الحالة.",
     "customerHeading": "العميل",
     "paymentHeading": "الدفع",
-    "backToOrders": "العودة إلى الطلبات"
+    "backToOrders": "العودة إلى الطلبات",
+    "loyaltyHeading": "الولاء",
+    "loyaltyCustomerBalance": "رصيد العميل: {balance} نقطة",
+    "loyaltyEmptyTitle": "لا توجد معاملات ولاء لهذا الطلب."
+  },
+  "Loyalty": {
+    "heading": "نقاط الولاء الخاصة بي",
+    "balanceLabel": "الرصيد الحالي",
+    "totalEarnedLabel": "إجمالي المكتسب",
+    "totalReversedLabel": "إجمالي المخصوم",
+    "historyHeading": "السجل",
+    "emptyTitle": "ليس لديك أي نقاط ولاء بعد.",
+    "emptyDescription": "ستظهر نقاطك هنا بمجرد تسليم طلبك الأول.",
+    "pointsEarned": "+{points} نقطة",
+    "pointsReversed": "-{points} نقطة",
+    "reason": {
+      "ORDER_DELIVERED": "تسليم الطلب",
+      "STATUS_CORRECTED": "تصحيح الحالة"
+    },
+    "viewOrderCta": "عرض الطلب رقم {number}"
   }
 }

@@ -79,6 +79,26 @@ export default async function AccountPage({ params }: PageProps) {
             </svg>
           </Link>
 
+          <Link
+            href="/account/loyalty"
+            className="flex items-center justify-between gap-2 rounded-(--radius-control) border border-border-strong p-4 transition-colors duration-200 hover:bg-surface-hover"
+          >
+            <span className="flex items-center gap-2 text-body-s font-medium text-text-primary">
+              <span aria-hidden="true">⭐</span>
+              {t("loyaltyCta")}
+            </span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className="size-4 text-text-muted rtl:-scale-x-100"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
+            </svg>
+          </Link>
+
           <div
             className="flex items-center justify-between gap-2 rounded-(--radius-control) border border-border-strong p-4 opacity-60"
             aria-disabled="true"

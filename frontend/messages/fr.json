@@ -410,7 +410,8 @@
       "heading": "Mon compte",
       "myOrders": "Mes commandes",
       "myInfo": "Mes informations",
-      "comingSoon": "Bientôt disponible."
+      "comingSoon": "Bientôt disponible.",
+      "loyaltyCta": "Mes points de fidélité"
     }
   },
   "Account": {
@@ -454,6 +455,25 @@
     "statusUpdateError": "Impossible de mettre à jour le statut.",
     "customerHeading": "Client",
     "paymentHeading": "Paiement",
-    "backToOrders": "Retour aux commandes"
+    "backToOrders": "Retour aux commandes",
+    "loyaltyHeading": "Fidélité",
+    "loyaltyCustomerBalance": "Solde du client : {balance} pts",
+    "loyaltyEmptyTitle": "Aucune transaction de fidélité pour cette commande."
+  },
+  "Loyalty": {
+    "heading": "Mes points de fidélité",
+    "balanceLabel": "Solde actuel",
+    "totalEarnedLabel": "Total gagné",
+    "totalReversedLabel": "Total déduit",
+    "historyHeading": "Historique",
+    "emptyTitle": "Vous n'avez encore aucun point de fidélité.",
+    "emptyDescription": "Vos points apparaîtront ici une fois votre première commande livrée.",
+    "pointsEarned": "+{points} pts",
+    "pointsReversed": "-{points} pts",
+    "reason": {
+      "ORDER_DELIVERED": "Commande livrée",
+      "STATUS_CORRECTED": "Correction de statut"
+    },
+    "viewOrderCta": "Voir la commande #{number}"
   }
 }

@@ -90,5 +90,19 @@ function cofeo_bootstrap() {
 	// uses, never modifying that class. See that class's own docblock.
 	require_once COFEO_PLUGIN_DIR . 'notifications/class-cofeo-notification-settings.php';
 	require_once COFEO_PLUGIN_DIR . 'notifications/class-cofeo-notification-dispatcher.php';
+
+	// Loyalty (Phase 4E): a third, fully independent listener on
+	// woocommerce_order_status_changed — never modifies
+	// class-cofeo-order-status.php or the notification dispatcher. See
+	// that class's own docblock. Schema loads first since the ledger
+	// and rules classes both depend on its table_name()/constants;
+	// maybe_upgrade() runs on every request but only actually touches
+	// the database the one time the stored schema version differs from
+	// the code's.
+	require_once COFEO_PLUGIN_DIR . 'loyalty/class-cofeo-loyalty-schema.php';
+	require_once COFEO_PLUGIN_DIR . 'loyalty/class-cofeo-loyalty-ledger.php';
+	require_once COFEO_PLUGIN_DIR . 'loyalty/class-cofeo-loyalty-rules.php';
+	require_once COFEO_PLUGIN_DIR . 'loyalty/class-cofeo-loyalty.php';
+	Cofeo_Loyalty_Schema::maybe_upgrade();
 }
 add_action( 'plugins_loaded', 'cofeo_bootstrap' );

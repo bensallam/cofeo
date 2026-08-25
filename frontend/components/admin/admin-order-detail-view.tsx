@@ -6,12 +6,18 @@ import { ProductImage } from "@/components/ui/product-image";
 import { OrderStatusBadge } from "@/components/checkout/order-status-badge";
 import { OrderStatusTimeline } from "@/components/checkout/order-status-timeline";
 import { OrderStatusControl } from "@/components/admin/order-status-control";
+import { AdminOrderLoyaltySection } from "@/components/admin/admin-order-loyalty-section";
 import { formatOrderDate } from "@/lib/i18n/date";
 import type { OrderDetails } from "@/lib/woocommerce/order";
+import type { LoyaltySummary, LoyaltyTransaction } from "@/lib/woocommerce/loyalty";
 import type { Locale } from "@/i18n/routing";
 
 type AdminOrderDetailViewProps = {
   order: OrderDetails;
+  loyaltyTransactions: LoyaltyTransaction[];
+  /** `null` for a guest order (`order.customerId <= 0`) — see
+   *  AdminOrderLoyaltySection's own docblock. */
+  loyaltyCustomerBalance: LoyaltySummary["balance"] | null;
 };
 
 /**
@@ -24,7 +30,7 @@ type AdminOrderDetailViewProps = {
  * the customer-facing view already consumes — no separate admin data
  * model exists.
  */
-export function AdminOrderDetailView({ order }: AdminOrderDetailViewProps) {
+export function AdminOrderDetailView({ order, loyaltyTransactions, loyaltyCustomerBalance }: AdminOrderDetailViewProps) {
   const t = useTranslations("Checkout");
   const tc = useTranslations("Checkout.orderConfirmation");
   const ta = useTranslations("Admin");
@@ -51,6 +57,8 @@ export function AdminOrderDetailView({ order }: AdminOrderDetailViewProps) {
         <h2 className="text-body-l font-medium text-text-primary">{tc("timelineHeading")}</h2>
         <OrderStatusTimeline status={order.cofeoStatus} history={order.statusHistory} />
       </div>
+
+      <AdminOrderLoyaltySection transactions={loyaltyTransactions} customerBalance={loyaltyCustomerBalance} />
 
       <div className="flex flex-col gap-4 rounded-(--radius-card) border border-border bg-surface p-6">
         <h2 className="text-body-l font-medium text-text-primary">{ta("customerHeading")}</h2>

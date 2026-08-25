@@ -6,6 +6,7 @@ import { Section } from "@/components/ui/section";
 import { AdminOrderDetailView } from "@/components/admin/admin-order-detail-view";
 import { getSession } from "@/lib/auth/session";
 import { getOrderById } from "@/lib/woocommerce/order";
+import { getLoyaltySummaryForCustomer, getLoyaltyTransactionsForOrder } from "@/lib/woocommerce/loyalty";
 
 type PageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -57,10 +58,25 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  // `order.customerId` comes from the order record itself (WooCommerce's
+  // own `customer_id`, already fetched server-side above) — never a
+  // client-supplied value. `0` means a guest order, which can never
+  // have a loyalty account (see class-cofeo-loyalty.php's own guard),
+  // so the customer-balance lookup is skipped entirely rather than
+  // querying for a balance that structurally cannot exist.
+  const [loyaltyTransactions, loyaltySummary] = await Promise.all([
+    getLoyaltyTransactionsForOrder(order.orderId),
+    order.customerId > 0 ? getLoyaltySummaryForCustomer(order.customerId) : Promise.resolve(null),
+  ]);
+
   return (
     <Section>
       <Container className="max-w-2xl">
-        <AdminOrderDetailView order={order} />
+        <AdminOrderDetailView
+          order={order}
+          loyaltyTransactions={loyaltyTransactions}
+          loyaltyCustomerBalance={loyaltySummary?.balance ?? null}
+        />
       </Container>
     </Section>
   );
