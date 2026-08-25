@@ -9,6 +9,25 @@
  * call, exactly like an admin choosing a new status from the
  * WooCommerce order screen would produce.
  *
+ * Phase 4D: this function is, and has always been, ADMIN-only —
+ * `isValidAdminAuth()` below rejects every call before anything else
+ * runs, and there is no other path anywhere in this codebase that
+ * reaches WooCommerce with a status write (confirmed by repo-wide
+ * search as part of that phase's own audit). Because of that, this no
+ * longer applies `canTransition()`'s forward-only happy-path graph or
+ * the old "a terminal order can't be touched" rule: those are the
+ * *customer-facing* domain model's own invariants (still fully intact
+ * and unit-tested in order-status.ts / order-status.test.ts, used
+ * wherever the app reasons about what a customer should be *shown* —
+ * e.g. getOrderTimeline()) — they were never meant to constrain a
+ * verified human admin correcting a real mistake, any more than
+ * wp-admin's own order-status dropdown does (see class-cofeo-order-status.php,
+ * which stopped enforcing exactly this in the Phase 4A persistence
+ * fix). An admin reaching this function may set any real COFEO status,
+ * forward or backward, from or to a terminal one — identical to what
+ * they could already do by using wp-admin directly instead of this
+ * in-app control.
+ *
  * The audit note for a successful change is written by that same PHP
  * module's `woocommerce_order_status_changed` hook, not here — that
  * hook fires for this REST API call just as much as for an admin
@@ -17,26 +36,20 @@
  * still gets the *real* actor identity for a change that came from
  * here, rather than falling back to whichever WordPress user owns the
  * REST API consumer key/secret pair (always the same one, regardless
- * of which COFEO admin actually triggered the change).
+ * of which COFEO admin actually triggered the change). The same hook
+ * also records the status-history event and fires the notification
+ * webhook — both entirely unaffected by, and unaware of, whether the
+ * change that triggered them came from here or from wp-admin.
  *
  * This module is intentionally split from `lib/actions/admin-order-actions.ts`:
  * this file is pure, fully unit-testable business logic that takes an
  * already-established `AdminAuthContext` as a plain argument; the Server
  * Action is the only thing a browser can actually reach, and it is what's
- * responsible for constructing (or, today, refusing to construct) that
- * context from a real session. See that file's docblock for why it
- * currently always refuses.
+ * responsible for constructing (or refusing to construct) that context
+ * from a real session — see that file's own docblock.
  */
 import { wcRestFetch } from "@/lib/woocommerce/rest-client";
-import {
-  COFEO_STATUS_META_KEY,
-  COFEO_STATUS_KEYS,
-  canTransition,
-  isTerminalStatus,
-  mapWooCommerceStatusToCofeoStatus,
-  resolveCofeoStatus,
-  type CofeoStatusKey,
-} from "@/lib/woocommerce/order-status";
+import { COFEO_STATUS_KEYS, type CofeoStatusKey } from "@/lib/woocommerce/order-status";
 
 /**
  * What a real admin session must prove before this module will act.
@@ -51,14 +64,7 @@ export type AdminAuthContext = {
   isAdmin: boolean;
 };
 
-export const MUTATION_ERROR_CODES = [
-  "UNAUTHORIZED",
-  "ORDER_NOT_FOUND",
-  "INVALID_STATUS",
-  "INVALID_TRANSITION",
-  "TERMINAL_ORDER",
-  "WOOCOMMERCE_ERROR",
-] as const;
+export const MUTATION_ERROR_CODES = ["UNAUTHORIZED", "ORDER_NOT_FOUND", "INVALID_STATUS", "WOOCOMMERCE_ERROR"] as const;
 
 export type MutationErrorCode = (typeof MUTATION_ERROR_CODES)[number];
 
@@ -68,18 +74,24 @@ export type MutationResult =
 
 type WcOrderStatusShape = {
   status: string;
-  meta_data?: { key: string; value: unknown }[];
 };
 
 /**
- * Every COFEO status that can be a mutation *target* maps onto a real
- * WooCommerce status — three onto the new `cofeo-*` statuses Phase 4A
- * registered, the rest onto WooCommerce's own natives. NEW never
- * appears here: nothing in the transition graph ever targets it (see
- * COFEO_STATUS_DEFINITIONS), so `canTransition` already rejects any
- * attempt to "set" it before this map would ever be consulted.
+ * Every COFEO status maps onto a real WooCommerce status — three onto
+ * the `cofeo-*` statuses Phase 4A registered, the rest onto
+ * WooCommerce's own natives. NEW maps to `pending` (not `on-hold`,
+ * the other native status that also *reads* back as NEW — `on-hold`
+ * is specifically the bank-transfer gateway's own awaiting-verification
+ * signal, never something an admin manually "sets" as a correction;
+ * `pending` is WooCommerce's own plain "not yet handled" state and the
+ * one wp-admin's own relabeled dropdown shows as "Commande reçue").
+ * Phase 4D: unlike before, NEW is now a valid mutation target — an
+ * admin correcting an order all the way back to received is exactly
+ * as legitimate as any other correction (see this file's own
+ * class-level docblock).
  */
-const WC_STATUS_FOR_COFEO_STATUS: Record<Exclude<CofeoStatusKey, "NEW">, string> = {
+const WC_STATUS_FOR_COFEO_STATUS: Record<CofeoStatusKey, string> = {
+  NEW: "pending",
   CONFIRMED: "processing",
   PREPARING: "cofeo-preparing",
   SHIPPED: "cofeo-shipped",
@@ -113,15 +125,15 @@ function isValidAdminAuth(auth: AdminAuthContext | null): auth is AdminAuthConte
  * "unauthorized but real order" vs "unauthorized and no such order").
  *
  * The order is always re-fetched fresh from WooCommerce right before
- * validating and writing — never from a cache, never from a value the
- * caller supplied — which is what protects against two admins acting
- * on stale state at once: whichever request's fresh read happens to
- * run last simply validates against whatever the *other* request just
- * wrote, and a transition that's no longer valid from that point is
- * rejected the same as any other invalid transition. A duplicate
- * request for the same still-valid transition (e.g. a retried click)
- * is safe by construction: the write itself (a WooCommerce status/meta
- * update) is idempotent, so repeating it changes nothing further.
+ * writing — never from a cache, never from a value the caller
+ * supplied — primarily so ORDER_NOT_FOUND is accurate (a deleted or
+ * never-existing order is caught here, not assumed). Phase 4D: this
+ * fresh read is no longer used to validate the requested status
+ * *against* the current one — an admin may move an order to any real
+ * COFEO status regardless of where it currently sits (see this file's
+ * own class-level docblock for why). A duplicate request for the same
+ * status (e.g. a retried click) is safe by construction: the write
+ * itself is idempotent, so repeating it changes nothing further.
  */
 export async function transitionOrderCofeoStatus(
   orderId: number,
@@ -139,31 +151,6 @@ export async function transitionOrderCofeoStatus(
     return { success: false, code: "WOOCOMMERCE_ERROR" };
   }
   if (!raw || typeof raw.status !== "string") return { success: false, code: "ORDER_NOT_FOUND" };
-
-  const wcBaseStatus = mapWooCommerceStatusToCofeoStatus(raw.status);
-
-  // Native WooCommerce terminal statuses (completed/cancelled/failed/
-  // refunded, all of which map to DELIVERED or CANCELLED) are always
-  // authoritative — no meta write can contradict them, regardless of
-  // what's requested.
-  if (isTerminalStatus(wcBaseStatus)) {
-    return { success: false, code: "TERMINAL_ORDER" };
-  }
-
-  const metaStatus = raw.meta_data?.find((entry) => entry.key === COFEO_STATUS_META_KEY)?.value;
-  const currentCofeoStatus = resolveCofeoStatus(raw.status, typeof metaStatus === "string" ? metaStatus : null);
-
-  if (!canTransition(currentCofeoStatus, requestedStatus)) {
-    return { success: false, code: "INVALID_TRANSITION" };
-  }
-
-  // canTransition() already guarantees this — nothing in the
-  // transition graph ever targets NEW — but that isn't something
-  // TypeScript can narrow from a boolean function result. Belt and
-  // suspenders, not reachable in practice (see order-status.test.ts).
-  if (requestedStatus === "NEW") {
-    return { success: false, code: "INVALID_TRANSITION" };
-  }
 
   const targetWcStatus = WC_STATUS_FOR_COFEO_STATUS[requestedStatus];
   try {

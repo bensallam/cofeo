@@ -438,5 +438,22 @@
   "OrderTimeline": {
     "correctionHeading": "Correction de statut",
     "correctionNotice": "{fromLabel} le {fromDate}, puis {toLabel} le {toDate}"
+  },
+  "Admin": {
+    "ordersHeading": "Commandes",
+    "noOrdersTitle": "Aucune commande.",
+    "previousPage": "Précédent",
+    "nextPage": "Suivant",
+    "guestCustomer": "Client invité",
+    "viewOrderCta": "Voir la commande",
+    "orderDetailsHeading": "Commande #{number}",
+    "changeStatusHeading": "Modifier le statut",
+    "changeStatusLabel": "Nouveau statut",
+    "updateStatusCta": "Mettre à jour",
+    "statusUpdateSuccess": "Statut mis à jour.",
+    "statusUpdateError": "Impossible de mettre à jour le statut.",
+    "customerHeading": "Client",
+    "paymentHeading": "Paiement",
+    "backToOrders": "Retour aux commandes"
   }
 }

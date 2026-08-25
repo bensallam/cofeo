@@ -438,5 +438,22 @@
   "OrderTimeline": {
     "correctionHeading": "Status correction",
     "correctionNotice": "{fromLabel} on {fromDate}, then {toLabel} on {toDate}"
+  },
+  "Admin": {
+    "ordersHeading": "Orders",
+    "noOrdersTitle": "No orders.",
+    "previousPage": "Previous",
+    "nextPage": "Next",
+    "guestCustomer": "Guest customer",
+    "viewOrderCta": "View order",
+    "orderDetailsHeading": "Order #{number}",
+    "changeStatusHeading": "Change status",
+    "changeStatusLabel": "New status",
+    "updateStatusCta": "Update",
+    "statusUpdateSuccess": "Status updated.",
+    "statusUpdateError": "Could not update the status.",
+    "customerHeading": "Customer",
+    "paymentHeading": "Payment",
+    "backToOrders": "Back to orders"
   }
 }

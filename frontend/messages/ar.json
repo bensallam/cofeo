@@ -438,5 +438,22 @@
   "OrderTimeline": {
     "correctionHeading": "تصحيح الحالة",
     "correctionNotice": "{fromLabel} في {fromDate}، ثم {toLabel} في {toDate}"
+  },
+  "Admin": {
+    "ordersHeading": "الطلبات",
+    "noOrdersTitle": "لا توجد طلبات.",
+    "previousPage": "السابق",
+    "nextPage": "التالي",
+    "guestCustomer": "عميل زائر",
+    "viewOrderCta": "عرض الطلب",
+    "orderDetailsHeading": "الطلب رقم #{number}",
+    "changeStatusHeading": "تغيير الحالة",
+    "changeStatusLabel": "الحالة الجديدة",
+    "updateStatusCta": "تحديث",
+    "statusUpdateSuccess": "تم تحديث الحالة.",
+    "statusUpdateError": "تعذر تحديث الحالة.",
+    "customerHeading": "العميل",
+    "paymentHeading": "الدفع",
+    "backToOrders": "العودة إلى الطلبات"
   }
 }

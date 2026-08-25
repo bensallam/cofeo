@@ -243,3 +243,43 @@ export async function getOrdersByCustomerId(
     return [];
   }
 }
+
+export type AdminOrderPage = {
+  orders: OrderDetails[];
+  hasNextPage: boolean;
+};
+
+/**
+ * Phase 4D — the admin order list. Deliberately the only order-reading
+ * function in this file with no `customer`/`order_key`/session-owner
+ * scoping at all: it is safe to call ONLY from a route that has
+ * already verified the caller's session has `role === "ADMIN"` (see
+ * app/[locale]/admin/orders/page.tsx) — this function itself performs
+ * no authorization check, the same way `getOrderById` performs no
+ * ownership check and relies entirely on its caller for that.
+ *
+ * `hasNextPage` is computed by requesting one extra item past
+ * `perPage` rather than reading WooCommerce's own `X-WP-TotalPages`
+ * response header, so this doesn't need `wcRestFetch` (shared by
+ * every other caller in this codebase) to start returning headers
+ * instead of a parsed body — a peek-ahead is a smaller, more isolated
+ * change than altering that shared client's return shape.
+ */
+export async function getOrdersForAdmin(params?: { page?: number; perPage?: number }): Promise<AdminOrderPage> {
+  const page = params?.page && params.page > 0 ? params.page : 1;
+  const perPage = params?.perPage && params.perPage > 0 ? params.perPage : 20;
+  const query = new URLSearchParams({
+    page: String(page),
+    per_page: String(perPage + 1),
+    orderby: "date",
+    order: "desc",
+  });
+
+  try {
+    const raw = await wcRestFetch<WcOrderV3[]>(`/orders?${query.toString()}`);
+    const hasNextPage = raw.length > perPage;
+    return { orders: raw.slice(0, perPage).map(mapOrder), hasNextPage };
+  } catch {
+    return { orders: [], hasNextPage: false };
+  }
+}

@@ -5,7 +5,7 @@ vi.mock("@/lib/woocommerce/rest-client", () => ({
 }));
 
 import { wcRestFetch } from "@/lib/woocommerce/rest-client";
-import { getOrderById, getOrdersByCustomerId } from "./order";
+import { getOrderById, getOrdersByCustomerId, getOrdersForAdmin } from "./order";
 
 const wcRestFetchMock = vi.mocked(wcRestFetch);
 
@@ -209,5 +209,48 @@ describe("getOrdersByCustomerId", () => {
   it("returns an empty list (not a throw) when WooCommerce can't be reached", async () => {
     wcRestFetchMock.mockRejectedValue(new Error("network error"));
     expect(await getOrdersByCustomerId(7)).toEqual([]);
+  });
+});
+
+describe("getOrdersForAdmin (Phase 4D)", () => {
+  it("requests no customer filter — every order, not one customer's own", async () => {
+    wcRestFetchMock.mockResolvedValue([RAW_ORDER]);
+    await getOrdersForAdmin();
+    const [path] = wcRestFetchMock.mock.calls[0];
+    expect(path).not.toContain("customer=");
+  });
+
+  it("maps every order in the response", async () => {
+    wcRestFetchMock.mockResolvedValue([RAW_ORDER, { ...RAW_ORDER, id: 43, number: "43" }]);
+    const result = await getOrdersForAdmin();
+    expect(result.orders.map((o) => o.orderId)).toEqual([42, 43]);
+  });
+
+  it("reports hasNextPage by requesting one extra item, never exposing it in the returned list", async () => {
+    const extra = { ...RAW_ORDER, id: 999, number: "999" };
+    wcRestFetchMock.mockResolvedValue([RAW_ORDER, extra]);
+    const result = await getOrdersForAdmin({ perPage: 1 });
+    expect(result.orders).toHaveLength(1);
+    expect(result.orders[0].orderId).toBe(42);
+    expect(result.hasNextPage).toBe(true);
+  });
+
+  it("reports hasNextPage: false when there is no extra item", async () => {
+    wcRestFetchMock.mockResolvedValue([RAW_ORDER]);
+    const result = await getOrdersForAdmin({ perPage: 20 });
+    expect(result.hasNextPage).toBe(false);
+  });
+
+  it("falls back to page 1 / 20 per page for invalid params, never throwing", async () => {
+    wcRestFetchMock.mockResolvedValue([]);
+    await getOrdersForAdmin({ page: -1, perPage: 0 });
+    const [path] = wcRestFetchMock.mock.calls[0];
+    expect(path).toContain("page=1");
+    expect(path).toContain("per_page=21");
+  });
+
+  it("returns an empty page (not a throw) when WooCommerce can't be reached", async () => {
+    wcRestFetchMock.mockRejectedValue(new Error("network error"));
+    expect(await getOrdersForAdmin()).toEqual({ orders: [], hasNextPage: false });
   });
 });

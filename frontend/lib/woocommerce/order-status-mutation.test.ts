@@ -13,81 +13,94 @@ const wcRestFetchMock = vi.mocked(wcRestFetch);
 const ADMIN: AdminAuthContext = { actorId: "1", actorEmail: "admin@cofeo.ma", isAdmin: true };
 const CUSTOMER: AdminAuthContext = { actorId: "42", actorEmail: "customer@example.com", isAdmin: false };
 
-/** Configures the mock so a GET returns the given order shape, and any
- *  write (PUT/POST) succeeds trivially — matching how the real
+/** Configures the mock so a GET returns the given raw WC status, and
+ *  any write (PUT) succeeds trivially — matching how the real
  *  wcRestFetch behaves for a well-formed request. */
-function mockOrder(status: string, metaStatus?: string) {
+function mockOrder(status: string) {
   wcRestFetchMock.mockImplementation((_path, init) => {
     const method = (init as RequestInit | undefined)?.method ?? "GET";
-    if (method === "GET") {
-      return Promise.resolve({
-        status,
-        meta_data: metaStatus ? [{ key: "_cofeo_order_status", value: metaStatus }] : [],
-      });
-    }
+    if (method === "GET") return Promise.resolve({ status });
     return Promise.resolve({});
   });
+}
+
+function putBody(): unknown {
+  const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
+  return putCall ? JSON.parse((putCall[1] as RequestInit).body as string) : undefined;
 }
 
 beforeEach(() => {
   wcRestFetchMock.mockReset();
 });
 
-describe("transitionOrderCofeoStatus — authorized, valid transitions", () => {
+describe("transitionOrderCofeoStatus — ADMIN forward corrections", () => {
   it("NEW → CONFIRMED (WC status pending → processing)", async () => {
     mockOrder("pending");
     const result = await transitionOrderCofeoStatus(1, "CONFIRMED", ADMIN);
     expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "CONFIRMED" });
-    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
-    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "processing" });
+    expect(putBody()).toEqual({ status: "processing" });
   });
 
-  it("CONFIRMED → PREPARING (Phase 4A: a real WC status write, cofeo-preparing)", async () => {
-    mockOrder("processing");
-    const result = await transitionOrderCofeoStatus(1, "PREPARING", ADMIN);
-    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "PREPARING" });
-    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
-    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "cofeo-preparing" });
-  });
-
-  it("PREPARING → SHIPPED (real status, no meta lookup needed for the current state)", async () => {
-    mockOrder("cofeo-preparing");
-    const result = await transitionOrderCofeoStatus(1, "SHIPPED", ADMIN);
-    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "SHIPPED" });
-    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
-    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "cofeo-shipped" });
-  });
-
-  it("SHIPPED → OUT_FOR_DELIVERY", async () => {
-    mockOrder("cofeo-shipped");
-    const result = await transitionOrderCofeoStatus(1, "OUT_FOR_DELIVERY", ADMIN);
-    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "OUT_FOR_DELIVERY" });
-    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
-    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "cofeo-outfordel" });
-  });
-
-  it("still honors legacy meta for an un-migrated historical order (PREPARING via meta -> SHIPPED)", async () => {
-    mockOrder("processing", "PREPARING");
-    const result = await transitionOrderCofeoStatus(1, "SHIPPED", ADMIN);
-    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "SHIPPED" });
-  });
-
-  it("OUT_FOR_DELIVERY → DELIVERED (WC status → completed)", async () => {
-    mockOrder("processing", "OUT_FOR_DELIVERY");
-    const result = await transitionOrderCofeoStatus(1, "DELIVERED", ADMIN);
-    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "DELIVERED" });
-    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
-    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "completed" });
+  it("CONFIRMED → PREPARING → SHIPPED → OUT_FOR_DELIVERY → DELIVERED all map to their real WC statuses", async () => {
+    const cases: [CofeoStatusKey, string][] = [
+      ["PREPARING", "cofeo-preparing"],
+      ["SHIPPED", "cofeo-shipped"],
+      ["OUT_FOR_DELIVERY", "cofeo-outfordel"],
+      ["DELIVERED", "completed"],
+    ];
+    for (const [target, expectedWcStatus] of cases) {
+      wcRestFetchMock.mockReset();
+      mockOrder("processing");
+      const result = await transitionOrderCofeoStatus(1, target, ADMIN);
+      expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: target });
+      expect(putBody()).toEqual({ status: expectedWcStatus });
+    }
   });
 
   it("PREPARING → CANCELLED (WC status → cancelled)", async () => {
-    mockOrder("processing", "PREPARING");
+    mockOrder("cofeo-preparing");
     const result = await transitionOrderCofeoStatus(1, "CANCELLED", ADMIN);
     expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "CANCELLED" });
-    const putCall = wcRestFetchMock.mock.calls.find(([, init]) => (init as RequestInit)?.method === "PUT");
-    expect(JSON.parse((putCall?.[1] as RequestInit).body as string)).toEqual({ status: "cancelled" });
+    expect(putBody()).toEqual({ status: "cancelled" });
+  });
+});
+
+describe("transitionOrderCofeoStatus — ADMIN reverse corrections (Phase 4D)", () => {
+  it("DELIVERED → PREPARING is accepted, not blocked by the forward-only graph", async () => {
+    mockOrder("completed");
+    const result = await transitionOrderCofeoStatus(1, "PREPARING", ADMIN);
+    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "PREPARING" });
+    expect(putBody()).toEqual({ status: "cofeo-preparing" });
   });
 
+  it("DELIVERED → NEW is accepted (WC status → pending)", async () => {
+    mockOrder("completed");
+    const result = await transitionOrderCofeoStatus(1, "NEW", ADMIN);
+    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "NEW" });
+    expect(putBody()).toEqual({ status: "pending" });
+  });
+
+  it("OUT_FOR_DELIVERY → NEW is accepted", async () => {
+    mockOrder("cofeo-outfordel");
+    const result = await transitionOrderCofeoStatus(1, "NEW", ADMIN);
+    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "NEW" });
+  });
+
+  it("a cancelled order can be corrected forward again (CANCELLED → CONFIRMED)", async () => {
+    mockOrder("cancelled");
+    const result = await transitionOrderCofeoStatus(1, "CONFIRMED", ADMIN);
+    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "CONFIRMED" });
+    expect(putBody()).toEqual({ status: "processing" });
+  });
+
+  it("a step can be skipped entirely (PREPARING → DELIVERED), matching wp-admin's own unrestricted dropdown", async () => {
+    mockOrder("cofeo-preparing");
+    const result = await transitionOrderCofeoStatus(1, "DELIVERED", ADMIN);
+    expect(result).toEqual({ success: true, orderId: 1, cofeoStatus: "DELIVERED" });
+  });
+});
+
+describe("transitionOrderCofeoStatus — audit trail delegation", () => {
   it("no longer writes a /notes call directly — the audit note is written by the PHP woocommerce_order_status_changed hook instead", async () => {
     mockOrder("processing");
     await transitionOrderCofeoStatus(7, "PREPARING", ADMIN);
@@ -104,15 +117,15 @@ describe("transitionOrderCofeoStatus — authorized, valid transitions", () => {
   });
 });
 
-describe("transitionOrderCofeoStatus — unauthorized callers", () => {
+describe("transitionOrderCofeoStatus — CUSTOMER and anonymous callers are always rejected", () => {
   it("rejects an anonymous caller (no auth context at all)", async () => {
     const result = await transitionOrderCofeoStatus(1, "CONFIRMED", null);
     expect(result).toEqual({ success: false, code: "UNAUTHORIZED" });
     expect(wcRestFetchMock).not.toHaveBeenCalled();
   });
 
-  it("rejects a customer (a real, non-admin actor)", async () => {
-    const result = await transitionOrderCofeoStatus(1, "CONFIRMED", CUSTOMER);
+  it("rejects a customer (a real, non-admin actor) — including for a reverse correction", async () => {
+    const result = await transitionOrderCofeoStatus(1, "NEW", CUSTOMER);
     expect(result).toEqual({ success: false, code: "UNAUTHORIZED" });
     expect(wcRestFetchMock).not.toHaveBeenCalled();
   });
@@ -131,56 +144,31 @@ describe("transitionOrderCofeoStatus — unauthorized callers", () => {
     expect(wcRestFetchMock).not.toHaveBeenCalled();
   });
 
-  it("never calls WooCommerce at all for an unauthorized caller, for any order id", async () => {
+  it("never calls WooCommerce at all for an unauthorized caller, for any order id or status, including reverse ones", async () => {
     await transitionOrderCofeoStatus(999999, "DELIVERED", null);
+    await transitionOrderCofeoStatus(999999, "NEW", CUSTOMER);
     expect(wcRestFetchMock).not.toHaveBeenCalled();
   });
 });
 
-describe("transitionOrderCofeoStatus — invalid transitions", () => {
-  it.each([
-    ["pending", undefined, "SHIPPED"],
-    ["pending", undefined, "DELIVERED"],
-    ["completed", undefined, "PREPARING"],
-    ["completed", undefined, "CONFIRMED"],
-    ["cancelled", undefined, "CONFIRMED"],
-  ] as [string, string | undefined, CofeoStatusKey][])(
-    "rejects wc=%s meta=%s → %s",
-    async (wcStatus, meta, requested) => {
-      mockOrder(wcStatus, meta);
-      const result = await transitionOrderCofeoStatus(1, requested, ADMIN);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(["INVALID_TRANSITION", "TERMINAL_ORDER"]).toContain(result.code);
-      }
-    },
-  );
-
+describe("transitionOrderCofeoStatus — input validation", () => {
   it("rejects a request with an unrecognized status string", async () => {
     mockOrder("processing");
     const result = await transitionOrderCofeoStatus(1, "SUPER_ADMIN_DELIVERED" as CofeoStatusKey, ADMIN);
     expect(result).toEqual({ success: false, code: "INVALID_STATUS" });
     expect(wcRestFetchMock).not.toHaveBeenCalled();
   });
-});
 
-describe("transitionOrderCofeoStatus — WooCommerce terminal status protection", () => {
-  it("a completed WC order cannot be overridden by any COFEO status request", async () => {
-    mockOrder("completed");
-    const result = await transitionOrderCofeoStatus(1, "PREPARING", ADMIN);
-    expect(result).toEqual({ success: false, code: "TERMINAL_ORDER" });
+  it("rejects an invalid order id (not a positive integer) even when authorized", async () => {
+    const result = await transitionOrderCofeoStatus(-1, "CONFIRMED", ADMIN);
+    expect(result).toEqual({ success: false, code: "ORDER_NOT_FOUND" });
+    expect(wcRestFetchMock).not.toHaveBeenCalled();
   });
 
-  it("a cancelled WC order cannot be overridden even with stale refinement-looking meta", async () => {
-    mockOrder("cancelled", "SHIPPED");
-    const result = await transitionOrderCofeoStatus(1, "CONFIRMED", ADMIN);
-    expect(result).toEqual({ success: false, code: "TERMINAL_ORDER" });
-  });
-
-  it("never issues a write when the order is terminal", async () => {
-    mockOrder("completed");
-    await transitionOrderCofeoStatus(1, "PREPARING", ADMIN);
-    expect(wcRestFetchMock).toHaveBeenCalledTimes(1); // only the initial GET
+  it("reports ORDER_NOT_FOUND when the order can't be fetched", async () => {
+    wcRestFetchMock.mockRejectedValue(new Error("404"));
+    const result = await transitionOrderCofeoStatus(123456789, "DELIVERED", ADMIN);
+    expect(result).toEqual({ success: false, code: "WOOCOMMERCE_ERROR" });
   });
 });
 
@@ -198,11 +186,5 @@ describe("transitionOrderCofeoStatus — security", () => {
       const serialized = JSON.stringify(result);
       expect(serialized).not.toMatch(/ck_|cs_|consumer_key|consumer_secret/i);
     }
-  });
-
-  it("rejects an invalid order id (not a positive integer) even when authorized", async () => {
-    const result = await transitionOrderCofeoStatus(-1, "CONFIRMED", ADMIN);
-    expect(result).toEqual({ success: false, code: "ORDER_NOT_FOUND" });
-    expect(wcRestFetchMock).not.toHaveBeenCalled();
   });
 });
